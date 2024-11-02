@@ -55,7 +55,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nextclass.utils.MaxTextCount
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.customIcon.WriteCompleteButton
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.view.toolBar.InsertReviewToolBarComponent
 
 
 @Composable
@@ -64,6 +66,7 @@ fun InsertReviewView() {
 
     Column(modifier = Modifier.fillMaxSize()) {
 
+        WriteCompleteButton()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,9 +77,7 @@ fun InsertReviewView() {
 
         }
 
-        TextInputOptionComponent(
-
-        )
+        InsertReviewToolBarComponent()
     }
 }
 
@@ -144,13 +145,13 @@ fun TextInputOptionComponent(
     Column(
         Modifier
             .fillMaxWidth()
-            .height(200.dp)
+
 
             .padding(8.dp),
         verticalArrangement = Arrangement.Bottom
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Column(
