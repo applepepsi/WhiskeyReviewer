@@ -12,17 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.view.InsertReviewView
 
 @Composable
-fun WriteCompleteButton() {
+fun WriteViewButtonComponent(
+    icon: ImageVector
+) {
 
     Box(
         modifier = Modifier
@@ -37,7 +37,7 @@ fun WriteCompleteButton() {
         Icon(
             modifier = Modifier
                 .size(25.dp),
-            imageVector = ImageVector.vectorResource(R.drawable.write_complete_button),
+            imageVector = icon,
             contentDescription = "",
             tint = Color.White,
         )
@@ -51,8 +51,6 @@ fun CustomIconPreview() {
 
 
     WhiskeyReviewerTheme {
-        WriteCompleteButton(
-
-        )
+        WriteViewButtonComponent(icon=ImageVector.vectorResource(R.drawable.write_complete_button))
     }
 }
