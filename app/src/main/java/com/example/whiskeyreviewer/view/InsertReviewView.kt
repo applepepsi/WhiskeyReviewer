@@ -9,6 +9,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,9 +27,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
+import androidx.compose.material.icons.filled.AddLink
+import androidx.compose.material.icons.filled.BorderColor
+import androidx.compose.material.icons.filled.FormatAlignCenter
+import androidx.compose.material.icons.filled.FormatAlignLeft
+import androidx.compose.material.icons.filled.FormatAlignRight
+import androidx.compose.material.icons.filled.FormatBold
+import androidx.compose.material.icons.filled.FormatColorText
+import androidx.compose.material.icons.filled.FormatItalic
+import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.FormatUnderlined
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Title
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -48,14 +66,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.nextclass.utils.MaxTextCount
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customIcon.WriteViewButtonComponent
+import com.example.whiskeyreviewer.component.wheelPicker.HorizontalWheelPicker
 import com.example.whiskeyreviewer.component.wheelPicker.Picker
 import com.example.whiskeyreviewer.component.wheelPicker.rememberPickerState
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.view.toolBar.InsertReviewToolBarComponent
+import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.view.toolBar.ToolBarItems
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
+import com.mohamedrejeb.richeditor.model.RichTextState
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -98,11 +120,7 @@ fun InsertReviewView() {
             }
 
 
-            TimePickerComponent(
-                selectDate = LocalDate.now(),
-                selectTime = LocalTime.now(),
-                onDateClick = { /*TODO*/ },
-                onTimeClick = {})
+
 
 
 
@@ -130,9 +148,7 @@ fun InsertReviewView() {
             }
 
             InsertReviewToolBarComponent(writeReviewViewModel)
-
         }
-
 }
 
 @Composable
@@ -406,37 +422,71 @@ fun PickerContainer(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp)
+            .padding(horizontal = 5.dp)
+            .padding(bottom = 5.dp)
             .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(10.dp))
             .clip(shape = RoundedCornerShape(10.dp))
             .background(Color.White)
+
     ) {
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                modifier = Modifier
-                    .clickable(onClick = onClick)
-                    .padding(10.dp),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Normal,
-                    color = MainColor
-                ),
-                text = "확인"
-            )
-            Divider(color = Color.LightGray, thickness = 1.dp)
-        }
+//        Column(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalAlignment = Alignment.End,
+//            verticalArrangement = Arrangement.Center
+//        ) {
+//            Text(
+//                modifier = Modifier
+//                    .clickable(onClick = onClick)
+//                    .padding(10.dp),
+//                style = TextStyle(
+//                    fontSize = 10.sp,
+//                    fontWeight = FontWeight.Normal,
+//                    fontStyle = FontStyle.Normal,
+//                    color = MainColor
+//                ),
+//                text = "확인"
+//            )
+//            Divider(color = Color.LightGray, thickness = 1.dp)
+//        }
 
         content()
     }
 }
 
+@Composable
+fun TextSizePickerComponent(
+    currentTextSize:Int=15,
+    updateTextSize:(Int)->Unit
+) {
 
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text=currentTextSize.toString()+"pt",
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                fontStyle = FontStyle.Normal,
+                color = Color.Black
+            ),
+            modifier = Modifier.padding(bottom=5.dp)
+        )
+
+        PickerContainer(onClick = {  }) {
+            HorizontalWheelPicker(
+                modifier = Modifier.fillMaxWidth(),
+                totalItems = 100,
+                initialSelectedItem = currentTextSize,
+                onItemSelected = { selectedIndex ->
+                    updateTextSize(selectedIndex)
+
+                }
+            )
+        }
+    }
+}
 
 @Composable
 fun TextSizeWheelPickerComponent() {
@@ -492,21 +542,16 @@ fun TextColorPickerComponent() {
     )
 
     PickerContainer(onClick = {  }) {
-        val chunkedList = colorList.chunked(colorList.size / 2)
 
-        Column(modifier = Modifier.fillMaxWidth().padding(top=5.dp,bottom=5.dp)) {
-            chunkedList.forEach { row ->
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 5.dp, end = 5.dp),
-                    contentPadding = PaddingValues(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    items(row) { color ->
-                        SingleTextColorPickerComponent(color = color)
-                    }
-                }
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 5.dp, end = 5.dp),
+            contentPadding = PaddingValues(5.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+        ) {
+            items(colorList) { color ->
+                SingleTextColorPickerComponent(color = color)
             }
         }
     }
@@ -534,15 +579,199 @@ fun SingleTextColorPickerComponent(
                     Modifier.border(
                         width = 1.dp,
                         color = Color.LightGray,
-                        shape = RoundedCornerShape(6.dp)
+                        shape = RoundedCornerShape(size = 6.dp)
                     )
                 }
             )
-            .size(50.dp)
+            .size(32.dp)
     ) {
     }
 }
 
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TextStyleController(
+    modifier: Modifier = Modifier,
+    state: RichTextState,
+    onBoldClick: () -> Unit,
+    onItalicClick: () -> Unit,
+    onUnderlineClick: () -> Unit,
+
+    onTextSizeClick: (TextStyleItems) -> Unit,
+    onTextColorClick: (TextStyleItems) -> Unit,
+    onTextBackGroundColor:(TextStyleItems)->Unit,
+    onStartAlignClick: () -> Unit,
+    onEndAlignClick: () -> Unit,
+    onCenterAlignClick: () -> Unit,
+    onExportClick: () -> Unit,
+) {
+
+
+
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            ,
+        contentPadding = PaddingValues(start=3.dp),
+        horizontalArrangement = Arrangement.spacedBy(7.dp),
+    ) {
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = { },
+                onClick = onBoldClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FormatBold,
+                    contentDescription = "굵기",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        item{
+            ControlWrapper(
+                selected = false,
+                onChangeClick = {  },
+                onClick = onItalicClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FormatItalic,
+                    contentDescription = "기울기",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = { },
+                onClick = onUnderlineClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FormatUnderlined,
+                    contentDescription = "밑줄",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = { },
+                onClick = { onTextSizeClick(TextStyleItems.TEXT_SIZE) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FormatSize,
+                    contentDescription = "글씨크기",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = {
+
+                },
+                onClick = { onTextBackGroundColor(TextStyleItems.TEXT_BACKGROUND_COLOR) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.BorderColor,
+                    contentDescription = "글자배경색",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = { },
+                onClick = { onTextColorClick(TextStyleItems.TEXT_COLOR) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FormatColorText,
+                    contentDescription = "글씨색",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = {  },
+                onClick = onStartAlignClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FormatAlignLeft,
+                    contentDescription = "시작정렬",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = {  },
+                onClick = onCenterAlignClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FormatAlignCenter,
+                    contentDescription = "중간정렬",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+        item {
+            ControlWrapper(
+                selected = false,
+                onChangeClick = {  },
+                onClick = onEndAlignClick
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.FormatAlignRight,
+                    contentDescription = "끝정렬",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ControlWrapper(
+    selected: Boolean,
+    selectedColor: Color = MainColor,
+    unselectedColor: Color = Color.LightGray,
+    onChangeClick: (Boolean) -> Unit,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(size = 6.dp))
+            .clickable {
+                onClick()
+                onChangeClick(!selected)
+            }
+            .background(
+                if (selected) selectedColor
+                else unselectedColor
+            )
+            .border(
+                width = 1.dp,
+                color = Color.LightGray,
+                shape = RoundedCornerShape(size = 6.dp)
+            )
+            .padding(all = 8.dp)
+            .size(20.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -575,9 +804,35 @@ fun WheelPreview() {
 
 
     WhiskeyReviewerTheme {
-        TextSizeWheelPickerComponent(
-
+        TextSizePickerComponent(
+            currentTextSize = 15,
+            updateTextSize = {}
         )
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun TextOptionPreview() {
+
+    val state = rememberRichTextState()
+
+    WhiskeyReviewerTheme {
+        TextStyleController(
+            state = state,
+            onBoldClick = { /*TODO*/ },
+            onItalicClick = { /*TODO*/ },
+            onUnderlineClick = { /*TODO*/ },
+
+            onTextSizeClick = { /*TODO*/ },
+            onTextColorClick = { /*TODO*/ },
+            onStartAlignClick = { /*TODO*/ },
+            onEndAlignClick = { /*TODO*/ },
+            onCenterAlignClick = { /*TODO*/ },
+            onTextBackGroundColor={
+
+            }) {
+
+        }
+    }
+}

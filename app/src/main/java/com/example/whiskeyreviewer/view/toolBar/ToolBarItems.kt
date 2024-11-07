@@ -7,14 +7,17 @@ sealed class ToolBarItems(
     val icon: Int,
 
 ) {
-    data object TextSize : ToolBarItems("글씨 크기", R.drawable.text_size_icon)
+    data object TextStyle : ToolBarItems("텍스트 스타일", R.drawable.text_size_icon)
 
-    data object TextColor : ToolBarItems("글씨 색상", R.drawable.select_color_icon)
 
     data object Picture : ToolBarItems("사진 추가", R.drawable.select_picture_icon)
 
+    data object SelectDate : ToolBarItems("날짜 선택", R.drawable.calender_icon)
+
+
+
     companion object {
-        val items = listOf(TextSize, TextColor, Picture)
+        val items = listOf(TextStyle,Picture ,SelectDate)
     }
 }
 

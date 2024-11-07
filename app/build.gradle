@@ -94,6 +94,13 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.0'
 
+    //리치에디터
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc09")
+
+    implementation "androidx.compose.material:material-icons-extended:1.6.7"
+
+    implementation 'com.github.Kaaveh:sdp-compose:1.1.0'
+
 
 
 }
