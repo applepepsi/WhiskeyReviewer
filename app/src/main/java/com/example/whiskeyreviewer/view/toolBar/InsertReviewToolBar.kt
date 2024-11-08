@@ -1,18 +1,14 @@
 package com.example.whiskeyreviewer.view.toolBar
 
-import android.app.Activity
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -24,15 +20,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,21 +44,21 @@ import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.view.TextColorPickerComponent
 import com.example.whiskeyreviewer.view.TextSizePickerComponent
-import com.example.whiskeyreviewer.view.TextSizeWheelPickerComponent
 import com.example.whiskeyreviewer.view.TextStyleController
 import com.example.whiskeyreviewer.view.TimePickerComponent
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
+import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import java.time.LocalDate
 import java.time.LocalTime
 
 
 @Composable
 fun InsertReviewToolBarComponent(
-    writeReviewViewModel: WriteReviewViewModel
+    writeReviewViewModel: WriteReviewViewModel,
+    richTextEditorState:RichTextState
 ) {
-    val state = rememberRichTextState()
+
 
     val singleImagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -93,15 +84,26 @@ fun InsertReviewToolBarComponent(
                             currentTextSize = writeReviewViewModel.textSize.value,
                             updateTextSize = {
                                 writeReviewViewModel.updateTextSize(it)
-                                state.toggleSpanStyle(SpanStyle(fontSize = writeReviewViewModel.textSize.value.sp))
+                                richTextEditorState.toggleSpanStyle(SpanStyle(fontSize = writeReviewViewModel.textSize.value.sp))
                             }
                         )
                     }
                     TextStyleItems.TEXT_COLOR->{
-                        TextColorPickerComponent()
+                        TextColorPickerComponent(
+                            currentColor=writeReviewViewModel.textColor.value,
+                            updateTextColor= {
+                                writeReviewViewModel.updateTextColor(it)
+                                richTextEditorState.toggleSpanStyle(SpanStyle(color = writeReviewViewModel.textColor.value))
+                        })
                     }
                     TextStyleItems.TEXT_BACKGROUND_COLOR->{
-                        TextColorPickerComponent()
+                        TextColorPickerComponent(
+                            currentColor = writeReviewViewModel.textBackgroundColor.value,
+                            updateTextColor = {
+                                writeReviewViewModel.updateTextBackgroundColor(it)
+                                richTextEditorState.toggleSpanStyle(SpanStyle(background = writeReviewViewModel.textBackgroundColor.value))
+                            }
+                        )
                     }
                 }
             }
@@ -110,15 +112,15 @@ fun InsertReviewToolBarComponent(
                 is ToolBarItems.TextStyle -> {
                     TextStyleController(
                         modifier = Modifier.weight(2f),
-                        state = state,
+                        state = richTextEditorState,
                         onBoldClick = {
-                            state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                            richTextEditorState.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
                         },
                         onItalicClick = {
-                            state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
+                            richTextEditorState.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
                         },
                         onUnderlineClick = {
-                            state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
+                            richTextEditorState.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
                         },
                         onTextSizeClick = {
                             writeReviewViewModel.selectTextStyleItem(it)
@@ -130,17 +132,18 @@ fun InsertReviewToolBarComponent(
                             writeReviewViewModel.selectTextStyleItem(it)
                         },
                         onStartAlignClick = {
-                            state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Start))
+                            richTextEditorState.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Start))
                         },
                         onEndAlignClick = {
-                            state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.End))
+                            richTextEditorState.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.End))
                         },
                         onCenterAlignClick = {
-                            state.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Center))
+                            richTextEditorState.toggleParagraphStyle(ParagraphStyle(textAlign = TextAlign.Center))
                         },
                         onExportClick = {
-                            Log.d("추출", state.toHtml())
-                        }
+                            Log.d("추출", richTextEditorState.toHtml())
+                        },
+                        writeReviewViewModel = writeReviewViewModel
                     )
 
                 }
@@ -225,9 +228,9 @@ fun RowScope.AddInsertReviewToolBarItem(
 @Preview(showBackground = true)
 @Composable
 fun BottomNavPreview() {
-
+    val richTextEditorState = rememberRichTextState()
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     WhiskeyReviewerTheme {
-        InsertReviewToolBarComponent(writeReviewViewModel)
+        InsertReviewToolBarComponent(writeReviewViewModel,richTextEditorState)
     }
 }

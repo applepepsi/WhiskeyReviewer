@@ -1,7 +1,6 @@
 package com.example.whiskeyreviewer.view
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,18 +27,14 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
-import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.FormatAlignCenter
 import androidx.compose.material.icons.filled.FormatAlignLeft
-import androidx.compose.material.icons.filled.FormatAlignRight
 import androidx.compose.material.icons.filled.FormatBold
 import androidx.compose.material.icons.filled.FormatColorText
 import androidx.compose.material.icons.filled.FormatItalic
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.FormatUnderlined
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Title
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -74,10 +68,11 @@ import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.view.toolBar.InsertReviewToolBarComponent
 import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
-import com.example.whiskeyreviewer.view.toolBar.ToolBarItems
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -88,7 +83,7 @@ import java.time.LocalTime
 fun InsertReviewView() {
 
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
-
+    val richTextEditorState = rememberRichTextState()
     val scrollState = rememberScrollState()
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -119,12 +114,6 @@ fun InsertReviewView() {
                 )
             }
 
-
-
-
-
-
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -143,11 +132,14 @@ fun InsertReviewView() {
 
                 }
 
-                TextInputComponent(text = "", onValueChange = {}, textCount = 0)
+                RichTextInputComponent(
+                    state = richTextEditorState,
+                    onValueChange = {
 
+                    },)
             }
 
-            InsertReviewToolBarComponent(writeReviewViewModel)
+            InsertReviewToolBarComponent(writeReviewViewModel,richTextEditorState=richTextEditorState)
         }
 }
 
@@ -202,6 +194,51 @@ fun TextInputComponent(
 //            fontSize = 12.sp,
 //            color = Color.DarkGray
 //        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RichTextInputComponent(
+    state: RichTextState,
+    onValueChange: (String) -> Unit,
+
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+
+    placeholder: String = "내용",
+    isError: Boolean = false,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+) {
+    Column(modifier = modifier) {
+        RichTextEditor(
+            state = state,
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 200.dp)
+                .padding(14.dp)
+                ,
+            enabled = enabled,
+            readOnly = readOnly,
+            colors = richTextEditorColors(
+                textColor = Color.Black,
+                containerColor = Color.Transparent,
+                cursorColor = Color.Black,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+            ),
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    style = TextStyle.Default.copy(color = Color.Gray)
+                )
+            },
+            isError = isError,
+
+
+        )
+
     }
 }
 
@@ -519,7 +556,10 @@ fun TextSizeWheelPickerComponent() {
 }
 
 @Composable
-fun TextColorPickerComponent() {
+fun TextColorPickerComponent(
+    currentColor: Color=Color.Black,
+    updateTextColor: (Color) -> Unit
+) {
     val colorList = listOf(
         Color(0xFFFF0000), // Red
         Color(0xFFFFA500), // Orange
@@ -551,7 +591,12 @@ fun TextColorPickerComponent() {
             horizontalArrangement = Arrangement.spacedBy(5.dp),
         ) {
             items(colorList) { color ->
-                SingleTextColorPickerComponent(color = color)
+                SingleTextColorPickerComponent(
+                    color = color,
+                    onClick = {
+                        updateTextColor(it)
+                    }
+                )
             }
         }
     }
@@ -562,12 +607,16 @@ fun TextColorPickerComponent() {
 @Composable
 fun SingleTextColorPickerComponent(
     color: Color = Color.Black,
-    select: Boolean = false
+    select: Boolean = false,
+    onClick: (Color) -> Unit
 ) {
     Box(
         modifier = Modifier
             .clip(shape = RoundedCornerShape(6.dp))
             .background(color)
+            .clickable {
+                onClick(color)
+            }
             .then(
                 if (select) {
                     Modifier.border(
@@ -597,7 +646,6 @@ fun TextStyleController(
     onBoldClick: () -> Unit,
     onItalicClick: () -> Unit,
     onUnderlineClick: () -> Unit,
-
     onTextSizeClick: (TextStyleItems) -> Unit,
     onTextColorClick: (TextStyleItems) -> Unit,
     onTextBackGroundColor:(TextStyleItems)->Unit,
@@ -605,6 +653,7 @@ fun TextStyleController(
     onEndAlignClick: () -> Unit,
     onCenterAlignClick: () -> Unit,
     onExportClick: () -> Unit,
+    writeReviewViewModel: WriteReviewViewModel
 ) {
 
 
@@ -618,8 +667,8 @@ fun TextStyleController(
     ) {
         item {
             ControlWrapper(
-                selected = false,
-                onChangeClick = { },
+                selected = writeReviewViewModel.textStyleState.value.bold,
+                onChangeClick = { writeReviewViewModel.toggleBold() },
                 onClick = onBoldClick
             ) {
                 Icon(
@@ -631,8 +680,8 @@ fun TextStyleController(
         }
         item{
             ControlWrapper(
-                selected = false,
-                onChangeClick = {  },
+                selected = writeReviewViewModel.textStyleState.value.italic,
+                onChangeClick = { writeReviewViewModel.toggleItalic() },
                 onClick = onItalicClick
             ) {
                 Icon(
@@ -644,8 +693,8 @@ fun TextStyleController(
         }
         item {
             ControlWrapper(
-                selected = false,
-                onChangeClick = { },
+                selected = writeReviewViewModel.textStyleState.value.underline,
+                onChangeClick = { writeReviewViewModel.toggleUnderline() },
                 onClick = onUnderlineClick
             ) {
                 Icon(
@@ -658,8 +707,10 @@ fun TextStyleController(
 
         item {
             ControlWrapper(
-                selected = false,
-                onChangeClick = { },
+                selected = writeReviewViewModel.textStyleState.value.textSize,
+                onChangeClick = {
+                    writeReviewViewModel.toggleTextSize()
+                },
                 onClick = { onTextSizeClick(TextStyleItems.TEXT_SIZE) }
             ) {
                 Icon(
@@ -671,9 +722,9 @@ fun TextStyleController(
         }
         item {
             ControlWrapper(
-                selected = false,
+                selected = writeReviewViewModel.textStyleState.value.textBackgroundColor,
                 onChangeClick = {
-
+                    writeReviewViewModel.toggleTextBackgroundColor()
                 },
                 onClick = { onTextBackGroundColor(TextStyleItems.TEXT_BACKGROUND_COLOR) }
             ) {
@@ -686,8 +737,11 @@ fun TextStyleController(
         }
         item {
             ControlWrapper(
-                selected = false,
-                onChangeClick = { },
+                selected = writeReviewViewModel.textStyleState.value.textColor,
+                onChangeClick = {
+                    writeReviewViewModel.toggleTextColor()
+
+                },
                 onClick = { onTextColorClick(TextStyleItems.TEXT_COLOR) }
             ) {
                 Icon(
@@ -700,8 +754,8 @@ fun TextStyleController(
 
         item {
             ControlWrapper(
-                selected = false,
-                onChangeClick = {  },
+                selected = writeReviewViewModel.textStyleState.value.textStartAlign,
+                onChangeClick = { writeReviewViewModel.toggleStartAlign() },
                 onClick = onStartAlignClick
             ) {
                 Icon(
@@ -713,8 +767,8 @@ fun TextStyleController(
         }
         item {
             ControlWrapper(
-                selected = false,
-                onChangeClick = {  },
+                selected = writeReviewViewModel.textStyleState.value.textMidAlign,
+                onChangeClick = { writeReviewViewModel.toggleMidAlign() },
                 onClick = onCenterAlignClick
             ) {
                 Icon(
@@ -726,8 +780,8 @@ fun TextStyleController(
         }
         item {
             ControlWrapper(
-                selected = false,
-                onChangeClick = {  },
+                selected = writeReviewViewModel.textStyleState.value.textEndAlign,
+                onChangeClick = { writeReviewViewModel.toggleEndAlign() },
                 onClick = onEndAlignClick
             ) {
                 Icon(
@@ -754,7 +808,7 @@ fun ControlWrapper(
             .clip(RoundedCornerShape(size = 6.dp))
             .clickable {
                 onClick()
-                onChangeClick(!selected)
+                onChangeClick(selected)
             }
             .background(
                 if (selected) selectedColor
@@ -791,9 +845,8 @@ fun WheelPreview1() {
 
 
     WhiskeyReviewerTheme {
-        TextColorPickerComponent(
-
-        )
+        TextColorPickerComponent() {
+        }
     }
 }
 
@@ -816,7 +869,7 @@ fun WheelPreview() {
 fun TextOptionPreview() {
 
     val state = rememberRichTextState()
-
+    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     WhiskeyReviewerTheme {
         TextStyleController(
             state = state,
@@ -831,8 +884,8 @@ fun TextOptionPreview() {
             onCenterAlignClick = { /*TODO*/ },
             onTextBackGroundColor={
 
-            }) {
-
-        }
+            },
+            writeReviewViewModel = writeReviewViewModel,
+            onExportClick = {})
     }
 }
