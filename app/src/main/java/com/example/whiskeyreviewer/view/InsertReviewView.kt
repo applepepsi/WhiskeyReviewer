@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -42,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +51,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +68,9 @@ import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.view.toolBar.InsertReviewToolBarComponent
+import com.example.whiskeyreviewer.view.toolBar.TextColors
 import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
+import com.example.whiskeyreviewer.view.toolBar.textColorList
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -85,6 +88,11 @@ fun InsertReviewView() {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     val richTextEditorState = rememberRichTextState()
     val scrollState = rememberScrollState()
+
+    val currentRichTextState=richTextEditorState.currentSpanStyle
+    LaunchedEffect(currentRichTextState){
+        writeReviewViewModel.updateSpanStyle(currentRichTextState)
+    }
 
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -514,7 +522,8 @@ fun TextSizePickerComponent(
         PickerContainer(onClick = {  }) {
             HorizontalWheelPicker(
                 modifier = Modifier.fillMaxWidth(),
-                totalItems = 100,
+                maxValue = 50,
+                minValue = 15,
                 initialSelectedItem = currentTextSize,
                 onItemSelected = { selectedIndex ->
                     updateTextSize(selectedIndex)
@@ -557,29 +566,11 @@ fun TextSizeWheelPickerComponent() {
 
 @Composable
 fun TextColorPickerComponent(
-    currentColor: Color=Color.Black,
-    updateTextColor: (Color) -> Unit
+
+    updateTextColor: (Color,Int) -> Unit,
+
+    currentSelectColorIndex: Int?=null
 ) {
-    val colorList = listOf(
-        Color(0xFFFF0000), // Red
-        Color(0xFFFFA500), // Orange
-        Color(0xFFFFC0CB), // Pink
-        Color(0xFF00FF00), // Green
-        Color(0xFF008000), // Dark Green
-        Color(0xFF20B2AA), // Light Sea Green
-        Color(0xFF0000FF), // Blue
-        Color(0xFFADD8E6), // Light Blue
-        Color(0xFF000080), // Navy
-        Color(0xFFFFFF00), // Yellow
-        Color(0xFFFFD700), // Gold
-        Color(0xFF808080), // Gray
-        Color(0xFFD3D3D3), // Light Gray
-        Color(0xFFA9A9A9), // Dark Gray
-        Color(0xFF800080), // Purple
-        Color(0xFFFF00FF), // Magenta
-        Color(0xFF000000), // Black
-        Color(0xFFFFFFFF)  // White
-    )
 
     PickerContainer(onClick = {  }) {
 
@@ -590,11 +581,13 @@ fun TextColorPickerComponent(
             contentPadding = PaddingValues(5.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
         ) {
-            items(colorList) { color ->
+            items(textColorList) { color ->
                 SingleTextColorPickerComponent(
-                    color = color,
+                    select = currentSelectColorIndex==color.index,
+                    color = color.color,
                     onClick = {
-                        updateTextColor(it)
+                        updateTextColor(color.color,color.index)
+//                        updateColorIndex(index)
                     }
                 )
             }
@@ -608,7 +601,8 @@ fun TextColorPickerComponent(
 fun SingleTextColorPickerComponent(
     color: Color = Color.Black,
     select: Boolean = false,
-    onClick: (Color) -> Unit
+    onClick: (Color) -> Unit,
+
 ) {
     Box(
         modifier = Modifier
@@ -842,11 +836,16 @@ fun InsertReviewPreview() {
 @Preview(showBackground = true)
 @Composable
 fun WheelPreview1() {
-
+    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
 
     WhiskeyReviewerTheme {
-        TextColorPickerComponent() {
-        }
+        TextColorPickerComponent(
+            updateTextColor = {color, i ->
+                              
+            },
+            currentSelectColorIndex = writeReviewViewModel.textColorIndex.value
+        )
+
     }
 }
 

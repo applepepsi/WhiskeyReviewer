@@ -22,6 +22,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -71,9 +72,9 @@ fun InsertReviewToolBarComponent(
 
     Column {
 
-
         val selectedItem=writeReviewViewModel.selectedItem.value
         val selectedTextStyleItem=writeReviewViewModel.selectedTextStyleItem.value
+
 
         selectedItem?.let {
 
@@ -90,19 +91,23 @@ fun InsertReviewToolBarComponent(
                     }
                     TextStyleItems.TEXT_COLOR->{
                         TextColorPickerComponent(
-                            currentColor=writeReviewViewModel.textColor.value,
-                            updateTextColor= {
-                                writeReviewViewModel.updateTextColor(it)
-                                richTextEditorState.toggleSpanStyle(SpanStyle(color = writeReviewViewModel.textColor.value))
-                        })
+                            currentSelectColorIndex=writeReviewViewModel.textColor.value.index,
+                            updateTextColor= {color,index->
+                                writeReviewViewModel.updateTextColor(color,index)
+                                richTextEditorState.toggleSpanStyle(SpanStyle(color = writeReviewViewModel.textColor.value.color))
+                        },
+
+                        )
                     }
                     TextStyleItems.TEXT_BACKGROUND_COLOR->{
                         TextColorPickerComponent(
-                            currentColor = writeReviewViewModel.textBackgroundColor.value,
-                            updateTextColor = {
-                                writeReviewViewModel.updateTextBackgroundColor(it)
-                                richTextEditorState.toggleSpanStyle(SpanStyle(background = writeReviewViewModel.textBackgroundColor.value))
-                            }
+                            currentSelectColorIndex=writeReviewViewModel.textBackgroundColor.value.index,
+                            updateTextColor = {color,index->
+                                writeReviewViewModel.updateTextBackgroundColor(color,index)
+
+                                richTextEditorState.toggleSpanStyle(SpanStyle(background = writeReviewViewModel.textBackgroundColor.value.color))
+                            },
+
                         )
                     }
                 }
@@ -179,6 +184,7 @@ fun InsertReviewToolBarComponent(
         }
     }
 }
+
 
 @Composable
 fun RowScope.AddInsertReviewToolBarItem(

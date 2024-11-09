@@ -3,15 +3,16 @@ package com.example.whiskeyreviewer.viewModel
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.ViewModel
+import com.example.whiskeyreviewer.utils.ColorCompare
+import com.example.whiskeyreviewer.utils.ColorCompare.colorsCompare
 import com.example.whiskeyreviewer.view.toolBar.TextAlignment
+import com.example.whiskeyreviewer.view.toolBar.TextColors
 
 import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.view.toolBar.TextStyleState
@@ -24,6 +25,8 @@ import javax.inject.Inject
 class WriteReviewViewModel @Inject constructor(
 
 ): ViewModel() {
+
+
 
     private val _selectedItem = mutableStateOf<ToolBarItems?>(null)
     val selectedItem: State<ToolBarItems?> = _selectedItem
@@ -46,12 +49,17 @@ class WriteReviewViewModel @Inject constructor(
     private val _textSize = mutableStateOf(15)
     val textSize: State<Int> = _textSize
 
-    private val _textColor = mutableStateOf(Color.Black)
-    val textColor: State<Color> = _textColor
+    private val _textColor = mutableStateOf(TextColors(Color(0xFF000000),0))
+    val textColor: State<TextColors> = _textColor
 
-    private val _textBackgroundColor = mutableStateOf(Color.Black)
-    val textBackgroundColor: State<Color> = _textBackgroundColor
+    private val _textBackgroundColor = mutableStateOf(TextColors(Color(0xFF000000),0))
+    val textBackgroundColor: State<TextColors> = _textBackgroundColor
 
+    private val _textColorIndex= mutableStateOf<Int?>(null)
+    val textColorIndex: State<Int?> = _textColorIndex
+
+    private val _textBackgroundColorIndex= mutableStateOf<Int?>(null)
+    val textBackgroundColorIndex: State<Int?> = _textBackgroundColorIndex
     fun selectItem(item: ToolBarItems) {
 
         if (item is ToolBarItems.Picture) {
@@ -90,17 +98,18 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateTextSize(textSize: Int) {
+        Log.d("사이즈", textSize.toString())
         _textSize.value=textSize
     }
 
-    fun updateTextColor(color: Color){
+    fun updateTextColor(color: Color,index:Int){
         Log.d("컬러1", color.toString())
-        _textColor.value=color
+        _textColor.value=_textColor.value.copy(color=color,index=index)
     }
 
-    fun updateTextBackgroundColor(color: Color){
+    fun updateTextBackgroundColor(color: Color,index:Int){
         Log.d("컬러2", color.toString())
-        _textBackgroundColor.value=color
+        _textBackgroundColor.value=_textBackgroundColor.value.copy(color=color,index=index)
     }
 
     fun toggleBold() {
@@ -146,6 +155,48 @@ class WriteReviewViewModel @Inject constructor(
             textMidAlign = except == TextAlignment.MID && _textStyleState.value.textMidAlign,
             textEndAlign = except == TextAlignment.END && _textStyleState.value.textEndAlign
         )
+    }
+
+    fun updateTextColorIndex(index: Int) {
+        Log.d("인덱스",index.toString())
+        _textColorIndex.value=index
+    }
+
+    fun updateTextBackgroundColorIndex(index: Int){
+        Log.d("인덱스2",index.toString())
+        _textBackgroundColorIndex.value=index
+    }
+
+
+    //커서를 옮겼을 때 해당 줄에 적용된 텍스트 효과를 받기 위해
+    fun updateSpanStyle(currentRichTextState: SpanStyle) {
+        Log.d("currentRichTextState",currentRichTextState.fontSize.toString())
+//        updateTextSize(currentRichTextState.fontSize.value.toInt())
+//        updateTextColor(currentRichTextState.color)
+//        updateTextBackgroundColor(currentRichTextState.background)
+
+        //커서를 옮겼을 때 아이콘 활성화 여부
+        _textStyleState.value = _textStyleState.value.copy(
+            bold = currentRichTextState.fontWeight != null,
+            italic = currentRichTextState.fontStyle != null,
+            underline = currentRichTextState.textDecoration != null
+        )
+
+
+        //색 자동 변경 기능은 임시 보류
+//        colorsCompare(currentRichTextState.color, textColor.value.color)?.let {
+//            Log.d("색",it.toString() )
+//            updateTextColor(it.color, it.index)
+//        }
+
+//        Log.d("색",colorsCompare(currentRichTextState.color, textColor.value.color).toString() )
+
+//        colorsCompare(currentRichTextState.background, textBackgroundColor.value.color)?.let {
+//            updateTextBackgroundColor(it.color, it.index)
+//        }
+
+
+
     }
 
 

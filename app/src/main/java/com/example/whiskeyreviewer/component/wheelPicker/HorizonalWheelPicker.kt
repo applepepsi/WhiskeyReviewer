@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.component.wheelPicker
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -26,13 +27,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import ir.kaaveh.sdpcompose.sdp
+import kotlinx.coroutines.delay
 
 
 @Composable
 fun HorizontalWheelPicker(
     modifier: Modifier = Modifier,
     wheelPickerWidth: Dp? = null,
-    totalItems: Int,
+    minValue: Int,
+    maxValue: Int,
     initialSelectedItem: Int,
     lineWidth: Dp = 2.sdp,
     selectedLineHeight: Dp = 32.sdp,
@@ -54,8 +57,9 @@ fun HorizontalWheelPicker(
     }.dp
     val effectiveWidth = wheelPickerWidth ?: screenWidthDp
 
+    val totalItems = maxValue - minValue
     var currentSelectedItem by remember { mutableIntStateOf(initialSelectedItem) }
-    val scrollState = rememberLazyListState(initialFirstVisibleItemIndex = initialSelectedItem)
+    val scrollState = rememberLazyListState(initialFirstVisibleItemIndex = initialSelectedItem - minValue)
 
     val visibleItemsInfo by remember { derivedStateOf { scrollState.layoutInfo.visibleItemsInfo } }
     val firstVisibleItemIndex = visibleItemsInfo.firstOrNull()?.index ?: -1
@@ -65,6 +69,8 @@ fun HorizontalWheelPicker(
     val bufferIndices = totalVisibleItems / 2
 
     LaunchedEffect(currentSelectedItem) {
+        Log.d("initialSelectedItem", initialSelectedItem.toString())
+        delay(100)
         onItemSelected(currentSelectedItem)
     }
 
@@ -74,7 +80,7 @@ fun HorizontalWheelPicker(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         items(totalItems + totalVisibleItems) { index ->
-            val adjustedIndex = index - bufferIndices
+            val adjustedIndex = minValue + index - bufferIndices
 
             if (index == middleIndex) {
                 currentSelectedItem = adjustedIndex
@@ -117,6 +123,7 @@ fun HorizontalWheelPicker(
         }
     }
 }
+
 
 @Composable
 private fun VerticalLine(
