@@ -5,12 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.ViewModel
-import com.example.whiskeyreviewer.utils.ColorCompare
-import com.example.whiskeyreviewer.utils.ColorCompare.colorsCompare
 import com.example.whiskeyreviewer.view.toolBar.TextAlignment
 import com.example.whiskeyreviewer.view.toolBar.TextColors
 
@@ -37,8 +33,8 @@ class WriteReviewViewModel @Inject constructor(
     private val _selectedTextStyleItem = mutableStateOf<TextStyleItems?>(null)
     val selectedTextStyleItem: State<TextStyleItems?> = _selectedTextStyleItem
 
-    private val _selectedImageUri = mutableStateOf<Uri?>(null)
-    val selectedImageUri: State<Uri?> = _selectedImageUri
+    private val _selectedImageUri = mutableStateOf<List<Uri>>(emptyList())
+    val selectedImageUri: State<List<Uri>> = _selectedImageUri
 
     private val _textStyleState = mutableStateOf(TextStyleState())
     val textStyleState: State<TextStyleState> = _textStyleState
@@ -61,13 +57,18 @@ class WriteReviewViewModel @Inject constructor(
     private val _textBackgroundColorIndex= mutableStateOf<Int?>(null)
     val textBackgroundColorIndex: State<Int?> = _textBackgroundColorIndex
     fun selectItem(item: ToolBarItems) {
-
+        Log.d("아이템", item.toString())
         if (item is ToolBarItems.Picture) {
-            _selectedItem.value= null
+
             _selectedItem.value = item
+
         } else {
             _selectedItem.value = if (_selectedItem.value == item) null else item
         }
+    }
+
+    fun resetItem(){
+        _selectedItem.value=null
     }
 
 
@@ -92,9 +93,18 @@ class WriteReviewViewModel @Inject constructor(
             }
     }
 
-    fun setSelectedImage(uri: Uri) {
-        Log.d("이미지", uri.toString())
-        _selectedImageUri.value = uri
+    fun setSelectedImage(uri: List<Uri>) {
+
+        _selectedImageUri.value += uri
+        Log.d("이미지", _selectedImageUri.value.toString())
+    }
+
+    fun deleteImage(index: Int){
+        val oldList=_selectedImageUri.value.toMutableList()
+        if (index in oldList.indices) {
+            oldList.removeAt(index)
+            _selectedImageUri.value = oldList
+        }
     }
 
     fun updateTextSize(textSize: Int) {
@@ -157,15 +167,6 @@ class WriteReviewViewModel @Inject constructor(
         )
     }
 
-    fun updateTextColorIndex(index: Int) {
-        Log.d("인덱스",index.toString())
-        _textColorIndex.value=index
-    }
-
-    fun updateTextBackgroundColorIndex(index: Int){
-        Log.d("인덱스2",index.toString())
-        _textBackgroundColorIndex.value=index
-    }
 
 
     //커서를 옮겼을 때 해당 줄에 적용된 텍스트 효과를 받기 위해

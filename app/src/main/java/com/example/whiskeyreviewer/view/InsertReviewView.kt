@@ -1,6 +1,8 @@
 package com.example.whiskeyreviewer.view
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -29,6 +32,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
 import androidx.compose.material.icons.filled.BorderColor
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FormatAlignCenter
 import androidx.compose.material.icons.filled.FormatAlignLeft
 import androidx.compose.material.icons.filled.FormatBold
@@ -74,8 +78,11 @@ import com.example.whiskeyreviewer.view.toolBar.textColorList
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
+import com.skydoves.landscapist.glide.GlideImage
+import java.net.URI
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -88,6 +95,8 @@ fun InsertReviewView() {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     val richTextEditorState = rememberRichTextState()
     val scrollState = rememberScrollState()
+
+
 
     val currentRichTextState=richTextEditorState.currentSpanStyle
     LaunchedEffect(currentRichTextState){
@@ -139,6 +148,16 @@ fun InsertReviewView() {
                     CommentCheckboxComponent(checked = true, onClickCheckBox = { /*TODO*/ })
 
                 }
+
+
+
+                ImageLazyRowComponent(
+                    imageList = writeReviewViewModel.selectedImageUri.value,
+                    deleteImage = {
+                        writeReviewViewModel.deleteImage(it)
+                    },
+                )
+
 
                 RichTextInputComponent(
                     state = richTextEditorState,
@@ -821,6 +840,52 @@ fun ControlWrapper(
     }
 }
 
+@Composable
+fun ImageLazyRowComponent(
+    imageList:List<Uri>,
+    deleteImage:(Int)->Unit,
+) {
+    val scrollState = rememberLazyListState()
+
+    Log.d("실행","실행")
+
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        state = scrollState,
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = PaddingValues(5.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        itemsIndexed(imageList) { index,image ->
+            Box(
+                modifier = Modifier
+                    .size(150.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                GlideImage(
+                    imageModel = image,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(8.dp))
+                )
+
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = null,
+                    tint = Color.LightGray,
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(top = 5.dp, end = 5.dp)
+                        .clickable {
+                            deleteImage(index)
+                        }
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun InsertReviewPreview() {
@@ -849,16 +914,20 @@ fun WheelPreview1() {
     }
 }
 
+val testUris = listOf(
+    Uri.parse("content://media/external/images/media/1"),
+    Uri.parse("content://media/external/images/media/2"),
 
+)
 @Preview(showBackground = true)
 @Composable
 fun WheelPreview() {
 
 
     WhiskeyReviewerTheme {
-        TextSizePickerComponent(
-            currentTextSize = 15,
-            updateTextSize = {}
+        ImageLazyRowComponent(
+            imageList = testUris,
+            deleteImage = {}
         )
     }
 }

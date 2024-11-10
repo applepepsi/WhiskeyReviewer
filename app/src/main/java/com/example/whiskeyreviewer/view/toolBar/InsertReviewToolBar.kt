@@ -3,6 +3,7 @@ package com.example.whiskeyreviewer.view.toolBar
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,9 +23,10 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,20 +63,26 @@ fun InsertReviewToolBarComponent(
 ) {
 
 
-    val singleImagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            writeReviewViewModel.setSelectedImage(it)
+//    val singleImagePickerLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri: Uri? ->
+//        uri?.let {
+//            writeReviewViewModel.setSelectedImage(it)
+//        }
+//    }
+
+    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { uris ->
+            writeReviewViewModel.setSelectedImage(uris)
         }
-    }
+    )
 
 
     Column {
 
         val selectedItem=writeReviewViewModel.selectedItem.value
         val selectedTextStyleItem=writeReviewViewModel.selectedTextStyleItem.value
-
 
         selectedItem?.let {
 
@@ -153,7 +161,10 @@ fun InsertReviewToolBarComponent(
 
                 }
                 is ToolBarItems.Picture -> {
-                    singleImagePickerLauncher.launch("image/*")
+
+                    multiplePhotoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    //이미지는 한번 실행되면 선택된 아이템을 초기화 할 필요가 있음
+                    writeReviewViewModel.resetItem()
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(
