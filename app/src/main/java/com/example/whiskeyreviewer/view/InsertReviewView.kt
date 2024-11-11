@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,7 +28,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
@@ -48,12 +48,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -62,7 +67,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.nextclass.utils.MaxTextCount
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customIcon.WriteViewButtonComponent
 import com.example.whiskeyreviewer.component.wheelPicker.HorizontalWheelPicker
@@ -72,23 +76,21 @@ import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.view.toolBar.InsertReviewToolBarComponent
-import com.example.whiskeyreviewer.view.toolBar.TextColors
 import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.view.toolBar.textColorList
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
-import com.mohamedrejeb.richeditor.ui.material3.RichText
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
 import com.skydoves.landscapist.glide.GlideImage
-import java.net.URI
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 
 
 @SuppressLint("RememberReturnType", "SuspiciousIndentation")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun InsertReviewView() {
 
@@ -103,126 +105,75 @@ fun InsertReviewView() {
         writeReviewViewModel.updateSpanStyle(currentRichTextState)
     }
 
-        Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .fillMaxSize()) {
 
 
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+
+                .padding(start = 8.dp, end = 8.dp, top = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            WriteViewButtonComponent(
+                icon = ImageVector.vectorResource(R.drawable.back_button_icon)
+            )
+
+            Text(
+                text = "리뷰 작성",
+                style = TextStyle.Default.copy(
+                    color = Color.Gray,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
+            WriteViewButtonComponent(
+                icon = ImageVector.vectorResource(R.drawable.write_complete_button)
+            )
+
+        }
+
+
+
+        Column(
+            modifier = Modifier
+                .padding(top = 3.dp)
+                .weight(1f)
+                .verticalScroll(scrollState)
+        ) {
+            ImageLazyRowComponent(
+                imageList = writeReviewViewModel.selectedImageUri.value,
+                deleteImage = {
+                    writeReviewViewModel.deleteImage(it)
+                },
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .padding(end = 13.dp, top = 15.dp),
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                WriteViewButtonComponent(
-                    icon = ImageVector.vectorResource(R.drawable.back_button_icon)
-                )
-
-                Text(
-                    text = "리뷰 작성",
-                    style = TextStyle.Default.copy(
-                        color = Color.Gray,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-
-                WriteViewButtonComponent(
-                    icon = ImageVector.vectorResource(R.drawable.write_complete_button)
-                )
+                CommentCheckboxComponent(checked = true, onClickCheckBox = { /*TODO*/ })
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-                    .padding(top = 3.dp)
-                    .weight(1f)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 13.dp, top = 15.dp),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CommentCheckboxComponent(checked = true, onClickCheckBox = { /*TODO*/ })
-
-                }
-
-
-
-                ImageLazyRowComponent(
-                    imageList = writeReviewViewModel.selectedImageUri.value,
-                    deleteImage = {
-                        writeReviewViewModel.deleteImage(it)
-                    },
-                )
-
-
-                RichTextInputComponent(
-                    state = richTextEditorState,
-                    onValueChange = {
-
-                    },)
-            }
-
-            InsertReviewToolBarComponent(writeReviewViewModel,richTextEditorState=richTextEditorState)
-        }
-}
-
-@Composable
-fun TextInputComponent(
-    text: String,
-    onValueChange: (String) -> Unit,
-    textCount: Int
-) {
-    Column(
-
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 4.dp, end = 4.dp, top = 5.dp)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            BasicTextField(
-                value = text,
+            RichTextInputComponent(
+                state = richTextEditorState,
                 onValueChange = {
-                    if (it.length <= MaxTextCount) {
-                        onValueChange(it)
-                    }
+
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(minHeight = 200.dp)
-                    .padding(14.dp),
-                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
-                decorationBox = { innerTextField ->
-                    Box(
-                        contentAlignment = Alignment.TopStart
-                    ) {
-                        if (text.isEmpty()) {
-                            Text(
-                                text = "내용",
-                                style = TextStyle.Default.copy(color = Color.Gray, fontSize = 20.sp)
-                            )
-                        }
-                        innerTextField()
-                    }
-                }
+                scrollState=scrollState
             )
         }
 
-//        Text(
-//            text = "${textCount}/${MaxTextCount}",
-//            modifier = Modifier
-//                .align(Alignment.End)
-//                .padding(end = 25.dp, top = 3.dp, bottom = 3.dp),
-//            fontSize = 12.sp,
-//            color = Color.DarkGray
-//        )
+        InsertReviewToolBarComponent(writeReviewViewModel, richTextEditorState = richTextEditorState)
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -237,36 +188,49 @@ fun RichTextInputComponent(
     isError: Boolean = false,
     enabled: Boolean = true,
     readOnly: Boolean = false,
+    scrollState: ScrollState,
 ) {
-    Column(modifier = modifier) {
-        RichTextEditor(
-            state = state,
-            modifier = Modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = 200.dp)
-                .padding(14.dp)
-                ,
-            enabled = enabled,
-            readOnly = readOnly,
-            colors = richTextEditorColors(
-                textColor = Color.Black,
-                containerColor = Color.Transparent,
-                cursorColor = Color.Black,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    style = TextStyle.Default.copy(color = Color.Gray)
-                )
+    val coroutineScope = rememberCoroutineScope()
+
+    var prevHeight by remember { mutableStateOf(0) }
+    RichTextEditor(
+        state = state,
+        modifier = Modifier
+            .fillMaxWidth()
+
+
+            .padding(start = 8.dp, end = 8.dp)
+            .onSizeChanged {
+                val diff = it.height - prevHeight
+                prevHeight = it.height
+                if (prevHeight == 0 || diff == 0) {
+                    return@onSizeChanged
+                }
+
+                coroutineScope.launch {
+                    scrollState.animateScrollTo(
+                        scrollState.value + diff
+                    )
+                }
             },
-            isError = isError,
 
-
-        )
-
-    }
+        enabled = enabled,
+        readOnly = readOnly,
+        colors = richTextEditorColors(
+            textColor = Color.Black,
+            containerColor = Color.Transparent,
+            cursorColor = Color.Black,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+        placeholder = {
+            Text(
+                text = placeholder,
+                style = TextStyle.Default.copy(color = Color.Gray)
+            )
+        },
+        isError = isError,
+    )
 }
 
 @Composable
@@ -955,5 +919,17 @@ fun TextOptionPreview() {
             },
             writeReviewViewModel = writeReviewViewModel,
             onExportClick = {})
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun TextSizePickerPreview() {
+
+    val state = rememberRichTextState()
+    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    WhiskeyReviewerTheme {
+        TextSizePickerComponent(currentTextSize = 15, updateTextSize = {})
     }
 }

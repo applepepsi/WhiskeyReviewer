@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -79,7 +81,10 @@ fun InsertReviewToolBarComponent(
     )
 
 
-    Column {
+    Column(
+        modifier = Modifier.imePadding(),
+        verticalArrangement = Arrangement.Bottom
+    ) {
 
         val selectedItem=writeReviewViewModel.selectedItem.value
         val selectedTextStyleItem=writeReviewViewModel.selectedTextStyleItem.value
@@ -112,7 +117,6 @@ fun InsertReviewToolBarComponent(
                             currentSelectColorIndex=writeReviewViewModel.textBackgroundColor.value.index,
                             updateTextColor = {color,index->
                                 writeReviewViewModel.updateTextBackgroundColor(color,index)
-
                                 richTextEditorState.toggleSpanStyle(SpanStyle(background = writeReviewViewModel.textBackgroundColor.value.color))
                             },
 
@@ -165,6 +169,7 @@ fun InsertReviewToolBarComponent(
                     multiplePhotoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     //이미지는 한번 실행되면 선택된 아이템을 초기화 할 필요가 있음
                     writeReviewViewModel.resetItem()
+                    writeReviewViewModel.resetTextStyleItem()
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(
@@ -172,6 +177,7 @@ fun InsertReviewToolBarComponent(
                         selectTime = LocalTime.now(),
                         onDateClick = { /*TODO*/ },
                         onTimeClick = {})
+                    writeReviewViewModel.resetTextStyleItem()
                 }
             }
         }

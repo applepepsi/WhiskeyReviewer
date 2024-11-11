@@ -48,7 +48,7 @@ class WriteReviewViewModel @Inject constructor(
     private val _textColor = mutableStateOf(TextColors(Color(0xFF000000),0))
     val textColor: State<TextColors> = _textColor
 
-    private val _textBackgroundColor = mutableStateOf(TextColors(Color(0xFF000000),0))
+    private val _textBackgroundColor = mutableStateOf(TextColors(Color(0xFFFFFFFF),0))
     val textBackgroundColor: State<TextColors> = _textBackgroundColor
 
     private val _textColorIndex= mutableStateOf<Int?>(null)
@@ -59,9 +59,7 @@ class WriteReviewViewModel @Inject constructor(
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
         if (item is ToolBarItems.Picture) {
-
             _selectedItem.value = item
-
         } else {
             _selectedItem.value = if (_selectedItem.value == item) null else item
         }
@@ -91,6 +89,11 @@ class WriteReviewViewModel @Inject constructor(
                 }
                 item
             }
+    }
+
+    fun resetTextStyleItem(){
+        _selectedTextStyleItem.value=null
+        _textStyleState.value = _textStyleState.value.copy(textSize = false, textColor = false, textBackgroundColor = false)
     }
 
     fun setSelectedImage(uri: List<Uri>) {
