@@ -14,6 +14,7 @@ import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.view.toolBar.TextStyleState
 import com.example.whiskeyreviewer.view.toolBar.ToolBarItems
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalDate
 import javax.inject.Inject
 
 
@@ -56,6 +57,13 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _textBackgroundColorIndex= mutableStateOf<Int?>(null)
     val textBackgroundColorIndex: State<Int?> = _textBackgroundColorIndex
+
+    private val _selectDateBottomSheetState= mutableStateOf<Boolean>(false)
+    val selectDateBottomSheetState: State<Boolean> = _selectDateBottomSheetState
+
+    private val _bottleOpenDate=mutableStateOf<LocalDate?>(null)
+    val bottleOpenDate: State<LocalDate?> = _bottleOpenDate
+
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
         if (item is ToolBarItems.Picture) {
@@ -203,5 +211,17 @@ class WriteReviewViewModel @Inject constructor(
 
     }
 
+    fun exportReview(html: String) {
+        Log.d("추출",html)
+    }
+
+
+    fun toggleDateSelectBottomSheetState(){
+        _selectDateBottomSheetState.value=!_selectDateBottomSheetState.value
+    }
+
+    fun updateSelectDate(selectDate:LocalDate){
+        _bottleOpenDate.value=selectDate
+    }
 
 }

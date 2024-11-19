@@ -21,7 +21,8 @@ import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 
 @Composable
 fun WriteViewButtonComponent(
-    icon: ImageVector
+    icon: ImageVector,
+    onClick:()->Unit
 ) {
 
     Box(
@@ -30,7 +31,7 @@ fun WriteViewButtonComponent(
             .background(MainColor)
             .size(38.dp)
             .clickable {
-
+                onClick()
             },
         contentAlignment = Alignment.Center
     ){
@@ -51,6 +52,6 @@ fun CustomIconPreview() {
 
 
     WhiskeyReviewerTheme {
-        WriteViewButtonComponent(icon=ImageVector.vectorResource(R.drawable.write_complete_button))
+        WriteViewButtonComponent(icon=ImageVector.vectorResource(R.drawable.write_complete_button), onClick = {})
     }
 }

@@ -173,10 +173,10 @@ fun InsertReviewToolBarComponent(
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(
-                        selectDate = LocalDate.now(),
-                        selectTime = LocalTime.now(),
-                        onDateClick = { /*TODO*/ },
-                        onTimeClick = {})
+                        selectDate = writeReviewViewModel.bottleOpenDate.value?: LocalDate.now(),
+
+                        onDateClick = { writeReviewViewModel.toggleDateSelectBottomSheetState() },
+                        )
                     writeReviewViewModel.resetTextStyleItem()
                 }
             }

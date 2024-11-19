@@ -2,7 +2,9 @@ package com.example.whiskeyreviewer.view
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,12 +41,18 @@ import androidx.compose.material.icons.filled.FormatColorText
 import androidx.compose.material.icons.filled.FormatItalic
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.FormatUnderlined
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -85,8 +92,10 @@ import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 
 
 @SuppressLint("RememberReturnType", "SuspiciousIndentation")
@@ -105,10 +114,16 @@ fun InsertReviewView() {
         writeReviewViewModel.updateSpanStyle(currentRichTextState)
     }
 
+    if (writeReviewViewModel.selectDateBottomSheetState.value) {
+        SelectDateBottomSheet(
+            onDismiss = { writeReviewViewModel.toggleDateSelectBottomSheetState() },
+            updateSelectData = { writeReviewViewModel.updateSelectDate(it) }
+        )
+    }
+
+
     Column(modifier = Modifier
         .fillMaxSize()) {
-
-
 
         Row(
             modifier = Modifier
@@ -119,7 +134,8 @@ fun InsertReviewView() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             WriteViewButtonComponent(
-                icon = ImageVector.vectorResource(R.drawable.back_button_icon)
+                icon = ImageVector.vectorResource(R.drawable.back_button_icon),
+                onClick = {}
             )
 
             Text(
@@ -132,7 +148,10 @@ fun InsertReviewView() {
             )
 
             WriteViewButtonComponent(
-                icon = ImageVector.vectorResource(R.drawable.write_complete_button)
+                icon = ImageVector.vectorResource(R.drawable.write_complete_button),
+                onClick = {
+                    writeReviewViewModel.exportReview(richTextEditorState.toHtml())
+                }
             )
 
         }
@@ -141,7 +160,7 @@ fun InsertReviewView() {
 
         Column(
             modifier = Modifier
-                .padding(top = 3.dp)
+                .padding(top = 20.dp)
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
@@ -200,20 +219,19 @@ fun RichTextInputComponent(
 
 
             .padding(start = 8.dp, end = 8.dp)
+            // 입력할때마다 계속 커서가 따라 가지 않음 => TextField의 height가 변하는만큼 스크롤을 움직여 주는 방식으로 해결
             .onSizeChanged {
                 val diff = it.height - prevHeight
                 prevHeight = it.height
                 if (prevHeight == 0 || diff == 0) {
                     return@onSizeChanged
                 }
-
                 coroutineScope.launch {
                     scrollState.animateScrollTo(
                         scrollState.value + diff
                     )
                 }
             },
-
         enabled = enabled,
         readOnly = readOnly,
         colors = richTextEditorColors(
@@ -352,17 +370,14 @@ fun CommentCheckboxComponent(
 @Composable
 fun TimePickerComponent(
     selectDate: LocalDate,
-    selectTime: LocalTime,
     onDateClick: () -> Unit,
-    onTimeClick: () -> Unit,
-
 ) {
     Box(
         modifier = Modifier
             .padding(start = 7.dp, end = 7.dp, top = 25.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(MainColor)
-            .height(90.dp),
+            .height(60.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -374,7 +389,7 @@ fun TimePickerComponent(
                 Icon(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .size(40.dp),
+                        .size(50.dp),
                     imageVector = ImageVector.vectorResource(R.drawable.calender_icon),
                     contentDescription = "",
                     tint = Color.White,
@@ -386,54 +401,29 @@ fun TimePickerComponent(
                     Text(
                         text = TimeFormatter.formatDate(selectDate),
                         color = Color.White,
-                        modifier = Modifier
+                        modifier = Modifier,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontStyle = FontStyle.Normal,
+                            color = Color.Black
+                        ),
                     )
                     TextButton(
                         onClick = onDateClick,
                         contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.height(25.dp)
+                        modifier = Modifier.height(25.dp),
+
                     ) {
                         Text(
                             text = "날짜 선택하기",
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-
-            Divider(
-                color = Color.White,
-                modifier = Modifier
-                    .height(50.dp)
-                    .width(1.dp)
-            )
-
-            Row {
-                Icon(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(40.dp),
-                    imageVector = ImageVector.vectorResource(R.drawable.schedule_icon),
-                    contentDescription = "",
-                    tint = Color.White,
-                )
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    modifier = Modifier.padding(start = 10.dp)
-                ) {
-                    Text(
-                        text = TimeFormatter.formatTime(selectTime),
-                        color = Color.White,
-                        modifier = Modifier
-                    )
-                    TextButton(
-                        onClick = onTimeClick,
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.height(25.dp)
-                    ) {
-                        Text(
-                            text = "시간 선택하기",
-                            color = Color.White
+                            color = Color.White,
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontStyle = FontStyle.Normal,
+                                color = Color.Black
+                            ),
                         )
                     }
                 }
@@ -457,26 +447,6 @@ fun PickerContainer(
             .background(Color.White)
 
     ) {
-
-//        Column(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalAlignment = Alignment.End,
-//            verticalArrangement = Arrangement.Center
-//        ) {
-//            Text(
-//                modifier = Modifier
-//                    .clickable(onClick = onClick)
-//                    .padding(10.dp),
-//                style = TextStyle(
-//                    fontSize = 10.sp,
-//                    fontWeight = FontWeight.Normal,
-//                    fontStyle = FontStyle.Normal,
-//                    color = MainColor
-//                ),
-//                text = "확인"
-//            )
-//            Divider(color = Color.LightGray, thickness = 1.dp)
-//        }
 
         content()
     }
@@ -517,35 +487,6 @@ fun TextSizePickerComponent(
     }
 }
 
-@Composable
-fun TextSizeWheelPickerComponent() {
-    val year = remember { (8..54).map { it.toString() } }
-    val yearPickerState = rememberPickerState()
-    val scrollState = rememberScrollState()
-
-    PickerContainer(onClick = {  }) {
-        Column(
-            modifier = Modifier.verticalScroll(scrollState),
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Row(
-                modifier = Modifier,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Picker(
-                    state = yearPickerState,
-                    items = year,
-                    visibleItemsCount = 3,
-                    modifier = Modifier.weight(0.5f),
-                    textModifier = Modifier.padding(3.dp),
-                    textStyle = TextStyle(fontSize = 20.sp),
-                    startIndex = 2024,
-                    separateWord = " pt"
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun TextColorPickerComponent(
@@ -850,6 +791,90 @@ fun ImageLazyRowComponent(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectDateBottomSheet(
+    onDismiss: () -> Unit,
+    updateSelectData: (LocalDate)->Unit,
+
+    ) {
+    val modalBottomSheetState = rememberModalBottomSheetState()
+
+
+
+    ModalBottomSheet(
+
+        onDismissRequest = { onDismiss() },
+        sheetState = modalBottomSheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+    ) {
+        CustomDatePicker(
+            select = {onDismiss()},
+            updateSelectData = updateSelectData
+        )
+
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomDatePicker(
+    select:()->Unit,
+    updateSelectData: (LocalDate) -> Unit
+) {
+    val dateState = rememberDatePickerState()
+
+    LaunchedEffect(dateState.selectedDateMillis) {
+        dateState.selectedDateMillis?.let {
+            val selectedDateTime = Instant.ofEpochMilli(it)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+            updateSelectData(selectedDateTime)
+        }
+    }
+
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme.copy(
+            primary = MainColor,
+        )
+    ) {
+        Column {
+            DatePicker(
+                state = dateState,
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(
+                            modifier = Modifier.padding(start = 15.dp, top = 10.dp),
+                            text = "날짜 선택",
+                            fontSize = 20.sp
+                        )
+                        Button(
+                            onClick = { select() },
+                            modifier = Modifier.padding(end=10.dp))
+                        {
+                            Text(text = "확인")
+                        }
+                    }
+                },
+                headline = {
+                    Text(
+                        modifier = Modifier.padding(start = 15.dp,bottom=10.dp),
+                        text = "날짜를 선택해 주세요.",
+                        fontSize = 15.sp
+                    )
+                },
+                showModeToggle = false
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun InsertReviewPreview() {
@@ -881,8 +906,9 @@ fun WheelPreview1() {
 val testUris = listOf(
     Uri.parse("content://media/external/images/media/1"),
     Uri.parse("content://media/external/images/media/2"),
-
 )
+
+
 @Preview(showBackground = true)
 @Composable
 fun WheelPreview() {
@@ -930,6 +956,8 @@ fun TextSizePickerPreview() {
     val state = rememberRichTextState()
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     WhiskeyReviewerTheme {
-        TextSizePickerComponent(currentTextSize = 15, updateTextSize = {})
+        TimePickerComponent(selectDate = LocalDate.now(),  onDateClick = { /*TODO*/ })
+            
+
     }
 }
