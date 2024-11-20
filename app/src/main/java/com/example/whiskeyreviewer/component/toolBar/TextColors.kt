@@ -1,4 +1,4 @@
-package com.example.whiskeyreviewer.view.toolBar
+package com.example.whiskeyreviewer.component.toolBar
 
 import androidx.compose.ui.graphics.Color
 

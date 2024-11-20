@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.view.HomeView
 import com.example.whiskeyreviewer.view.InsertReviewView
 
 class MainActivity : ComponentActivity() {
@@ -34,7 +35,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    InsertReviewView()
+//    InsertReviewView()
+    HomeView()
 }
 
 @Preview(showBackground = true)

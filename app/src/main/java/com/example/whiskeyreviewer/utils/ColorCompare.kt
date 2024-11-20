@@ -3,8 +3,8 @@ package com.example.whiskeyreviewer.utils
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.example.whiskeyreviewer.view.toolBar.TextColors
-import com.example.whiskeyreviewer.view.toolBar.textColorList
+import com.example.whiskeyreviewer.component.toolBar.TextColors
+import com.example.whiskeyreviewer.component.toolBar.textColorList
 
 object ColorCompare {
     fun colorsCompare(spanColor: Color, currentColor: Color): TextColors? {

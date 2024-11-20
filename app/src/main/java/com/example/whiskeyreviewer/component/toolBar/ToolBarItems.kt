@@ -1,4 +1,4 @@
-package com.example.whiskeyreviewer.view.toolBar
+package com.example.whiskeyreviewer.component.toolBar
 
 import com.example.whiskeyreviewer.R
 
@@ -17,7 +17,7 @@ sealed class ToolBarItems(
 
 
     companion object {
-        val items = listOf(TextStyle,Picture ,SelectDate)
+        val items = listOf(TextStyle, Picture , SelectDate)
     }
 }
 

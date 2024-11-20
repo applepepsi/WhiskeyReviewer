@@ -7,12 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.lifecycle.ViewModel
-import com.example.whiskeyreviewer.view.toolBar.TextAlignment
-import com.example.whiskeyreviewer.view.toolBar.TextColors
+import com.example.whiskeyreviewer.component.toolBar.TextAlignment
+import com.example.whiskeyreviewer.component.toolBar.TextColors
 
-import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
-import com.example.whiskeyreviewer.view.toolBar.TextStyleState
-import com.example.whiskeyreviewer.view.toolBar.ToolBarItems
+import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
+import com.example.whiskeyreviewer.component.toolBar.TextStyleState
+import com.example.whiskeyreviewer.component.toolBar.ToolBarItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject

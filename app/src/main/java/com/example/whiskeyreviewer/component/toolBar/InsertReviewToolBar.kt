@@ -1,4 +1,4 @@
-package com.example.whiskeyreviewer.view.toolBar
+package com.example.whiskeyreviewer.component.toolBar
 
 import android.net.Uri
 import android.util.Log
@@ -93,7 +93,7 @@ fun InsertReviewToolBarComponent(
 
             selectedTextStyleItem?.let{
                 when(selectedTextStyleItem){
-                    TextStyleItems.TEXT_SIZE->{
+                    TextStyleItems.TEXT_SIZE ->{
                         TextSizePickerComponent(
                             currentTextSize = writeReviewViewModel.textSize.value,
                             updateTextSize = {
@@ -102,7 +102,7 @@ fun InsertReviewToolBarComponent(
                             }
                         )
                     }
-                    TextStyleItems.TEXT_COLOR->{
+                    TextStyleItems.TEXT_COLOR ->{
                         TextColorPickerComponent(
                             currentSelectColorIndex=writeReviewViewModel.textColor.value.index,
                             updateTextColor= {color,index->
@@ -112,7 +112,7 @@ fun InsertReviewToolBarComponent(
 
                         )
                     }
-                    TextStyleItems.TEXT_BACKGROUND_COLOR->{
+                    TextStyleItems.TEXT_BACKGROUND_COLOR ->{
                         TextColorPickerComponent(
                             currentSelectColorIndex=writeReviewViewModel.textBackgroundColor.value.index,
                             updateTextColor = {color,index->

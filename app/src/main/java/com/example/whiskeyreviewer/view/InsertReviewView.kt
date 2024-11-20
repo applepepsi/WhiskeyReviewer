@@ -82,9 +82,9 @@ import com.example.whiskeyreviewer.component.wheelPicker.rememberPickerState
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
-import com.example.whiskeyreviewer.view.toolBar.InsertReviewToolBarComponent
-import com.example.whiskeyreviewer.view.toolBar.TextStyleItems
-import com.example.whiskeyreviewer.view.toolBar.textColorList
+import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponent
+import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
+import com.example.whiskeyreviewer.component.toolBar.textColorList
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -374,7 +374,7 @@ fun TimePickerComponent(
 ) {
     Box(
         modifier = Modifier
-            .padding(start = 7.dp, end = 7.dp, top = 25.dp)
+            .padding(start = 7.dp, end = 7.dp, top = 1.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(MainColor)
             .height(60.dp),
@@ -851,7 +851,7 @@ fun CustomDatePicker(
                     ){
                         Text(
                             modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                            text = "날짜 선택",
+                            text = "개봉일 선택",
                             fontSize = 20.sp
                         )
                         Button(
@@ -865,7 +865,7 @@ fun CustomDatePicker(
                 headline = {
                     Text(
                         modifier = Modifier.padding(start = 15.dp,bottom=10.dp),
-                        text = "날짜를 선택해 주세요.",
+                        text = "개봉일을 선택해 주세요.",
                         fontSize = 15.sp
                     )
                 },
