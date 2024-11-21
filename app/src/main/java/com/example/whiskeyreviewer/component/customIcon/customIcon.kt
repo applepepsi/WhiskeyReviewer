@@ -67,11 +67,11 @@ fun WhiskeyScoreComponent(score: Double) {
         Box(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(7.dp))
-                .border(
-                    width = 0.5.dp,
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(7.dp)
-                )
+//                .border(
+//                    width = 0.5.dp,
+//                    color = Color.LightGray,
+//                    shape = RoundedCornerShape(7.dp)
+//                )
 
 //                .background(MainColor)
                 .size(25.dp),
@@ -80,7 +80,7 @@ fun WhiskeyScoreComponent(score: Double) {
         ){
             Icon(
                 modifier = Modifier
-                    .size(20.dp),
+                    .size(25.dp),
                 imageVector = Icons.Default.Star,
                 contentDescription = "",
                 tint = Color.Yellow,
