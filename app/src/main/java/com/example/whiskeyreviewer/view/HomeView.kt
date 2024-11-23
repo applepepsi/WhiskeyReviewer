@@ -25,7 +25,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.whiskeyreviewer.R
-import com.example.whiskeyreviewer.component.home.ModalNavComponent
+import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -45,7 +45,7 @@ fun HomeView(
     ModalNavigationDrawer(
         drawerState=drawerState,
         drawerContent = {
-            ModalNavComponent(drawerState=drawerState,scope=scope)
+            NavigationDrawerComponent(drawerState=drawerState,scope=scope)
         })
     {
         Column(
@@ -71,6 +71,10 @@ fun HomeView(
                 horizontalAlignment = Alignment.CenterHorizontally,
 //            contentPadding = PaddingValues(vertical = 10.dp),
             ) {
+                item{
+
+                }
+
                 items(items = testData){ singleWhiskeyData->
                     SingleWhiskeyComponent(singleWhiskeyData = singleWhiskeyData)
 

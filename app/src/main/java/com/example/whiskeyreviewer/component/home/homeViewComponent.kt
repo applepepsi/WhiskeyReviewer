@@ -111,78 +111,6 @@ fun SingleWhiskeyComponent(
     }
 }
 
-@Composable
-fun ModalNavComponent(drawerState: DrawerState, scope: CoroutineScope) {
-    ModalDrawerSheet (
-        modifier = Modifier
-            .fillMaxWidth(0.8f),
-
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(
-            modifier= Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 15.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(
-                text="위스키 리뷰어",
-                style = TextStyle.Default.copy(
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(start=15.dp)
-            )
-
-            Icon(
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable {
-                        scope.launch {
-                            drawerState.close()
-                        }
-                    },
-                imageVector = ImageVector.vectorResource(R.drawable.menu_icon),
-                contentDescription = "",
-                tint = Color.Black,
-            )
-        }
-
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-
-        ) {
-
-            Text(
-                text="위스키 검색",
-                style = TextStyle.Default.copy(
-                    color = Color.Black,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(start=15.dp)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ){
-                CustomSearchBoxComponent(
-                    text="",
-                    onValueChange = {},
-                    search = { /*TODO*/ },
-                    deleteInputText = {}
-                )
-            }
-
-        }
-
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -193,15 +121,5 @@ fun HomeComponentPreview() {
         SingleWhiskeyComponent(
             singleWhiskeyData = SingleWhiskeyData()
         )
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun ModalNavPreview() {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    WhiskeyReviewerTheme {
-        ModalNavComponent(drawerState, scope)
     }
 }
