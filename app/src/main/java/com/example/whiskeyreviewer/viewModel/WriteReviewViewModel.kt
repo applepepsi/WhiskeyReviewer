@@ -13,6 +13,8 @@ import com.example.whiskeyreviewer.component.toolBar.TextColors
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.component.toolBar.ToolBarItems
+import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.TapLayoutItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -63,6 +65,9 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _bottleOpenDate=mutableStateOf<LocalDate?>(null)
     val bottleOpenDate: State<LocalDate?> = _bottleOpenDate
+
+    private val _myReviewList = mutableStateOf<List<SingleWhiskeyData>>(emptyList())
+    val myReviewList: State<List<SingleWhiskeyData>> = _myReviewList
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
@@ -222,6 +227,10 @@ class WriteReviewViewModel @Inject constructor(
 
     fun updateSelectDate(selectDate:LocalDate){
         _bottleOpenDate.value=selectDate
+    }
+
+    fun getFilteredWhiskeyReview(it: TapLayoutItems) {
+        Log.d("아이템", it.toString())
     }
 
 }

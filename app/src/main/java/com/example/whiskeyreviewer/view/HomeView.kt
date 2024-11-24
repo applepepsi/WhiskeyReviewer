@@ -24,11 +24,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
+import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import kotlinx.coroutines.launch
 
 
@@ -36,9 +40,9 @@ import kotlinx.coroutines.launch
 fun HomeView(
 
 ) {
-    val testData= listOf(
-        SingleWhiskeyData(), SingleWhiskeyData(),SingleWhiskeyData()
-    )
+
+    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -66,21 +70,14 @@ fun HomeView(
                 tint = Color.Black,
             )
 
-            LazyColumn(
-
-                horizontalAlignment = Alignment.CenterHorizontally,
-//            contentPadding = PaddingValues(vertical = 10.dp),
-            ) {
-                item{
-
-                }
-
-                items(items = testData){ singleWhiskeyData->
-                    SingleWhiskeyComponent(singleWhiskeyData = singleWhiskeyData)
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-            }
+            TapLayoutComponent(
+                myReview = {
+                    MyReviewComponent(
+                        myReviewItems = writeReviewViewModel.myReviewList.value
+                    )
+                },
+                updateCurrentPage = { writeReviewViewModel.getFilteredWhiskeyReview(it) }
+            )
         }
     }
 
