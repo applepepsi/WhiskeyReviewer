@@ -1,7 +1,6 @@
 package com.example.whiskeyreviewer.component.customIcon
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -32,16 +31,17 @@ import com.example.whiskeyreviewer.ui.theme.OrangeColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 
 @Composable
-fun WriteViewButtonComponent(
+fun CustomIconComponent(
     icon: ImageVector,
-    onClick:()->Unit
+    onClick: () -> Unit,
+    modifier: Modifier=Modifier
 ) {
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .clip(shape = RoundedCornerShape(7.dp))
             .background(MainColor)
-            .size(38.dp)
+            .size(35.dp)
             .clickable {
                 onClick()
             },
@@ -49,7 +49,7 @@ fun WriteViewButtonComponent(
     ){
         Icon(
             modifier = Modifier
-                .size(25.dp),
+                .size(23.dp),
             imageVector = icon,
             contentDescription = "",
             tint = Color.White,
@@ -132,6 +132,10 @@ fun CustomIconPreview() {
 
 
     WhiskeyReviewerTheme {
-        WriteViewButtonComponent(icon=ImageVector.vectorResource(R.drawable.write_complete_button), onClick = {})
+        CustomIconComponent(
+            icon=ImageVector.vectorResource(R.drawable.write_complete_button),
+            onClick = {},
+            modifier = Modifier
+        )
     }
 }

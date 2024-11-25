@@ -10,7 +10,7 @@ sealed class TapLayoutItems(
     val title: String,
 
 ) {
-
+    data object AllWhiskey : TapLayoutItems("전체")
     data object ScotchWhiskey : TapLayoutItems("스카치")
     data object IrishWhiskey : TapLayoutItems("아이리시")
     data object AmericanWhiskey : TapLayoutItems("아메리칸")

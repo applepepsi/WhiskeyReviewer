@@ -44,7 +44,6 @@ import androidx.compose.material.icons.filled.FormatUnderlined
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -75,10 +74,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.whiskeyreviewer.R
-import com.example.whiskeyreviewer.component.customIcon.WriteViewButtonComponent
+import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.wheelPicker.HorizontalWheelPicker
-import com.example.whiskeyreviewer.component.wheelPicker.Picker
-import com.example.whiskeyreviewer.component.wheelPicker.rememberPickerState
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
@@ -94,7 +91,6 @@ import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.ZoneId
 
 
@@ -133,9 +129,10 @@ fun InsertReviewView() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            WriteViewButtonComponent(
+            CustomIconComponent(
                 icon = ImageVector.vectorResource(R.drawable.back_button_icon),
-                onClick = {}
+                onClick = {},
+                modifier = Modifier
             )
 
             Text(
@@ -147,11 +144,12 @@ fun InsertReviewView() {
                 )
             )
 
-            WriteViewButtonComponent(
+            CustomIconComponent(
                 icon = ImageVector.vectorResource(R.drawable.write_complete_button),
                 onClick = {
                     writeReviewViewModel.exportReview(richTextEditorState.toHtml())
-                }
+                },
+                modifier = Modifier
             )
 
         }

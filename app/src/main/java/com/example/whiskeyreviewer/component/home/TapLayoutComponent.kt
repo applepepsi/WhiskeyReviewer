@@ -1,6 +1,13 @@
 package com.example.whiskeyreviewer.component.home
 
+import android.annotation.SuppressLint
+import android.app.ActionBar
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,15 +32,22 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull.content
 
@@ -41,12 +55,14 @@ import kotlinx.serialization.json.JsonNull.content
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TapLayoutComponent(
+    customFilter:@Composable () -> Unit,
     myReview: @Composable () -> Unit,
     updateCurrentPage:(TapLayoutItems) -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { 9 })
+
 
     val whiskeyData = listOf(
+        TapLayoutItems.AllWhiskey,
         TapLayoutItems.ScotchWhiskey,
         TapLayoutItems.IrishWhiskey,
         TapLayoutItems.AmericanWhiskey,
@@ -59,7 +75,12 @@ fun TapLayoutComponent(
     )
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val pagerState = rememberPagerState(pageCount = { whiskeyData.size })
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
             containerColor = Color.White,
@@ -72,6 +93,12 @@ fun TapLayoutComponent(
             }
         ) {
             whiskeyData.forEachIndexed { index, whiskey ->
+
+                val textAndIconColor by animateColorAsState(
+                    targetValue = if (pagerState.currentPage == index) LightBlackColor else Color.LightGray,
+                    label = ""
+                )
+
                 Tab(
                     selected = pagerState.currentPage == index,
                     onClick = {
@@ -82,28 +109,38 @@ fun TapLayoutComponent(
                             pagerState.animateScrollToPage(index)
                         }
                     },
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    //잔상효과 제거
+                    interactionSource = object : MutableInteractionSource {
+                        override val interactions: Flow<Interaction> = emptyFlow()
+
+                        override suspend fun emit(interaction: Interaction) {}
+
+                        override fun tryEmit(interaction: Interaction) = true
+                    }
                 ) {
-                    Text(text = whiskey.title)
+                    Text(
+                        text = whiskey.title,
+                        style = TextStyle.Default.copy(
+                            color = textAndIconColor,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    )
                 }
             }
         }
+
+        customFilter()
 
         HorizontalPager(state = pagerState) { page ->
 
             myReview()
 
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(16.dp),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Text(text = whiskeyData[page].toString())
-//            }
         }
     }
 }
+
 
 
 @Preview(showBackground = true)
@@ -114,7 +151,7 @@ fun TapLayoutPreview() {
 
     WhiskeyReviewerTheme {
         TapLayoutComponent(
-            myReview = {}, updateCurrentPage = {}
+            myReview = {}, updateCurrentPage = {}, customFilter = {}
         )
     }
 }

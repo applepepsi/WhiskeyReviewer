@@ -13,8 +13,10 @@ import com.example.whiskeyreviewer.component.toolBar.TextColors
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.component.toolBar.ToolBarItems
+import com.example.whiskeyreviewer.data.FilterDropDownMenuState
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
+import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -68,6 +70,21 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _myReviewList = mutableStateOf<List<SingleWhiskeyData>>(emptyList())
     val myReviewList: State<List<SingleWhiskeyData>> = _myReviewList
+
+    private val _currentWhiskeyFilter = mutableStateOf<TapLayoutItems>(TapLayoutItems.AllWhiskey)
+    val currentWhiskeyFilter: State<TapLayoutItems> = _currentWhiskeyFilter
+
+    private val _currentDayFilter = mutableStateOf<WhiskeyFilterItems>(WhiskeyFilterItems.DayAscendingOrder)
+    val currentDayFilter: State<WhiskeyFilterItems> = _currentDayFilter
+
+    private val _currentScoreFilter = mutableStateOf<WhiskeyFilterItems>(WhiskeyFilterItems.ScoreAscendingOrder)
+    val currentScoreFilter: State<WhiskeyFilterItems> = _currentScoreFilter
+
+    private val _currentOpenDateFilter = mutableStateOf<WhiskeyFilterItems>(WhiskeyFilterItems.OpenDateAscendingOrder)
+    val currentOpenDateFilter: State<WhiskeyFilterItems> = _currentOpenDateFilter
+
+    private val _filterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
+    val filterDropDownMenuState: State<FilterDropDownMenuState> = _filterDropDownMenuState
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
@@ -229,8 +246,24 @@ class WriteReviewViewModel @Inject constructor(
         _bottleOpenDate.value=selectDate
     }
 
-    fun getFilteredWhiskeyReview(it: TapLayoutItems) {
-        Log.d("아이템", it.toString())
+    fun getFilteredWhiskeyReview(currentWhiskey: TapLayoutItems) {
+        _currentWhiskeyFilter.value=currentWhiskey
     }
 
+    fun updateFilter( filterKey: WhiskeyFilterItems) {
+        when(filterKey.type){
+            WhiskeyFilterItems.DAY->_currentDayFilter.value=filterKey
+            WhiskeyFilterItems.SCORE->_currentScoreFilter.value=filterKey
+            WhiskeyFilterItems.OPEN_DATE->_currentOpenDateFilter.value=filterKey
+        }
+    }
+
+    fun toggleFilterDropDownMenuState(filterKey: String) {
+
+        _filterDropDownMenuState.value = _filterDropDownMenuState.value.copy(
+            day = if (filterKey == WhiskeyFilterItems.DAY) !_filterDropDownMenuState.value.day else false,
+            score = if (filterKey == WhiskeyFilterItems.SCORE) !_filterDropDownMenuState.value.score else false,
+            openDate = if (filterKey == WhiskeyFilterItems.OPEN_DATE) !_filterDropDownMenuState.value.openDate else false
+        )
+    }
 }

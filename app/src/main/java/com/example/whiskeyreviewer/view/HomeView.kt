@@ -1,16 +1,16 @@
 package com.example.whiskeyreviewer.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
@@ -26,11 +26,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.customComponent.MainTitleComponent
+import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
-import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
-import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import kotlinx.coroutines.launch
@@ -53,24 +54,49 @@ fun HomeView(
         })
     {
         Column(
-            modifier=Modifier
+            modifier= Modifier
                 .fillMaxSize()
+                .background(Color.White)
         ) {
 
-            Icon(
-                modifier = Modifier
-                    .size(30.dp)
-                    .clickable {
-                        scope.launch {
-                            drawerState.open()
-                        }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).padding(top=10.dp,bottom=5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Icon(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .clickable {
+                            scope.launch {
+                                drawerState.open()
+                            }
+                        },
+                    imageVector = ImageVector.vectorResource(R.drawable.menu_icon),
+                    contentDescription = "",
+                    tint = Color.Black,
+                )
+
+                MainTitleComponent(
+                    value = "나의 리뷰"
+                )
+
+                CustomIconComponent(
+                    icon = Icons.Default.Search,
+                    onClick = {
+
                     },
-                imageVector = ImageVector.vectorResource(R.drawable.menu_icon),
-                contentDescription = "",
-                tint = Color.Black,
-            )
+                    modifier=Modifier
+                )
+
+
+            }
+
 
             TapLayoutComponent(
+                customFilter = {
+                    CustomFilterRow(writeReviewViewModel = writeReviewViewModel)
+                },
                 myReview = {
                     MyReviewComponent(
                         myReviewItems = writeReviewViewModel.myReviewList.value
