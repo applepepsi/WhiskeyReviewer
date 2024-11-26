@@ -1,8 +1,10 @@
 package com.example.whiskeyreviewer.component.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -40,6 +43,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComp
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
@@ -50,27 +54,46 @@ import kotlinx.coroutines.launch
 fun SingleWhiskeyComponent(
     singleWhiskeyData:SingleWhiskeyData
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .clip(
+                RoundedCornerShape(12.dp)
+            )
+            .border(
+                width = 0.5.dp,
+                color = Color.LightGray,
+                shape = RoundedCornerShape(12.dp)
+            ),
+    ) {
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(330.dp)
-                .padding(horizontal = 20.dp)
-                .border(
-                    width = 1.dp,
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(8.dp)
-                ),
-            verticalArrangement = Arrangement.Center
+                .background(Color(0xFFF6F6F6))
+            ,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             GlideImage(
-                imageModel = singleWhiskeyData.picture,
+                imageModel = R.drawable.jack,
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
                     .size(200.dp)
-
             )
+            
+            Spacer(modifier = Modifier.height(10.dp))
+//            NavigationDrawerLabel(
+//                selectColor = Color.LightGray,
+//                modifier = Modifier)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column(
+            modifier = Modifier,
+
+            verticalArrangement = Arrangement.Center
+        ) {
 
             Text(
                 text = singleWhiskeyData.name,
@@ -107,8 +130,10 @@ fun SingleWhiskeyComponent(
                 Spacer(modifier = Modifier.width(15.dp))
 
                 TagComponent(text = "개봉 D - " + singleWhiskeyData.dday.toString())
+
             }
 
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }

@@ -62,6 +62,9 @@ fun CustomDropDownMenuComponent(
         targetValue = if (dropDownMenuOption) MainColor else Color.White, label = ""
     )
 
+    val selectBorder=  if (dropDownMenuOption) 1.5.dp else 0.5.dp
+
+
     val textAndIconColor by animateColorAsState(
         targetValue = if (dropDownMenuOption) LightBlackColor else Color.LightGray, label = ""
     )
@@ -75,7 +78,7 @@ fun CustomDropDownMenuComponent(
                 .clip(RoundedCornerShape(8.dp))
                 .border(
                     BorderStroke(
-                        1.dp,
+                        selectBorder,
                         Color.LightGray
                     ),
                     RoundedCornerShape(8.dp)
@@ -88,7 +91,7 @@ fun CustomDropDownMenuComponent(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 8.dp, horizontal = 10.dp)
+                    .padding(vertical = 10.dp, horizontal = 12.dp)
                     .menuAnchor(),
                 verticalAlignment = Alignment.CenterVertically
             ){
@@ -97,7 +100,7 @@ fun CustomDropDownMenuComponent(
                     style = TextStyle.Default.copy(
                         color = textAndIconColor,
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Bold
                     ),
                     modifier = Modifier
 
@@ -125,7 +128,7 @@ fun CustomDropDownMenuComponent(
                                 style = TextStyle.Default.copy(
                                     color = Color.Gray,
                                     fontSize = 11.sp,
-                                    fontWeight = FontWeight.Normal
+                                    fontWeight = FontWeight.Bold
                                 )
                             )
                         },

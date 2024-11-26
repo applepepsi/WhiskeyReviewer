@@ -41,7 +41,7 @@ fun MainTitleComponent(
         text = value,
         style = TextStyle.Default.copy(
             color = Color.Black,
-            fontSize = 18.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
     )

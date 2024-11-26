@@ -39,7 +39,7 @@ fun CustomSearchBoxComponent(
 
     Box(
         modifier = Modifier
-            .padding(start = 15.dp, end =15.dp)
+            .padding(start = 15.dp, end =15.dp,)
             .fillMaxWidth()
 
             .clip(RoundedCornerShape(8.dp))

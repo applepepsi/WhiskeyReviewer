@@ -12,8 +12,10 @@ import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 
 @Composable
 fun CustomFilterRow(writeReviewViewModel: WriteReviewViewModel) {
+
+
     LazyRow(
-        modifier = Modifier.padding(vertical = 7.dp, horizontal = 8.dp),
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item{

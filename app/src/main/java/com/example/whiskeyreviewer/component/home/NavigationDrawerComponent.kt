@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -65,15 +66,15 @@ fun NavigationDrawerComponent(drawerState: DrawerState, scope: CoroutineScope) {
         Row(
             modifier= Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp, end = 15.dp),
+                .padding(start = 8.dp, end = 20.dp,top=5.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
                 text="위스키 리뷰어",
                 style = TextStyle.Default.copy(
-                    color = Color.Black,
-                    fontSize = 20.sp,
+                    color = LightBlackColor,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier.padding(start=8.dp)
@@ -89,25 +90,25 @@ fun NavigationDrawerComponent(drawerState: DrawerState, scope: CoroutineScope) {
                     },
                 imageVector = ImageVector.vectorResource(R.drawable.menu_icon),
                 contentDescription = "",
-                tint = Color.Black,
+                tint =LightBlackColor,
             )
         }
 
+        Spacer(modifier = Modifier.height(30.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
-
             ) {
 
             Text(
                 text="위스키 검색",
                 style = TextStyle.Default.copy(
-                    color = Color.Black,
+                    color = LightBlackColor,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.padding(start=15.dp)
+                modifier = Modifier.padding(start=20.dp,bottom=5.dp)
             )
             Row(
                 modifier = Modifier
@@ -123,6 +124,8 @@ fun NavigationDrawerComponent(drawerState: DrawerState, scope: CoroutineScope) {
             }
 
         }
+
+        Spacer(Modifier.height(20.dp))
 
         NavigationDrawerItemsComponent(
             navController = mainNavController,
@@ -173,39 +176,43 @@ fun NavigationDrawerItem(
     val selected = currentDestination?.hierarchy?.any { it.route == screen.screenRoute } == true
     val interactionSource = remember { MutableInteractionSource() }
 
-    Column(Modifier
-        .fillMaxWidth()
-        .clickable(
-            onClick = {
-                Log.d("선택된 루트2", screen.screenRoute)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = {
+                    Log.d("선택된 루트2", screen.screenRoute)
 
-                when(screen.screenRoute){
-                    NavigationDrawerItems.BACKUP -> {
+                    when (screen.screenRoute) {
+                        NavigationDrawerItems.BACKUP -> {
 
-                    }
-                    else -> {
-                        modalNavController.navigate(screen.screenRoute) {
-                            popUpTo(modalNavController.graph.findStartDestination().id)
-                            launchSingleTop = true
+                        }
+
+                        else -> {
+                            modalNavController.navigate(screen.screenRoute) {
+                                popUpTo(modalNavController.graph.findStartDestination().id)
+                                launchSingleTop = true
+                            }
                         }
                     }
-                }
-            },)
+                },
+            )
     ) {
         Row(
             modifier = Modifier
                 .padding(start = 15.dp)
 
-                .height(50.dp),
+                .height(60.dp),
 
             verticalAlignment = Alignment.CenterVertically,
 
             ) {
-            Image(
-                painter = painterResource(id = screen.icon),
+            Icon(
+                imageVector = ImageVector.vectorResource(screen.icon),
                 contentDescription = screen.title,
                 modifier = Modifier
-                    .size(25.dp)
+                    .size(25.dp),
+                tint = LightBlackColor
             )
 
             Spacer(modifier = Modifier.width(15.dp))
@@ -213,7 +220,7 @@ fun NavigationDrawerItem(
             Text(
                 text = screen.title,
                 style = TextStyle.Default.copy(
-                    color = Color.Black,
+                    color = LightBlackColor,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal
                 ),

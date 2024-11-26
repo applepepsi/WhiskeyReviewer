@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.OrangeColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -49,7 +50,7 @@ fun CustomIconComponent(
     ){
         Icon(
             modifier = Modifier
-                .size(23.dp),
+                .size(25.dp),
             imageVector = icon,
             contentDescription = "",
             tint = Color.White,
@@ -58,7 +59,9 @@ fun CustomIconComponent(
 }
 
 @Composable
-fun WhiskeyScoreComponent(score: Double) {
+fun WhiskeyScoreComponent(
+    score: Double
+) {
 
 
     Row(
@@ -83,7 +86,7 @@ fun WhiskeyScoreComponent(score: Double) {
                     .size(25.dp),
                 imageVector = Icons.Default.Star,
                 contentDescription = "",
-                tint = Color.Yellow,
+                tint = LightOrangeColor,
             )
         }
 
@@ -93,7 +96,7 @@ fun WhiskeyScoreComponent(score: Double) {
             text=score.toString(),
             style = TextStyle.Default.copy(
                 color = Color.Gray,
-                fontSize = 15.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Normal
             )
         )
@@ -110,7 +113,7 @@ fun TagComponent(
         modifier = Modifier
             .clip(shape = RoundedCornerShape(7.dp))
             .background(OrangeColor)
-            .padding(start = 7.dp,end=5.dp,top=5.dp,bottom=7.dp),
+            .padding(start = 8.dp,end=8.dp,top=5.dp,bottom=5.dp),
 
         contentAlignment = Alignment.Center
     ){
@@ -132,10 +135,8 @@ fun CustomIconPreview() {
 
 
     WhiskeyReviewerTheme {
-        CustomIconComponent(
-            icon=ImageVector.vectorResource(R.drawable.write_complete_button),
-            onClick = {},
-            modifier = Modifier
+        WhiskeyScoreComponent(
+            score = 5.0
         )
     }
 }
