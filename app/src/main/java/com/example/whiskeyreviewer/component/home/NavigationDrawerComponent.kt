@@ -146,7 +146,6 @@ fun NavigationDrawerItemsComponent(
         NavigationDrawerItems.Backup,
     )
 
-
     val currentDestination = navigationDrawerController.currentBackStackEntryAsState().value?.destination
 
     Column {
@@ -226,8 +225,6 @@ fun NavigationDrawerItem(
                 ),
                 modifier = Modifier
             )
-
-
         }
         NavigationDrawerLabel(selectColor = Color.LightGray, modifier = Modifier.padding(horizontal = 15.dp))
 

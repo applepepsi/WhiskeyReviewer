@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,13 +15,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -74,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.customComponent.PrivateCheckboxComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.wheelPicker.HorizontalWheelPicker
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -147,7 +145,7 @@ fun InsertReviewView() {
             CustomIconComponent(
                 icon = ImageVector.vectorResource(R.drawable.write_complete_button),
                 onClick = {
-                    writeReviewViewModel.exportReview(richTextEditorState.toHtml())
+                    writeReviewViewModel.exportReview(richTextEditorState)
                 },
                 modifier = Modifier
             )
@@ -175,14 +173,14 @@ fun InsertReviewView() {
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CommentCheckboxComponent(checked = true, onClickCheckBox = { /*TODO*/ })
+                PrivateCheckboxComponent(
+                    checked = writeReviewViewModel.writeReviewDate.value.private,
+                    onClickCheckBox = { writeReviewViewModel.togglePrivateState() })
             }
 
             RichTextInputComponent(
                 state = richTextEditorState,
-                onValueChange = {
 
-                },
                 scrollState=scrollState
             )
         }
@@ -197,7 +195,6 @@ fun InsertReviewView() {
 @Composable
 fun RichTextInputComponent(
     state: RichTextState,
-    onValueChange: (String) -> Unit,
 
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
 
@@ -314,56 +311,6 @@ fun TextInputOptionComponent(
     }
 }
 
-@Composable
-fun CommentCheckboxComponent(
-    checked:Boolean,
-    onClickCheckBox: () -> Unit,
-
-    modifier: Modifier=Modifier
-) {
-
-    Row(
-        modifier = modifier
-
-        ,
-        verticalAlignment = Alignment.CenterVertically,
-    ){
-
-        val iconImage=if(checked){
-            ImageVector.vectorResource(R.drawable.custom_checkbox_on)
-        }else{
-            ImageVector.vectorResource(R.drawable.custom_checkbox_off)
-        }
-
-        Image(
-            contentDescription = null,
-            imageVector=iconImage,
-            modifier = Modifier
-                .size(23.dp)
-                .clickable {
-                    onClickCheckBox()
-                }
-        )
-
-        Spacer(modifier = Modifier.width(3.dp))
-
-        Text(
-            text = "공개 설정",
-
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                fontStyle = FontStyle.Normal,
-                color = Color.Gray
-            ),
-        )
-
-
-
-    }
-}
-
-
 
 @Composable
 fun TimePickerComponent(
@@ -414,7 +361,7 @@ fun TimePickerComponent(
 
                     ) {
                         Text(
-                            text = "날짜 선택하기",
+                            text = "개봉일 선택하기",
                             color = Color.White,
                             style = TextStyle(
                                 fontSize = 16.sp,

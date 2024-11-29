@@ -68,7 +68,8 @@ import kotlinx.serialization.json.JsonNull.content
 fun TapLayoutComponent(
     customFilter:@Composable () -> Unit,
     myReview: @Composable () -> Unit,
-    updateCurrentPage:(TapLayoutItems) -> Unit
+    updateCurrentPage:(TapLayoutItems) -> Unit,
+
 ) {
 
 
@@ -155,11 +156,12 @@ fun TapLayoutComponent(
 
         customFilter()
 
+
         HorizontalPager(state = pagerState) { page ->
 
             myReview()
-
         }
+
     }
 }
 
@@ -194,7 +196,7 @@ fun TapLayoutPreview() {
 
     WhiskeyReviewerTheme {
         TapLayoutComponent(
-            myReview = {}, updateCurrentPage = {}, customFilter = {}
+            myReview = {}, updateCurrentPage = {}, customFilter = {},
         )
     }
 }

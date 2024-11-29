@@ -71,7 +71,7 @@ fun SingleWhiskeyComponent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF6F6F6))
+//                .background(Color(0xFFF6F6F6))
             ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

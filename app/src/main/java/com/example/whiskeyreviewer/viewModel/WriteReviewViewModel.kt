@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.viewModel
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
@@ -12,19 +13,23 @@ import com.example.whiskeyreviewer.component.toolBar.TextColors
 
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.TextStyleState
-import com.example.whiskeyreviewer.component.toolBar.ToolBarItems
+import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
+import com.example.whiskeyreviewer.data.WriteReviewData
+import com.example.whiskeyreviewer.utils.ImageConverter
+import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalDate
 import javax.inject.Inject
 
 
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
-
+    @ApplicationContext private val applicationContext: Context
 ): ViewModel() {
 
 
@@ -65,8 +70,6 @@ class WriteReviewViewModel @Inject constructor(
     private val _selectDateBottomSheetState= mutableStateOf<Boolean>(false)
     val selectDateBottomSheetState: State<Boolean> = _selectDateBottomSheetState
 
-    private val _bottleOpenDate=mutableStateOf<LocalDate?>(null)
-    val bottleOpenDate: State<LocalDate?> = _bottleOpenDate
 
     private val _myReviewList = mutableStateOf<List<SingleWhiskeyData>>(emptyList())
     val myReviewList: State<List<SingleWhiskeyData>> = _myReviewList
@@ -85,6 +88,13 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _filterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
     val filterDropDownMenuState: State<FilterDropDownMenuState> = _filterDropDownMenuState
+
+    private val _writeReviewDate = mutableStateOf(WriteReviewData())
+    val writeReviewDate: State<WriteReviewData> = _writeReviewDate
+
+    private val _homeFloatingActionButtonState = mutableStateOf(false)
+    val homeFloatingActionButtonState: State<Boolean> = _homeFloatingActionButtonState
+
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
@@ -233,8 +243,18 @@ class WriteReviewViewModel @Inject constructor(
 
     }
 
-    fun exportReview(html: String) {
-        Log.d("추출",html)
+    fun exportReview(richTextEditorState: RichTextState,) {
+
+        Log.d("richTextEditorState",richTextEditorState.toHtml())
+        Log.d("richTextEditorState",richTextEditorState.annotatedString.text)
+
+        val imageFiles=if(selectedImageUri.value.isNotEmpty()){
+            ImageConverter.convertUrisToFiles(applicationContext,selectedImageUri.value)
+        }else{
+            null
+        }
+        Log.d("imageFiles", imageFiles.toString())
+
     }
 
 
@@ -243,7 +263,9 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateSelectDate(selectDate:LocalDate){
-        _bottleOpenDate.value=selectDate
+        _writeReviewDate.value=_writeReviewDate.value.copy(
+            openDate = selectDate
+        )
     }
 
     fun getFilteredWhiskeyReview(currentWhiskey: TapLayoutItems) {
@@ -265,5 +287,15 @@ class WriteReviewViewModel @Inject constructor(
             score = if (filterKey == WhiskeyFilterItems.SCORE) !_filterDropDownMenuState.value.score else false,
             openDate = if (filterKey == WhiskeyFilterItems.OPEN_DATE) !_filterDropDownMenuState.value.openDate else false
         )
+    }
+
+    fun togglePrivateState() {
+        _writeReviewDate.value=writeReviewDate.value.copy(
+            private = !_writeReviewDate.value.private
+        )
+    }
+
+    fun toggleHomeFloatingActionButtonState(){
+        _homeFloatingActionButtonState.value=!_homeFloatingActionButtonState.value
     }
 }

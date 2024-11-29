@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.component.toolBar
 
-import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -26,9 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.view.TextColorPickerComponent
@@ -54,8 +51,6 @@ import com.example.whiskeyreviewer.view.TimePickerComponent
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
-import java.time.LocalDate
-import java.time.LocalTime
 
 
 @Composable
@@ -74,7 +69,7 @@ fun InsertReviewToolBarComponent(
 //    }
 
     val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 3),
         onResult = { uris ->
             writeReviewViewModel.setSelectedImage(uris)
         }
@@ -173,7 +168,7 @@ fun InsertReviewToolBarComponent(
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(
-                        selectDate = writeReviewViewModel.bottleOpenDate.value?: LocalDate.now(),
+                        selectDate = writeReviewViewModel.writeReviewDate.value.openDate,
 
                         onDateClick = { writeReviewViewModel.toggleDateSelectBottomSheetState() },
                         )

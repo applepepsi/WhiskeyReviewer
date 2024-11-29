@@ -1,4 +1,4 @@
-package com.example.whiskeyreviewer.component.toolBar
+package com.example.whiskeyreviewer.data
 
 import com.example.whiskeyreviewer.R
 
@@ -12,7 +12,7 @@ sealed class ToolBarItems(
 
     data object Picture : ToolBarItems("사진 추가", R.drawable.select_picture_icon)
 
-    data object SelectDate : ToolBarItems("날짜 선택", R.drawable.calender_icon)
+    data object SelectDate : ToolBarItems("개봉일 선택", R.drawable.calender_icon)
 
 
 
