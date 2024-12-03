@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.component.customComponent
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
@@ -12,6 +13,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,11 +65,12 @@ import com.example.whiskeyreviewer.ui.theme.OrangeColor
 @Composable
 fun CustomFloatingActionButton(
     expendState:Boolean,
-    floatingActionButtonClick:()->Unit
+    floatingActionButtonClick:()->Unit,
+    floatingActionItemClick:(FloatingActionButtonItems)->Unit,
 ) {
 
 
-    val items = listOf(
+    val floatingItems = listOf(
         FloatingActionButtonItems.NewBottle,
         FloatingActionButtonItems.NewBottle2
     )
@@ -86,8 +90,15 @@ fun CustomFloatingActionButton(
             LazyColumn(
                 modifier= Modifier.padding(bottom = 8.dp)
             ) {
-                items(items.size) {
-                    SingleFloatingActionButtonItem(icon = ImageVector.vectorResource(items[it].icon), title = items[it].title)
+                items(items=floatingItems) {floatingItem->
+                    SingleFloatingActionButtonItem(
+                        icon = ImageVector.vectorResource(floatingItem.icon),
+                        title = floatingItem.title,
+                        onClick = {
+                            Log.d("터치", floatingItem.toString())
+                            floatingActionItemClick(floatingItem)
+                        }
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -115,12 +126,15 @@ fun CustomFloatingActionButton(
 @Composable
 fun SingleFloatingActionButtonItem(
     icon: ImageVector,
-    title: String
+    title: String,
+    onClick:()->Unit,
 ) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier
+
     ) {
 
         Spacer(modifier = Modifier.weight(1f))
@@ -147,7 +161,7 @@ fun SingleFloatingActionButtonItem(
 
         FloatingActionButton(
             onClick = {
-
+                onClick()
             },
             modifier = Modifier.size(40.dp),
             containerColor = OrangeColor

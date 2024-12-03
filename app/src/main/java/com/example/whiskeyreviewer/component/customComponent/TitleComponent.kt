@@ -35,9 +35,11 @@ import com.example.whiskeyreviewer.ui.theme.MainColor
 
 @Composable
 fun MainTitleComponent(
-    value:String
+    value:String,
+
 ) {
     Text(
+        modifier = Modifier,
         text = value,
         style = TextStyle.Default.copy(
             color = Color.Black,

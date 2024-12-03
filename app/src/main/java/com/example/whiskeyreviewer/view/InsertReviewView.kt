@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.FormatColorText
 import androidx.compose.material.icons.filled.FormatItalic
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.FormatUnderlined
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -70,7 +71,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.PrivateCheckboxComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.wheelPicker.HorizontalWheelPicker
@@ -80,6 +84,7 @@ import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponent
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.textColorList
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -95,9 +100,12 @@ import java.time.ZoneId
 @SuppressLint("RememberReturnType", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun InsertReviewView() {
+fun InsertReviewView(
+    writeReviewViewModel: WriteReviewViewModel,
+    navController: NavHostController
+) {
 
-    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+
     val richTextEditorState = rememberRichTextState()
     val scrollState = rememberScrollState()
 
@@ -119,39 +127,29 @@ fun InsertReviewView() {
     Column(modifier = Modifier
         .fillMaxSize()) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
+        CustomAppBarComponent(
+            titleTextValue = "리뷰 작성",
+            leftButton = {
 
-                .padding(start = 8.dp, end = 8.dp, top = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CustomIconComponent(
-                icon = ImageVector.vectorResource(R.drawable.back_button_icon),
-                onClick = {},
-                modifier = Modifier
-            )
-
-            Text(
-                text = "리뷰 작성",
-                style = TextStyle.Default.copy(
-                    color = Color.Gray,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                CustomIconComponent(
+                    icon = ImageVector.vectorResource(R.drawable.back_button_icon),
+                    onClick = {
+                        navController.navigateUp()
+                    },
+                    modifier = Modifier
                 )
-            )
 
-            CustomIconComponent(
-                icon = ImageVector.vectorResource(R.drawable.write_complete_button),
-                onClick = {
-                    writeReviewViewModel.exportReview(richTextEditorState)
-                },
-                modifier = Modifier
-            )
-
-        }
-
+            },
+            rightButton = {
+                CustomIconComponent(
+                    icon = ImageVector.vectorResource(R.drawable.write_complete_button),
+                    onClick = {
+                        writeReviewViewModel.exportReview(richTextEditorState)
+                    },
+                    modifier=Modifier
+                )
+            },
+        )
 
 
         Column(
@@ -823,12 +821,10 @@ fun CustomDatePicker(
 @Preview(showBackground = true)
 @Composable
 fun InsertReviewPreview() {
-
-
+    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val mainNavController = rememberNavController()
     WhiskeyReviewerTheme {
-        InsertReviewView(
-
-        )
+        InsertReviewView(writeReviewViewModel, mainNavController)
     }
 }
 

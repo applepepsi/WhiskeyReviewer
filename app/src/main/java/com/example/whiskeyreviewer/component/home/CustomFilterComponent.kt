@@ -11,7 +11,9 @@ import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 
 @Composable
-fun CustomFilterRow(writeReviewViewModel: WriteReviewViewModel) {
+fun CustomFilterRow(
+    writeReviewViewModel: WriteReviewViewModel
+) {
 
 
     LazyRow(

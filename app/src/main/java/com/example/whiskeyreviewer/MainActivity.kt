@@ -6,14 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.whiskeyreviewer.component.home.TapLayoutComponent
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.view.HomeView
-import com.example.whiskeyreviewer.view.InsertReviewView
+import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,6 +24,8 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
+
+
             WhiskeyReviewerTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -38,8 +41,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val mainNavController = rememberNavController()
+
 //    InsertReviewView()
-    HomeView()
+    MainNavGraph(mainNavController,writeReviewViewModel)
 //    TapLayoutComponent()
 }
 

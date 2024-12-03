@@ -52,7 +52,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SingleWhiskeyComponent(
-    singleWhiskeyData:SingleWhiskeyData
+    singleWhiskeyData:SingleWhiskeyData,
+    reviewClick:()->Unit
 ) {
     Column(
         modifier = Modifier
@@ -65,7 +66,11 @@ fun SingleWhiskeyComponent(
                 width = 0.5.dp,
                 color = Color.LightGray,
                 shape = RoundedCornerShape(12.dp)
-            ),
+            )
+            .clickable {
+                reviewClick()
+            }
+        ,
     ) {
 
         Column(
@@ -140,7 +145,8 @@ fun SingleWhiskeyComponent(
 
 @Composable
 fun MyReviewComponent(
-    myReviewItems:List<SingleWhiskeyData>
+    myReviewItems:List<SingleWhiskeyData>,
+    setSelectReview:(SingleWhiskeyData)->Unit
 ) {
     val testData= listOf(
         SingleWhiskeyData(), SingleWhiskeyData(),SingleWhiskeyData()
@@ -154,7 +160,13 @@ fun MyReviewComponent(
 
 
         items(items = testData){ singleWhiskeyData->
-            SingleWhiskeyComponent(singleWhiskeyData = singleWhiskeyData)
+
+            SingleWhiskeyComponent(
+                singleWhiskeyData = singleWhiskeyData,
+                reviewClick={
+                    setSelectReview(singleWhiskeyData)
+                }
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
         }
@@ -170,7 +182,8 @@ fun HomeComponentPreview() {
 
     WhiskeyReviewerTheme {
         SingleWhiskeyComponent(
-            singleWhiskeyData = SingleWhiskeyData()
+            singleWhiskeyData = SingleWhiskeyData(),
+            reviewClick = {}
         )
     }
 }

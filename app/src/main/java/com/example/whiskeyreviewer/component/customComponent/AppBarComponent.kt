@@ -43,7 +43,8 @@ fun CustomAppBarComponent(
         leftButton()
 
         MainTitleComponent(
-            value = titleTextValue
+            value = titleTextValue,
+
         )
 
         rightButton()

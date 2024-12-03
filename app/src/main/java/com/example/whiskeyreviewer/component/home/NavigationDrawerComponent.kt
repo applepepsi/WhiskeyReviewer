@@ -45,6 +45,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
+import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -80,17 +81,14 @@ fun NavigationDrawerComponent(drawerState: DrawerState, scope: CoroutineScope) {
                 modifier = Modifier.padding(start=8.dp)
             )
 
-            Icon(
+            CustomIconComponent(
+                icon = ImageVector.vectorResource(R.drawable.menu_icon),
+                onClick = {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                },
                 modifier = Modifier
-                    .size(30.dp)
-                    .clickable {
-                        scope.launch {
-                            drawerState.close()
-                        }
-                    },
-                imageVector = ImageVector.vectorResource(R.drawable.menu_icon),
-                contentDescription = "",
-                tint =LightBlackColor,
             )
         }
 

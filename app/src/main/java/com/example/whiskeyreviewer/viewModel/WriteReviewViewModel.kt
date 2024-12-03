@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -15,6 +16,9 @@ import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
+import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
+import com.example.whiskeyreviewer.data.MyReviewFilterItems
+import com.example.whiskeyreviewer.data.ReviewData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
@@ -89,12 +93,28 @@ class WriteReviewViewModel @Inject constructor(
     private val _filterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
     val filterDropDownMenuState: State<FilterDropDownMenuState> = _filterDropDownMenuState
 
+
+
     private val _writeReviewDate = mutableStateOf(WriteReviewData())
     val writeReviewDate: State<WriteReviewData> = _writeReviewDate
 
     private val _homeFloatingActionButtonState = mutableStateOf(false)
     val homeFloatingActionButtonState: State<Boolean> = _homeFloatingActionButtonState
 
+    private val _myWhiskyFilterDropDownMenuState = mutableStateOf(MyReviewFilterDropDownMenuState())
+    val myWhiskyFilterDropDownMenuState: State<MyReviewFilterDropDownMenuState> = _myWhiskyFilterDropDownMenuState
+
+    private val _currentMyReviewBottleNumFilter = mutableIntStateOf(10)
+    val currentMyReviewBottleNumFilter: State<Int> = _currentMyReviewBottleNumFilter
+
+    private val _myReviewData = mutableStateOf<ReviewData>(ReviewData())
+    val myReviewData: State<ReviewData> = _myReviewData
+
+    private val _currentMyReviewDayFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.New)
+    val currentMyReviewDayFilter: State<MyReviewFilterItems> = _currentMyReviewDayFilter
+
+    private val _currentMyReviewTypeFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.Review)
+    val currentMyReviewTypeFilter: State<MyReviewFilterItems> = _currentMyReviewTypeFilter
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
@@ -289,6 +309,27 @@ class WriteReviewViewModel @Inject constructor(
         )
     }
 
+    fun toggleMyWhiskeyReviewDropDownMenuState(filterKey: String) {
+
+        _myWhiskyFilterDropDownMenuState.value = _myWhiskyFilterDropDownMenuState.value.copy(
+            bottleNum = if (filterKey == MyReviewFilterItems.BOTTLE_NUM) !_myWhiskyFilterDropDownMenuState.value.bottleNum else false,
+            day = if (filterKey == MyReviewFilterItems.DAY) !_myWhiskyFilterDropDownMenuState.value.day else false,
+            reviewType = if (filterKey == MyReviewFilterItems.REVIEW_TYPE) !_myWhiskyFilterDropDownMenuState.value.reviewType else false,
+        )
+    }
+
+    fun updateMyWhiskeyFilter( filterKey: MyReviewFilterItems) {
+        when(filterKey.type){
+
+            MyReviewFilterItems.DAY->_currentMyReviewDayFilter.value=filterKey
+            MyReviewFilterItems.REVIEW_TYPE->_currentMyReviewTypeFilter.value=filterKey
+        }
+    }
+
+    fun updateMyBottleNumFilter( filterKey: Int) {
+        _currentMyReviewBottleNumFilter.intValue=filterKey
+    }
+
     fun togglePrivateState() {
         _writeReviewDate.value=writeReviewDate.value.copy(
             private = !_writeReviewDate.value.private
@@ -297,5 +338,9 @@ class WriteReviewViewModel @Inject constructor(
 
     fun toggleHomeFloatingActionButtonState(){
         _homeFloatingActionButtonState.value=!_homeFloatingActionButtonState.value
+    }
+
+    fun updateSelectReview(selectReview:SingleWhiskeyData) {
+
     }
 }
