@@ -5,11 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.OrangeColor
@@ -113,7 +117,8 @@ fun TagComponent(
         modifier = Modifier
             .clip(shape = RoundedCornerShape(7.dp))
             .background(OrangeColor)
-            .padding(start = 8.dp,end=8.dp,top=5.dp,bottom=5.dp),
+            .padding(start = 8.dp,end=8.dp,top=5.dp,bottom=5.dp)
+            .widthIn(30.dp),
 
         contentAlignment = Alignment.Center
     ){
@@ -128,15 +133,53 @@ fun TagComponent(
     }
 }
 
+@Composable
+fun CustomTagComponent(
+    text:String=""
+){
+    Box(
+        modifier = Modifier
+            .padding(3.dp)
+    ) {
 
+        Box(
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(7.dp))
+                .background(OrangeColor)
+                .padding(start = 8.dp, end = 8.dp, top = 5.dp, bottom = 5.dp)
+                .widthIn(30.dp)
+                .align(Alignment.Center)
+        ) {
+            Text(
+                text = "# $text",
+                style = TextStyle.Default.copy(
+                    color = Color.White,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Normal
+                ),
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+
+        Icon(
+            modifier = Modifier
+                .size(14.dp)
+                .align(Alignment.TopEnd)
+                .offset(x = 1.dp, y = (-5).dp),
+            imageVector = Icons.Default.Clear,
+            contentDescription = "",
+            tint = LightBlackColor,
+        )
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun CustomIconPreview() {
 
 
     WhiskeyReviewerTheme {
-        WhiskeyScoreComponent(
-            score = 5.0
+        CustomTagComponent(
+            text="테스트"
         )
     }
 }

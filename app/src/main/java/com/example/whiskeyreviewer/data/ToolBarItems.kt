@@ -14,10 +14,10 @@ sealed class ToolBarItems(
 
     data object SelectDate : ToolBarItems("개봉일 선택", R.drawable.calender_icon)
 
-
+    data object SelectTag : ToolBarItems("태그 추가", R.drawable.hashtag_icon)
 
     companion object {
-        val items = listOf(TextStyle, Picture , SelectDate)
+        val items = listOf(TextStyle, Picture , SelectDate,SelectTag)
     }
 }
 

@@ -1,9 +1,6 @@
 package com.example.whiskeyreviewer.component.myReview
 
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,42 +35,89 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
-import com.example.whiskeyreviewer.component.customComponent.CustomDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
-import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.data.WhiskyDrinkingType
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.view.HomeView
-import com.example.whiskeyreviewer.view.ImageLazyRowComponent
-import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
+import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.skydoves.landscapist.glide.GlideImage
+import java.time.LocalDate
 
 @Composable
 fun MyReviewPost(
 
 ) {
+
+    val testDataList= listOf(
+        WhiskyReviewData(
+            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            reviewStyle = "",
+            private = false,
+            openDate = LocalDate.of(2024, 11, 15),
+            score=1.5,
+            imageList = emptyList()
+        ),
+        WhiskyReviewData(
+            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            reviewStyle = "",
+            private = true,
+            openDate = LocalDate.of(2024, 11, 10),
+            score=1.5,
+            imageList = emptyList()
+        ),
+        WhiskyReviewData(
+            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            reviewStyle = "",
+            private = false,
+            openDate = LocalDate.of(2024, 11, 20),
+            score=3.5,
+            imageList = emptyList()
+        ),
+        WhiskyReviewData(
+            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            reviewStyle = "",
+            private = true,
+            openDate = LocalDate.of(2024, 11, 1),
+            score=2.5,
+            imageList = emptyList()
+        ),
+    )
+
     LazyColumn(
         modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-
+        items(items=testDataList){singleReview->
+            MyReviewSinglePost(
+                reviewText = singleReview.reviewText,
+                score=singleReview.score,
+                drinkingType = WhiskyDrinkingType.Highball,
+                private = singleReview.private,
+                openDate = TimeFormatter.dateCalculation(singleReview.openDate),
+                imageList = singleReview.imageList
+            )
+        }
     }
 }
 
 @Composable
 fun MyReviewSinglePost(
-    text:String="",
+    reviewText:String="",
     score:Double=0.0,
     drinkingType: WhiskyDrinkingType,
-    day:Int=0,
+    private:Boolean=true,
+
+    openDate:String="",
     imageList:List<String> = emptyList()
 ) {
+
+
+
+
     Column(
-        modifier=Modifier
+        modifier= Modifier
             .fillMaxWidth()
 
             .clip(RoundedCornerShape(8.dp))
@@ -80,14 +125,17 @@ fun MyReviewSinglePost(
             .padding(horizontal = 15.dp, vertical = 10.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(end=10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
             horizontalArrangement = Arrangement.End
         ){
+            //리치텍스트로 수정예정
             Text(
                 text = "수정",
                 style = TextStyle.Default.copy(
-                    color = LightBlackColor,
-                    fontSize = 12.sp,
+                    color = Color.LightGray,
+                    fontSize = 9.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
@@ -98,8 +146,8 @@ fun MyReviewSinglePost(
             Text(
                 text = "삭제",
                 style = TextStyle.Default.copy(
-                    color = LightBlackColor,
-                    fontSize = 12.sp,
+                    color = Color.LightGray,
+                    fontSize = 9.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
@@ -118,7 +166,7 @@ fun MyReviewSinglePost(
         Spacer(modifier = Modifier.height(7.dp))
 
         Text(
-            text = text,
+            text = reviewText,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 12.sp,
@@ -136,7 +184,7 @@ fun MyReviewSinglePost(
 
             Spacer(modifier = Modifier.width(15.dp))
 
-            TagComponent(text = "개봉 D - $day")
+            TagComponent(text = "개봉 $openDate")
 
             Spacer(modifier = Modifier.width(4.dp))
 
@@ -190,6 +238,20 @@ fun ReviewImageLazyRowComponent(
     }
 }
 
+@Composable
+fun StarRatingComponent(
+
+) {
+
+}
+
+@Composable
+fun SingleStar(
+
+) {
+
+}
+
 @Preview(showBackground = true)
 @Composable
 fun MyReviewPostPreview() {
@@ -197,7 +259,7 @@ fun MyReviewPostPreview() {
 
     WhiskeyReviewerTheme {
         MyReviewSinglePost(
-            text="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
             score=3.5,
             drinkingType = WhiskyDrinkingType.Highball
         )

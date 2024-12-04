@@ -5,7 +5,8 @@ import androidx.compose.ui.text.style.TextAlign
 enum class TextStyleItems {
     TEXT_SIZE,
     TEXT_COLOR,
-    TEXT_BACKGROUND_COLOR
+    TEXT_BACKGROUND_COLOR,
+
 }
 
 enum class TextAlignment {

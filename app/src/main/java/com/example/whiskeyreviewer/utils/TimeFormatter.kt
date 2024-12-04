@@ -17,7 +17,16 @@ import java.util.Locale
 
 object TimeFormatter {
 
+    fun dateCalculation(date: LocalDate): String {
+        val currentDate = LocalDate.now()
+        val day=ChronoUnit.DAYS.between(currentDate, date)
+//        return when(val day=ChronoUnit.DAYS.between(currentDate, date)) {
+//            0L -> "D+"
+//            else -> "D-${day}"
+//        }
 
+        return "D+${day}"
+    }
 
 
     fun formatDate(date: LocalDate): String {
@@ -40,11 +49,6 @@ object TimeFormatter {
 
         return time.format(outputFormatter)
     }
-
-
-
-
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun timeAgo(stringDate: String): String {

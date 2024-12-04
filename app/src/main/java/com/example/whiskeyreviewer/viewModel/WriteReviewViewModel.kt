@@ -93,8 +93,6 @@ class WriteReviewViewModel @Inject constructor(
     private val _filterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
     val filterDropDownMenuState: State<FilterDropDownMenuState> = _filterDropDownMenuState
 
-
-
     private val _writeReviewDate = mutableStateOf(WriteReviewData())
     val writeReviewDate: State<WriteReviewData> = _writeReviewDate
 
@@ -115,6 +113,12 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _currentMyReviewTypeFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.Review)
     val currentMyReviewTypeFilter: State<MyReviewFilterItems> = _currentMyReviewTypeFilter
+
+    private val _currentTag=mutableStateOf<String>("")
+    val currentTag: State<String> = _currentTag
+
+    private val _tagList=mutableStateOf<List<String>>(emptyList())
+    val tagList: State<List<String>> = _tagList
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
@@ -342,5 +346,15 @@ class WriteReviewViewModel @Inject constructor(
 
     fun updateSelectReview(selectReview:SingleWhiskeyData) {
 
+    }
+
+    fun updateCurrentTag(currentTag:String){
+
+        if (currentTag.contains(" ") && currentTag.isNotEmpty()) {
+            _tagList.value+=currentTag
+            _currentTag.value=""
+        } else {
+            _currentTag.value=currentTag
+        }
     }
 }

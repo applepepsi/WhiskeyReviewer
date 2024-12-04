@@ -31,6 +31,7 @@ import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
+import com.example.whiskeyreviewer.component.myReview.MyReviewPost
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
@@ -112,6 +113,9 @@ fun WhiskeyDetailView(
             )
         }
 
+        MyReviewPost(
+
+        )
     }
 
 }

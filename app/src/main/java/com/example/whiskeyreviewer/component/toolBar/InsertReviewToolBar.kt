@@ -41,13 +41,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.whiskeyreviewer.component.customIcon.CustomTagComponent
+import com.example.whiskeyreviewer.component.writeReivew.InsertTagComponent
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.view.TextColorPickerComponent
-import com.example.whiskeyreviewer.view.TextSizePickerComponent
-import com.example.whiskeyreviewer.view.TextStyleController
-import com.example.whiskeyreviewer.view.TimePickerComponent
+import com.example.whiskeyreviewer.component.writeReivew.TextColorPickerComponent
+import com.example.whiskeyreviewer.component.writeReivew.TextSizePickerComponent
+import com.example.whiskeyreviewer.component.writeReivew.TextStyleController
+import com.example.whiskeyreviewer.component.writeReivew.TimePickerComponent
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -173,6 +175,15 @@ fun InsertReviewToolBarComponent(
                         onDateClick = { writeReviewViewModel.toggleDateSelectBottomSheetState() },
                         )
                     writeReviewViewModel.resetTextStyleItem()
+                }
+                is ToolBarItems.SelectTag -> {
+                    InsertTagComponent(
+                        text = writeReviewViewModel.currentTag.value,
+                        onValueChange = {
+                            writeReviewViewModel.updateCurrentTag(it)
+                        },
+                        tagList = writeReviewViewModel.tagList.value
+                    )
                 }
             }
         }
