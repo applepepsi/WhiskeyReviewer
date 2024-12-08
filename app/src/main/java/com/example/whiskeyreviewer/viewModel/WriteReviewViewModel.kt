@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -119,6 +120,102 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _tagList=mutableStateOf<List<String>>(emptyList())
     val tagList: State<List<String>> = _tagList
+
+    private val _score= mutableDoubleStateOf(1.0)
+    val score: State<Double> = _score
+
+    private val _scoreDialogState= mutableStateOf(false)
+    val scoreDialogState: State<Boolean> = _scoreDialogState
+
+    private val _myReviewDataList=mutableStateOf<List<WriteReviewData>>(
+        listOf(
+            WriteReviewData(
+                reviewStyle = "스타일 A",
+                private = false,
+                openDate = LocalDate.of(2024, 1, 10),
+                tag = "태그1",
+                score = 4.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 B",
+                private = true,
+                openDate = LocalDate.of(2025, 2, 15),
+                tag = "태그2",
+                score = 3.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 C",
+                private = false,
+                openDate = LocalDate.of(2022, 3, 20),
+                tag = "태그3",
+                score = 5.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 D",
+                private = true,
+                openDate = LocalDate.of(2021, 4, 5),
+                tag = "태그4",
+                score = 2.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 4.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 4.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 2.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 3.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 2.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 5.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 3.0
+            ),
+            WriteReviewData(
+                reviewStyle = "스타일 E",
+                private = false,
+                openDate = LocalDate.of(2020, 5, 30),
+                tag = "태그5",
+                score = 1.0
+            ),
+        )
+    )
+    val myReviewDataList: State<List<WriteReviewData>> = _myReviewDataList
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
@@ -356,5 +453,21 @@ class WriteReviewViewModel @Inject constructor(
         } else {
             _currentTag.value=currentTag
         }
+    }
+
+    fun deleteTag(index: Int) {
+        val tagList=_tagList.value.toMutableList()
+        if (index in tagList.indices) {
+            tagList.removeAt(index)
+            _tagList.value = tagList
+        }
+    }
+
+    fun toggleRatingScoreDialogState() {
+        _scoreDialogState.value=!_scoreDialogState.value
+    }
+
+    fun updateScore(score:Double){
+        _score.value=score
     }
 }

@@ -26,10 +26,11 @@ import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.PrivateCheckboxComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.myReview.RatingScoreDialog
+import com.example.whiskeyreviewer.component.myReview.RatingStarComponent
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponent
 import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
-import com.example.whiskeyreviewer.component.writeReivew.InsertTagComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -61,6 +62,13 @@ fun InsertReviewView(
             updateSelectData = { writeReviewViewModel.updateSelectDate(it) }
         )
     }
+
+    RatingScoreDialog(
+        toggleOption = { writeReviewViewModel.toggleRatingScoreDialogState() },
+        scoreChange = { writeReviewViewModel.updateScore(it) },
+        currentState = writeReviewViewModel.scoreDialogState.value,
+        currentScore=writeReviewViewModel.score.value
+    )
 
 
     Column(modifier = Modifier
@@ -105,14 +113,19 @@ fun InsertReviewView(
             )
 
 
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 13.dp, top = 15.dp),
-                horizontalArrangement = Arrangement.End,
+                    .padding(end = 13.dp, top = 15.dp,start=15.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                RatingStarComponent(
+                    score=writeReviewViewModel.score.value,
+                    option=writeReviewViewModel.scoreDialogState.value,
+                    toggleOption = { writeReviewViewModel.toggleRatingScoreDialogState() }
+                )
+
                 PrivateCheckboxComponent(
                     checked = writeReviewViewModel.writeReviewDate.value.private,
                     onClickCheckBox = { writeReviewViewModel.togglePrivateState() })

@@ -225,12 +225,12 @@ fun <T> MyReviewCustomDropdownMenu(
             modifier = Modifier
 
                 .clip(RoundedCornerShape(8.dp))
-                .border(BorderStroke(selectBorder, Color.LightGray), RoundedCornerShape(8.dp))
+//                .border(BorderStroke(selectBorder, Color.LightGray), RoundedCornerShape(8.dp))
                 .background(backgroundColor)
         ) {
             Row(
                 modifier = Modifier
-                    .width(85.dp)
+//                    .width(85.dp)
                     .padding(vertical = 10.dp, horizontal = 10.dp)
                     .menuAnchor(),
                 verticalAlignment = Alignment.CenterVertically,

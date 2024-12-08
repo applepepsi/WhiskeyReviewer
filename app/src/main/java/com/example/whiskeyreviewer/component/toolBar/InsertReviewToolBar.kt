@@ -182,7 +182,10 @@ fun InsertReviewToolBarComponent(
                         onValueChange = {
                             writeReviewViewModel.updateCurrentTag(it)
                         },
-                        tagList = writeReviewViewModel.tagList.value
+                        tagList = writeReviewViewModel.tagList.value,
+                        deleteClick = {
+                            writeReviewViewModel.deleteTag(it)
+                        }
                     )
                 }
             }
@@ -227,8 +230,8 @@ fun RowScope.AddInsertReviewToolBarItem(
             .weight(1f)
             .clickable(
                 onClick = { writeReviewViewModel.selectItem(item) },
-                interactionSource = interactionSource,
-                indication = rememberRipple()
+//                interactionSource = interactionSource,
+//                indication = rememberRipple()
             )
             .background(backgroundColor)
             .padding(vertical = 7.dp,),

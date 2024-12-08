@@ -19,11 +19,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text2.input.TextFieldState
 
 
 import androidx.compose.material.icons.Icons
@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.component.customIcon.CustomTagComponent
+import com.example.whiskeyreviewer.component.home.NavigationDrawerLabel
 import com.example.whiskeyreviewer.data.WhiskyDrinkingType
 import kotlinx.coroutines.launch
 
@@ -60,7 +61,8 @@ import kotlinx.coroutines.launch
 fun InsertTagComponent(
     text:String="",
     onValueChange:(String)->Unit,
-    tagList:List<String> = emptyList()
+    tagList:List<String> = emptyList(),
+    deleteClick:(Int)->Unit,
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -69,7 +71,7 @@ fun InsertTagComponent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start=5.dp,end=5.dp,top=4.dp)
+            .padding(start = 5.dp, end = 5.dp, top = 4.dp)
 
     ) {
 
@@ -88,7 +90,7 @@ fun InsertTagComponent(
                 .heightIn(50.dp)
 //                .border(width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(10.dp))
 //                .clip(shape = RoundedCornerShape(10.dp))
-                .padding(start=8.dp),
+                .padding(start = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
 
@@ -120,39 +122,30 @@ fun InsertTagComponent(
                                 },
                             state=listState
                         ){
-                            items(items=tagList){singleTag->
+                            itemsIndexed(items=tagList){index,singleTag->
+
                                 CustomTagComponent(
                                     text=singleTag,
+                                    deleteClick = {
+                                        deleteClick(index)
+                                    }
                                 )
                             }
 
                             item{
-                                if(text.isEmpty()){
-//                                    Text(
-//                                        text="EX. 온더락",
-//                                        style = TextStyle.Default.copy(
-//                                            color = Color.LightGray,
-//                                            fontSize = 20.sp,
-//                                            fontWeight = FontWeight.Normal
-//                                        ),
-//                                        modifier = Modifier.padding(start=5.dp)
-//                                    )
-                                }else{
-                                    Box(
-                                        content = { innerTextField() },
-                                        modifier = Modifier
+                                Box(
+                                    content = { innerTextField() },
+                                    modifier = Modifier
 
-                                            .padding(end = 4.dp,top=5.dp),
-
-                                        )
-                                }
-
+                                        .padding(end = 4.dp,top=10.dp),
+                                )
                             }
                         }
                     }
                 }
             )
         }
+        NavigationDrawerLabel(selectColor = Color.LightGray, modifier = Modifier)
     }
 
 }

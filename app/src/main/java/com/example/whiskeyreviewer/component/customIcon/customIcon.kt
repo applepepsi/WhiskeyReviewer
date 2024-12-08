@@ -2,7 +2,9 @@ package com.example.whiskeyreviewer.component.customIcon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
@@ -17,6 +19,8 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -135,14 +139,17 @@ fun TagComponent(
 
 @Composable
 fun CustomTagComponent(
-    text:String=""
+    text:String="",
+    deleteClick:()->Unit
 ){
+
+
     Box(
         modifier = Modifier
-            .padding(3.dp)
+            .padding(4.dp)
     ) {
 
-        Box(
+        Column(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(7.dp))
                 .background(OrangeColor)
@@ -153,11 +160,11 @@ fun CustomTagComponent(
             Text(
                 text = "# $text",
                 style = TextStyle.Default.copy(
-                    color = Color.White,
-                    fontSize = 15.sp,
+                    color = LightBlackColor,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Normal
                 ),
-                modifier = Modifier.align(Alignment.Center)
+
             )
         }
 
@@ -165,7 +172,13 @@ fun CustomTagComponent(
             modifier = Modifier
                 .size(14.dp)
                 .align(Alignment.TopEnd)
-                .offset(x = 1.dp, y = (-5).dp),
+                .offset(x = -2.dp, y = (-7).dp)
+                .clickable(
+                    interactionSource = remember{ MutableInteractionSource() },
+                    indication = null
+                ) {
+                    deleteClick()
+                },
             imageVector = Icons.Default.Clear,
             contentDescription = "",
             tint = LightBlackColor,
@@ -179,7 +192,8 @@ fun CustomIconPreview() {
 
     WhiskeyReviewerTheme {
         CustomTagComponent(
-            text="테스트"
+            text="테스트",
+            {}
         )
     }
 }
