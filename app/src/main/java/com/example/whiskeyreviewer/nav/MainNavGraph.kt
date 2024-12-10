@@ -13,6 +13,7 @@ import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.view.HomeView
 import com.example.whiskeyreviewer.view.InsertReviewView
 import com.example.whiskeyreviewer.view.WhiskeyDetailView
+import com.example.whiskeyreviewer.view.WhiskeySearchView
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 
 @Composable
@@ -51,6 +52,9 @@ private fun NavGraphBuilder.homeRoute(
         }
         composable(MainRoute.INSERT_REVIEW) {
             InsertReviewView(writeReviewViewModel,navController)
+        }
+        composable(MainRoute.WHISKEY_SEARCH) {
+            WhiskeySearchView(writeReviewViewModel,navController)
         }
     }
 }

@@ -132,7 +132,7 @@ fun TapLayoutComponent(
                         }
                     },
                     modifier = Modifier
-                        .padding(16.dp),
+                        .padding(top=4.dp,start=13.dp,end=16.dp,bottom=16.dp),
                     //잔상효과 제거
                     interactionSource = object : MutableInteractionSource {
                         override val interactions: Flow<Interaction> = emptyFlow()

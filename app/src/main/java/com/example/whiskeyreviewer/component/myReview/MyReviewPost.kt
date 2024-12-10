@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.component.myReview
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -228,8 +230,14 @@ fun ReviewImageLazyRowComponent(
                     .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.TopEnd
             ) {
+//                GlideImage(
+//                    imageModel = image,
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .clip(RoundedCornerShape(8.dp))
+//                )
                 GlideImage(
-                    imageModel = image,
+                    imageModel = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000041"),
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))

@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,12 +31,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
@@ -46,7 +41,6 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
-
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
@@ -54,16 +48,12 @@ import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
-import com.example.whiskeyreviewer.ui.theme.LightBlackColor
-import com.example.whiskeyreviewer.ui.theme.MainColor
-import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun HomeView(
+fun WhiskeySearchView(
     writeReviewViewModel: WriteReviewViewModel,
     navController: NavHostController
 ) {
@@ -72,33 +62,30 @@ fun HomeView(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        writeReviewViewModel.setRecentSearchTextList(
-            recentSearchWordList = RecentSearchWordManager.loadRecentSearchList(context, type = RECENT_SEARCH_REVIEW_TEXT),
-            type = RECENT_SEARCH_REVIEW_TEXT
-        )
 
-    }
+//    LaunchedEffect(Unit) {
+//        writeReviewViewModel.updateHomeSearchBarText(it)
+//    }
 
     Scaffold(
         floatingActionButton = {
-            CustomFloatingActionButton(
-                expendState = writeReviewViewModel.homeFloatingActionButtonState.value,
-                floatingActionButtonClick = { writeReviewViewModel.toggleHomeFloatingActionButtonState() },
-                floatingActionItemClick = {
-                    when(it.screenRoute){
-                        FloatingActionButtonItems.NewBottle.screenRoute-> {
-                            Log.d("루트",it.screenRoute)
-                            navController.navigate(MainRoute.INSERT_REVIEW)
-                        }
-                        FloatingActionButtonItems.NewBottle2.screenRoute-> {
-                            Log.d("루트",it.screenRoute)
-                            navController.navigate(MainRoute.INSERT_REVIEW)
-                        }
-                        else-> Log.d("루트",it.screenRoute)
-                    }
-                }
-            )
+//            CustomFloatingActionButton(
+//                expendState = writeReviewViewModel.homeFloatingActionButtonState.value,
+//                floatingActionButtonClick = { writeReviewViewModel.toggleHomeFloatingActionButtonState() },
+//                floatingActionItemClick = {
+//                    when(it.screenRoute){
+//                        FloatingActionButtonItems.NewBottle.screenRoute-> {
+//                            Log.d("루트",it.screenRoute)
+//                            navController.navigate(MainRoute.INSERT_REVIEW)
+//                        }
+//                        FloatingActionButtonItems.NewBottle2.screenRoute-> {
+//                            Log.d("루트",it.screenRoute)
+//                            navController.navigate(MainRoute.INSERT_REVIEW)
+//                        }
+//                        else-> Log.d("루트",it.screenRoute)
+//                    }
+//                }
+//            )
         }
     ) {
         ModalNavigationDrawer(
@@ -129,15 +116,12 @@ fun HomeView(
             ) {
 
                 CustomAppBarComponent(
-                    titleTextValue = "나의 리뷰",
+                    titleTextValue = "위스키 검색",
                     leftButton = {
-
                         CustomIconComponent(
-                            icon = ImageVector.vectorResource(R.drawable.menu_icon),
+                            icon = ImageVector.vectorResource(R.drawable.back_button_icon),
                             onClick = {
-                                scope.launch {
-                                    drawerState.open()
-                                }
+                                navController.navigateUp()
                             },
                             modifier = Modifier
                         )
@@ -148,22 +132,21 @@ fun HomeView(
                             onClick = {
                                 writeReviewViewModel.toggleHomeSearchBarState()
                             },
-                            modifier=Modifier
+                            modifier= Modifier
                         )
                     },
                 )
 
-                if(writeReviewViewModel.homeSearchBarState.value){
+                if(writeReviewViewModel.whiskeySearchBarState.value){
 
                     Text(
                         modifier = Modifier.padding(start=17.dp),
-                        text="리뷰 검색",
+                        text="위스키 검색",
                         style = TextStyle.Default.copy(
                             color = Color.Gray,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Normal
                         )
-
                     )
 
                     Spacer(modifier = Modifier.height(5.dp))
@@ -171,26 +154,26 @@ fun HomeView(
                     CustomSearchBoxComponent(
                         text=writeReviewViewModel.homeSearchBarSText.value,
                         onValueChange = {
-                            writeReviewViewModel.updateHomeSearchBarText(it)
+                            writeReviewViewModel.updateDrawerSearchBarText(it)
                         },
                         search = {
                             writeReviewViewModel.setRecentSearchTextList(
                                 RecentSearchWordManager.saveSearchText(
                                     context = context,
                                     searchText="wfwfwf",
-                                    type = RECENT_SEARCH_REVIEW_TEXT
+                                    type = RECENT_SEARCH_WHISKEY_TEXT
                                 ),
-                                type = RECENT_SEARCH_REVIEW_TEXT
+                                type = RECENT_SEARCH_WHISKEY_TEXT
                             )
                         },
-                        deleteInputText = {writeReviewViewModel.updateHomeSearchBarText("")}
+                        deleteInputText = {writeReviewViewModel.updateDrawerSearchBarText("")}
                     )
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(top=5.dp,bottom=5.dp,end=5.dp,start=7.dp),
+                        contentPadding = PaddingValues(top=5.dp,bottom=12.dp,end=5.dp,start=7.dp),
                     ){
 
-                        items(items = writeReviewViewModel.recentSearchReviewTextList.value) { searchWord ->
+                        items(items = writeReviewViewModel.recentSearchWhiskeyTextList.value) { searchWord ->
                             if(searchWord!=""){
                                 RecentSearchWordComponent(
                                     text=searchWord,
@@ -199,9 +182,9 @@ fun HomeView(
                                             RecentSearchWordManager.deleteRecentSearchText(
                                                 context = context,
                                                 searchText=searchWord,
-                                                type= RECENT_SEARCH_REVIEW_TEXT
+                                                type= RECENT_SEARCH_WHISKEY_TEXT
                                             ),
-                                            type = RECENT_SEARCH_REVIEW_TEXT
+                                            type = RECENT_SEARCH_WHISKEY_TEXT
                                         )
 
                                     },
@@ -209,6 +192,8 @@ fun HomeView(
 
                                     }
                                 )
+                            }else{
+                                Spacer(modifier = Modifier.height(35.dp))
                             }
                         }
                     }
@@ -231,23 +216,10 @@ fun HomeView(
                         writeReviewViewModel.getFilteredWhiskeyReview(it)
                     },
 
-                )
+                    )
 
             }
         }
     }
 
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreview() {
-    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
-    val mainNavController = rememberNavController()
-
-    WhiskeyReviewerTheme {
-        HomeView(writeReviewViewModel,mainNavController)
-    }
 }

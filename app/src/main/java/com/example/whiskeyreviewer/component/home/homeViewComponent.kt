@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.component.home
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -85,8 +86,13 @@ fun SingleWhiskeyComponent(
             ,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+//            GlideImage(
+//                imageModel = R.drawable.jack,
+//                modifier = Modifier
+//                    .size(200.dp)
+//            )
             GlideImage(
-                imageModel = R.drawable.jack,
+                imageModel = singleWhiskeyData.picture,
                 modifier = Modifier
                     .size(200.dp)
             )
@@ -139,7 +145,7 @@ fun SingleWhiskeyComponent(
 
                 Spacer(modifier = Modifier.width(15.dp))
 
-                TagComponent(text = "개봉 D - " + singleWhiskeyData.dday.toString())
+                TagComponent(text = "개봉 D + " + singleWhiskeyData.dday.toString())
 
             }
 
@@ -154,7 +160,21 @@ fun MyReviewComponent(
     setSelectReview:(SingleWhiskeyData)->Unit
 ) {
     val testData= listOf(
-        SingleWhiskeyData(), SingleWhiskeyData(),SingleWhiskeyData()
+        SingleWhiskeyData(
+            name="잭 다니엘 10년",
+            capacity = 700,
+            score=4.5,
+            dday=6,
+            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039")
+        ), SingleWhiskeyData(
+            name="글렌 리뱃 12년산",
+            capacity = 1000,
+            score=3.5,
+            dday=3,
+            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037")
+        ),
+        SingleWhiskeyData(
+        )
     )
 
     LazyColumn(

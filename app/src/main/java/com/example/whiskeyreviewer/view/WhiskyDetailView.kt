@@ -122,7 +122,7 @@ fun WhiskeyDetailView(
         }
 
         Column(
-            modifier = Modifier.height(300.dp)
+            modifier = Modifier.weight(1f)
         ) {
             when(writeReviewViewModel.currentMyReviewTypeFilter.value){
                 MyReviewFilterItems.Graph->{

@@ -10,6 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.lifecycle.ViewModel
+import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
+import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.component.toolBar.TextAlignment
 import com.example.whiskeyreviewer.component.toolBar.TextColors
 
@@ -128,94 +130,67 @@ class WriteReviewViewModel @Inject constructor(
     val scoreDialogState: State<Boolean> = _scoreDialogState
 
     private val _myReviewDataList=mutableStateOf<List<WriteReviewData>>(
-        listOf(
-            WriteReviewData(
-                reviewStyle = "스타일 A",
-                private = false,
-                openDate = LocalDate.of(2024, 1, 10),
-                tag = "태그1",
-                score = 4.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 B",
-                private = true,
-                openDate = LocalDate.of(2025, 2, 15),
-                tag = "태그2",
-                score = 3.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 C",
-                private = false,
-                openDate = LocalDate.of(2022, 3, 20),
-                tag = "태그3",
-                score = 5.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 D",
-                private = true,
-                openDate = LocalDate.of(2021, 4, 5),
-                tag = "태그4",
-                score = 2.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 4.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 4.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 2.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 3.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 2.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 5.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 3.0
-            ),
-            WriteReviewData(
-                reviewStyle = "스타일 E",
-                private = false,
-                openDate = LocalDate.of(2020, 5, 30),
-                tag = "태그5",
-                score = 1.0
-            ),
-        )
+        emptyList()
     )
     val myReviewDataList: State<List<WriteReviewData>> = _myReviewDataList
+
+    private val _homeSearchBarState= mutableStateOf(false)
+    val homeSearchBarState: State<Boolean> = _homeSearchBarState
+
+    private val _homeSearchBarSText= mutableStateOf("")
+    val homeSearchBarSText: State<String> = _homeSearchBarSText
+
+    private val _drawerSearchBarText= mutableStateOf("")
+    val drawerSearchBarText: State<String> = _drawerSearchBarText
+
+    private val _recentSearchReviewTextList=mutableStateOf(listOf<String>())
+    val recentSearchReviewTextList: State<List<String>> = _recentSearchReviewTextList
+
+    private val _recentSearchWhiskeyTextList=mutableStateOf(listOf<String>())
+    val recentSearchWhiskeyTextList: State<List<String>> = _recentSearchWhiskeyTextList
+
+    private val _whiskeySearchBarState= mutableStateOf(true)
+    val whiskeySearchBarState: State<Boolean> = _whiskeySearchBarState
+
+    fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
+        Log.d("최근검색어", recentSearchWordList.toString())
+        when(type){
+            RECENT_SEARCH_REVIEW_TEXT->{
+                _recentSearchReviewTextList.value=recentSearchWordList
+            }
+            RECENT_SEARCH_WHISKEY_TEXT->{
+                _recentSearchWhiskeyTextList.value=recentSearchWordList
+            }
+        }
+    }
+
+    fun updateSearchWord(searchWord:String,type:String){
+        when(type){
+            RECENT_SEARCH_REVIEW_TEXT->{
+
+            }
+            RECENT_SEARCH_WHISKEY_TEXT->{
+
+            }
+        }
+    }
+
+
+
+
+    fun toggleHomeSearchBarState(){
+        _homeSearchBarState.value=!_homeSearchBarState.value
+    }
+
+    fun updateHomeSearchBarText(newSearchText:String){
+        _homeSearchBarSText.value=newSearchText
+        //실시간 검색 구현 예정
+    }
+
+    fun updateDrawerSearchBarText(newSearchText:String){
+        _drawerSearchBarText.value=newSearchText
+        //실시간 검색 구현 예정
+    }
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())

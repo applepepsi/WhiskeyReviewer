@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -39,7 +41,7 @@ fun CustomSearchBoxComponent(
 
     Box(
         modifier = Modifier
-            .padding(start = 15.dp, end =15.dp,)
+            .padding(start = 15.dp, end = 15.dp,)
             .fillMaxWidth()
 
             .clip(RoundedCornerShape(8.dp))
@@ -57,7 +59,7 @@ fun CustomSearchBoxComponent(
 
         OutlinedTextField(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth().padding(end=4.dp),
             value = text,
             onValueChange = {
                 onValueChange(it)
@@ -66,7 +68,7 @@ fun CustomSearchBoxComponent(
                 Text(
                     text = "",
                     color = Color.Black,
-                    fontSize = 18.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
             },
@@ -134,4 +136,14 @@ fun SearchBarDivider(
         thickness = 30.dp,
         color = MainColor
     )
+}
+
+@Preview
+@Composable
+fun SearchBarPreview(
+    modifier: Modifier = Modifier
+){
+    CustomSearchBoxComponent(onValueChange = {}, search = { /*TODO*/ }) {
+        
+    }
 }

@@ -30,6 +30,7 @@ const val VERIFICATION_CODE_ATTEMPTS_EXCEEDED = "E00505" // 인증코드 입력�
 
 const val MaxTextCount = 64
 
-
+const val RECENT_SEARCH_REVIEW_TEXT="recentSearchReviewText"
+const val RECENT_SEARCH_WHISKEY_TEXT="recentSearchWhiskeyText"
 
 

@@ -346,7 +346,7 @@ fun MyReviewGraphComponent2(
 
         ),
         modelProducer = modelProducer,
-        modifier = Modifier.padding(start=5.dp,end=5.dp).fillMaxHeight(),
+        modifier = Modifier.padding(start=5.dp,end=5.dp).fillMaxHeight().padding(bottom=20.dp),
         zoomState = rememberVicoZoomState(zoomEnabled = false),
 
     )
