@@ -12,6 +12,7 @@ import androidx.navigation.compose.navigation
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.view.HomeView
 import com.example.whiskeyreviewer.view.InsertReviewView
+import com.example.whiskeyreviewer.view.ReviewDetailView
 import com.example.whiskeyreviewer.view.WhiskeyDetailView
 import com.example.whiskeyreviewer.view.WhiskeySearchView
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -56,5 +57,10 @@ private fun NavGraphBuilder.homeRoute(
         composable(MainRoute.WHISKEY_SEARCH) {
             WhiskeySearchView(writeReviewViewModel,navController)
         }
+        composable(MainRoute.REVIEW_DETAIL) {
+            ReviewDetailView(navController,writeReviewViewModel)
+        }
     }
 }
+
+

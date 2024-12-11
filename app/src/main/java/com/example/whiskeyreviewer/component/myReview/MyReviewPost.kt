@@ -62,7 +62,7 @@ import java.time.LocalDate
 
 @Composable
 fun MyReviewPost(
-
+    singleReviewClick:(WhiskyReviewData)->Unit
 ) {
 
     val testDataList= listOf(
@@ -111,7 +111,8 @@ fun MyReviewPost(
                 drinkingType = WhiskyDrinkingType.Highball,
                 private = singleReview.private,
                 openDate = TimeFormatter.dateCalculation(singleReview.openDate),
-                imageList = singleReview.imageList
+                imageList = singleReview.imageList,
+                singleReviewClick = { singleReviewClick(singleReview) }
             )
         }
     }
@@ -125,7 +126,8 @@ fun MyReviewSinglePost(
     private:Boolean=true,
 
     openDate:String="",
-    imageList:List<String> = emptyList()
+    imageList:List<String> = emptyList(),
+    singleReviewClick:() -> Unit,
 ) {
 
 
@@ -133,6 +135,9 @@ fun MyReviewSinglePost(
 
     Column(
         modifier= Modifier
+            .clickable() {
+                singleReviewClick()
+            }
             .fillMaxWidth()
 
             .clip(RoundedCornerShape(8.dp))
@@ -437,7 +442,8 @@ fun MyReviewPostPreview() {
         MyReviewSinglePost(
             reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
             score=3.5,
-            drinkingType = WhiskyDrinkingType.Highball
+            drinkingType = WhiskyDrinkingType.Highball,
+            singleReviewClick = {}
         )
     }
 }

@@ -37,6 +37,7 @@ import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
+import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
@@ -132,7 +133,10 @@ fun WhiskeyDetailView(
                 }
                 MyReviewFilterItems.Review->{
                     MyReviewPost(
-
+                        singleReviewClick = {
+                            writeReviewViewModel.setSelectReviewData(it)
+                            navController.navigate(REVIEW_DETAIL)
+                        }
                     )
                 }
 

@@ -5,4 +5,5 @@ object MainRoute {
     const val WHISKY_DETAIL = "whiskyDetailView"
     const val INSERT_REVIEW = "insertReviewView"
     const val WHISKEY_SEARCH = "whiskeySearchView"
+    const val REVIEW_DETAIL = "reviewDetail"
 }

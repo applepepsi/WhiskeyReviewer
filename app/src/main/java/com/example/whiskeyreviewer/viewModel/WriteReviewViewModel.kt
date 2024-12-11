@@ -25,6 +25,7 @@ import com.example.whiskeyreviewer.data.ReviewData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.mohamedrejeb.richeditor.model.RichTextState
@@ -151,6 +152,9 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _whiskeySearchBarState= mutableStateOf(true)
     val whiskeySearchBarState: State<Boolean> = _whiskeySearchBarState
+
+    private val _selectWhiskyData=mutableStateOf(WhiskyReviewData())
+    val selectWhiskyData: State<WhiskyReviewData> = _selectWhiskyData
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -444,5 +448,9 @@ class WriteReviewViewModel @Inject constructor(
 
     fun updateScore(score:Double){
         _score.value=score
+    }
+
+    fun setSelectReviewData(reviewData: WhiskyReviewData){
+        _selectWhiskyData.value=reviewData
     }
 }
