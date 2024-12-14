@@ -147,11 +147,12 @@ fun NavigationDrawerComponent(
                         writeReviewViewModel.setRecentSearchTextList(
                             RecentSearchWordManager.saveSearchText(
                                 context = context,
-                                searchText="wfwfwf",
+                                searchText=writeReviewViewModel.drawerSearchBarText.value,
                                 type = RECENT_SEARCH_WHISKEY_TEXT
                             ),
                             type = RECENT_SEARCH_WHISKEY_TEXT
                         )
+
                         navController.navigate(MainRoute.WHISKEY_SEARCH)
                     },
                     deleteInputText = {writeReviewViewModel.updateDrawerSearchBarText("") }
@@ -178,6 +179,7 @@ fun NavigationDrawerComponent(
 
                             },
                             search = {
+                                writeReviewViewModel.updateDrawerSearchBarText(searchWord)
                                 navController.navigate(MainRoute.WHISKEY_SEARCH)
                             }
                         )

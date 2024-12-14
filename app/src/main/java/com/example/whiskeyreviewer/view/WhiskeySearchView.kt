@@ -63,9 +63,10 @@ fun WhiskeySearchView(
     val context = LocalContext.current
 
 
-//    LaunchedEffect(Unit) {
-//        writeReviewViewModel.updateHomeSearchBarText(it)
-//    }
+    LaunchedEffect(Unit) {
+        writeReviewViewModel.toggleDrawerSearchBarState(state = true)
+//        writeReviewViewModel.updateDrawerSearchBarText(writeReviewViewModel.drawerSearchBarText.value)
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -130,7 +131,7 @@ fun WhiskeySearchView(
                         CustomIconComponent(
                             icon = Icons.Default.Search,
                             onClick = {
-                                writeReviewViewModel.toggleHomeSearchBarState()
+                                writeReviewViewModel.toggleDrawerSearchBarState()
                             },
                             modifier= Modifier
                         )
@@ -152,7 +153,7 @@ fun WhiskeySearchView(
                     Spacer(modifier = Modifier.height(5.dp))
 
                     CustomSearchBoxComponent(
-                        text=writeReviewViewModel.homeSearchBarSText.value,
+                        text=writeReviewViewModel.drawerSearchBarText.value,
                         onValueChange = {
                             writeReviewViewModel.updateDrawerSearchBarText(it)
                         },
@@ -160,7 +161,7 @@ fun WhiskeySearchView(
                             writeReviewViewModel.setRecentSearchTextList(
                                 RecentSearchWordManager.saveSearchText(
                                     context = context,
-                                    searchText="wfwfwf",
+                                    searchText=writeReviewViewModel.drawerSearchBarText.value,
                                     type = RECENT_SEARCH_WHISKEY_TEXT
                                 ),
                                 type = RECENT_SEARCH_WHISKEY_TEXT

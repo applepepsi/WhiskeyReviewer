@@ -4,9 +4,9 @@ import java.time.LocalDate
 
 data class WriteReviewData(
 //    val reviewText:String="",
-    val reviewStyle:String="",
-    val private:Boolean=false,
-    val openDate: LocalDate= LocalDate.now(),
-    val tag:String="",
+    val content:String="",
+    val is_anonymous:Boolean=false,
+    val open_date: LocalDate= LocalDate.now(),
+    val tags:List<String> = listOf(),
     val score: Double=0.0
 )

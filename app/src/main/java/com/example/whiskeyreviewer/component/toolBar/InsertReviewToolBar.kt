@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +40,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.whiskeyreviewer.component.customIcon.CustomTagComponent
 import com.example.whiskeyreviewer.component.writeReivew.InsertTagComponent
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -170,7 +168,7 @@ fun InsertReviewToolBarComponent(
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(
-                        selectDate = writeReviewViewModel.writeReviewDate.value.openDate,
+                        selectDate = writeReviewViewModel.writeReviewDate.value.open_date,
 
                         onDateClick = { writeReviewViewModel.toggleDateSelectBottomSheetState() },
                         )

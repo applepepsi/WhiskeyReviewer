@@ -34,3 +34,7 @@ const val RECENT_SEARCH_REVIEW_TEXT="recentSearchReviewText"
 const val RECENT_SEARCH_WHISKEY_TEXT="recentSearchWhiskeyText"
 
 
+const val REVIEW_SAVE="/review"
+const val REVIEW_MODIFY="/review/{identifier}"
+const val DELETE_REVIEW="/review/{identifier}"
+const val GET_REVIEW="/review/{identifier}"

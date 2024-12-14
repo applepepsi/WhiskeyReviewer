@@ -7,5 +7,6 @@ data class SingleWhiskeyData(
     val capacity:Int=0,
     val score:Double=0.0,
     val dday:Int=0,
+    val tags:List<String> = emptyList(),
     val picture: Uri=Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000022")
 )

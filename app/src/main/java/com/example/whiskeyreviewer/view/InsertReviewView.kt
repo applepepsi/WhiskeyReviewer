@@ -127,7 +127,7 @@ fun InsertReviewView(
                 )
 
                 PrivateCheckboxComponent(
-                    checked = writeReviewViewModel.writeReviewDate.value.private,
+                    checked = writeReviewViewModel.writeReviewDate.value.is_anonymous,
                     onClickCheckBox = { writeReviewViewModel.togglePrivateState() })
             }
 

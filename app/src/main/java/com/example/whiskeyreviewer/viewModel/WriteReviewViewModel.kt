@@ -131,7 +131,92 @@ class WriteReviewViewModel @Inject constructor(
     val scoreDialogState: State<Boolean> = _scoreDialogState
 
     private val _myReviewDataList=mutableStateOf<List<WriteReviewData>>(
-        emptyList()
+        listOf(
+            WriteReviewData(
+                content = "스타일 A",
+                is_anonymous = false,
+                open_date = LocalDate.of(2024, 1, 10),
+                tags = listOf(""),
+                score = 4.0
+            ),
+            WriteReviewData(
+                content = "스타일 B",
+                is_anonymous = true,
+                open_date = LocalDate.of(2025, 2, 15),
+                tags = listOf(""),
+                score = 3.0
+            ),
+            WriteReviewData(
+                content = "스타일 C",
+                is_anonymous = false,
+                open_date = LocalDate.of(2022, 3, 20),
+                tags = listOf(""),
+                score = 5.0
+            ),
+            WriteReviewData(
+                content = "스타일 D",
+                is_anonymous = true,
+                open_date = LocalDate.of(2021, 4, 5),
+                tags = listOf(""),
+                score = 2.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 4.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 4.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 2.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 3.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 2.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 5.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 3.0
+            ),
+            WriteReviewData(
+                content = "스타일 E",
+                is_anonymous = false,
+                open_date = LocalDate.of(2020, 5, 30),
+                tags = listOf(""),
+                score = 1.0
+            ),
+        )
     )
     val myReviewDataList: State<List<WriteReviewData>> = _myReviewDataList
 
@@ -155,6 +240,8 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _selectWhiskyData=mutableStateOf(WhiskyReviewData())
     val selectWhiskyData: State<WhiskyReviewData> = _selectWhiskyData
+
+
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -194,6 +281,14 @@ class WriteReviewViewModel @Inject constructor(
     fun updateDrawerSearchBarText(newSearchText:String){
         _drawerSearchBarText.value=newSearchText
         //실시간 검색 구현 예정
+    }
+
+    fun toggleDrawerSearchBarState(state:Boolean?=null){
+        if(state!=null){
+            _whiskeySearchBarState.value=state
+        }else{
+            _whiskeySearchBarState.value=!_whiskeySearchBarState.value
+        }
     }
 
     fun selectItem(item: ToolBarItems) {
@@ -354,7 +449,7 @@ class WriteReviewViewModel @Inject constructor(
             null
         }
         Log.d("imageFiles", imageFiles.toString())
-
+        _writeReviewDate.value
     }
 
 
@@ -364,7 +459,7 @@ class WriteReviewViewModel @Inject constructor(
 
     fun updateSelectDate(selectDate:LocalDate){
         _writeReviewDate.value=_writeReviewDate.value.copy(
-            openDate = selectDate
+            open_date = selectDate
         )
     }
 
@@ -412,7 +507,7 @@ class WriteReviewViewModel @Inject constructor(
 
     fun togglePrivateState() {
         _writeReviewDate.value=writeReviewDate.value.copy(
-            private = !_writeReviewDate.value.private
+            is_anonymous = !_writeReviewDate.value.is_anonymous
         )
     }
 

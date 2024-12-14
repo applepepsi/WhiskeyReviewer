@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -145,8 +146,19 @@ fun SingleWhiskeyComponent(
 
                 Spacer(modifier = Modifier.width(15.dp))
 
-                TagComponent(text = "개봉 D + " + singleWhiskeyData.dday.toString())
+                LazyRow(
 
+                    modifier = Modifier.padding(end=8.dp),
+
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ){
+                    item{
+                        TagComponent(text = "개봉 D + " + singleWhiskeyData.dday.toString())
+                    }
+                    items(items=singleWhiskeyData.tags){singleTag->
+                        TagComponent(text = singleTag)
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -165,13 +177,15 @@ fun MyReviewComponent(
             capacity = 700,
             score=4.5,
             dday=6,
-            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039")
+            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039"),
+            tags = listOf("싱글몰트","더블","트리플","더블","트리플")
         ), SingleWhiskeyData(
             name="글렌 리뱃 12년산",
             capacity = 1000,
             score=3.5,
             dday=3,
-            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037")
+            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037"),
+            tags = listOf("싱글몰트","더블","트리플","더블","트리플")
         ),
         SingleWhiskeyData(
         )

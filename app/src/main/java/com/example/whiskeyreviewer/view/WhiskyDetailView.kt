@@ -1,20 +1,17 @@
 package com.example.whiskeyreviewer.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,22 +24,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
-import com.example.whiskeyreviewer.component.customComponent.CustomDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
-import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
-import com.example.whiskeyreviewer.component.home.TapLayoutComponent
-import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
-import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.data.WriteReviewData
-import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import java.time.LocalDate
@@ -153,87 +144,87 @@ fun WhiskeyDetailView(
 
 val testReviewDataList = listOf(
     WriteReviewData(
-        reviewStyle = "스타일 A",
-        private = false,
-        openDate = LocalDate.of(2024, 1, 10),
-        tag = "태그1",
+        content = "스타일 A",
+        is_anonymous = false,
+        open_date = LocalDate.of(2024, 1, 10),
+        tags = listOf(""),
         score = 4.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 B",
-        private = true,
-        openDate = LocalDate.of(2025, 2, 15),
-        tag = "태그2",
+        content = "스타일 B",
+        is_anonymous = true,
+        open_date = LocalDate.of(2025, 2, 15),
+        tags = listOf(""),
         score = 3.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 C",
-        private = false,
-        openDate = LocalDate.of(2022, 3, 20),
-        tag = "태그3",
+        content = "스타일 C",
+        is_anonymous = false,
+        open_date = LocalDate.of(2022, 3, 20),
+        tags = listOf(""),
         score = 5.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 D",
-        private = true,
-        openDate = LocalDate.of(2021, 4, 5),
-        tag = "태그4",
+        content = "스타일 D",
+        is_anonymous = true,
+        open_date = LocalDate.of(2021, 4, 5),
+        tags = listOf(""),
         score = 2.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 4.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 4.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 2.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 3.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 2.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 5.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 3.0
     ),
     WriteReviewData(
-        reviewStyle = "스타일 E",
-        private = false,
-        openDate = LocalDate.of(2020, 5, 30),
-        tag = "태그5",
+        content = "스타일 E",
+        is_anonymous = false,
+        open_date = LocalDate.of(2020, 5, 30),
+        tags = listOf(""),
         score = 1.0
     ),
 )
