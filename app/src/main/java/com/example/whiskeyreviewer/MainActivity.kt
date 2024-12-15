@@ -16,7 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.view.HomeView
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,12 +47,21 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(ssaId: String) {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
     val mainNavController = rememberNavController()
 
     Log.d("ssaid",ssaId)
 
+    mainViewModel.tryLogin( ssaid = ssaId )
+
+
+    when(mainViewModel.loginResult.value){
+        true -> { MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel) }
+        false -> { }
+        else -> { }
+    }
 //    InsertReviewView()
-    MainNavGraph(mainNavController,writeReviewViewModel)
+
 //    TapLayoutComponent()
 }
 

@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
-import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
@@ -54,10 +51,9 @@ import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
-import com.example.whiskeyreviewer.ui.theme.LightBlackColor
-import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import kotlinx.coroutines.launch
 
@@ -65,7 +61,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeView(
     writeReviewViewModel: WriteReviewViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -73,7 +70,7 @@ fun HomeView(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        writeReviewViewModel.setRecentSearchTextList(
+        mainViewModel.setRecentSearchTextList(
             recentSearchWordList = RecentSearchWordManager.loadRecentSearchList(context, type = RECENT_SEARCH_REVIEW_TEXT),
             type = RECENT_SEARCH_REVIEW_TEXT
         )
@@ -83,8 +80,8 @@ fun HomeView(
     Scaffold(
         floatingActionButton = {
             CustomFloatingActionButton(
-                expendState = writeReviewViewModel.homeFloatingActionButtonState.value,
-                floatingActionButtonClick = { writeReviewViewModel.toggleHomeFloatingActionButtonState() },
+                expendState = mainViewModel.homeFloatingActionButtonState.value,
+                floatingActionButtonClick = { mainViewModel.toggleHomeFloatingActionButtonState() },
                 floatingActionItemClick = {
                     when(it.screenRoute){
                         FloatingActionButtonItems.NewBottle.screenRoute-> {
@@ -112,13 +109,13 @@ fun HomeView(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    if (writeReviewViewModel.homeFloatingActionButtonState.value) {
-                        writeReviewViewModel.toggleHomeFloatingActionButtonState()
+                    if (mainViewModel.homeFloatingActionButtonState.value) {
+                        mainViewModel.toggleHomeFloatingActionButtonState()
                     }
                 },
             drawerState=drawerState,
             drawerContent = {
-                NavigationDrawerComponent(drawerState=drawerState,scope=scope,writeReviewViewModel=writeReviewViewModel,navController=navController)
+                NavigationDrawerComponent(drawerState=drawerState,scope=scope,mainViewModel=mainViewModel,navController=navController)
             })
         {
 
@@ -146,14 +143,14 @@ fun HomeView(
                         CustomIconComponent(
                             icon = Icons.Default.Search,
                             onClick = {
-                                writeReviewViewModel.toggleHomeSearchBarState()
+                                mainViewModel.toggleHomeSearchBarState()
                             },
                             modifier=Modifier
                         )
                     },
                 )
 
-                if(writeReviewViewModel.homeSearchBarState.value){
+                if(mainViewModel.homeSearchBarState.value){
 
                     Text(
                         modifier = Modifier.padding(start=17.dp),
@@ -169,12 +166,12 @@ fun HomeView(
                     Spacer(modifier = Modifier.height(5.dp))
 
                     CustomSearchBoxComponent(
-                        text=writeReviewViewModel.homeSearchBarSText.value,
+                        text=mainViewModel.homeSearchBarSText.value,
                         onValueChange = {
-                            writeReviewViewModel.updateHomeSearchBarText(it)
+                            mainViewModel.updateHomeSearchBarText(it)
                         },
                         search = {
-                            writeReviewViewModel.setRecentSearchTextList(
+                            mainViewModel.setRecentSearchTextList(
                                 RecentSearchWordManager.saveSearchText(
                                     context = context,
                                     searchText="wfwfwf",
@@ -183,19 +180,19 @@ fun HomeView(
                                 type = RECENT_SEARCH_REVIEW_TEXT
                             )
                         },
-                        deleteInputText = {writeReviewViewModel.updateHomeSearchBarText("")}
+                        deleteInputText = {mainViewModel.updateHomeSearchBarText("")}
                     )
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(top=5.dp,bottom=5.dp,end=5.dp,start=7.dp),
                     ){
 
-                        items(items = writeReviewViewModel.recentSearchReviewTextList.value) { searchWord ->
+                        items(items = mainViewModel.recentSearchReviewTextList.value) { searchWord ->
                             if(searchWord!=""){
                                 RecentSearchWordComponent(
                                     text=searchWord,
                                     deleteSearchWord = {
-                                        writeReviewViewModel.setRecentSearchTextList(
+                                        mainViewModel.setRecentSearchTextList(
                                             RecentSearchWordManager.deleteRecentSearchText(
                                                 context = context,
                                                 searchText=searchWord,
@@ -216,19 +213,19 @@ fun HomeView(
 
                 TapLayoutComponent(
                     customFilter = {
-                        CustomFilterRow(writeReviewViewModel = writeReviewViewModel)
+                        CustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
                         MyReviewComponent(
-                            myReviewItems = writeReviewViewModel.myReviewList.value,
+                            myReviewItems = mainViewModel.myReviewList.value,
                             setSelectReview = {singleWhiskyData->
-                                writeReviewViewModel.updateSelectReview(singleWhiskyData)
+                                mainViewModel.updateSelectReview(singleWhiskyData)
                                 navController.navigate(MainRoute.WHISKY_DETAIL)
                             }
                         )
                     },
                     updateCurrentPage = {
-                        writeReviewViewModel.getFilteredWhiskeyReview(it)
+                        mainViewModel.getFilteredWhiskeyReview(it)
                     },
 
                 )
@@ -245,9 +242,10 @@ fun HomeView(
 @Composable
 fun HomePreview() {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
     val mainNavController = rememberNavController()
 
     WhiskeyReviewerTheme {
-        HomeView(writeReviewViewModel,mainNavController)
+        HomeView(writeReviewViewModel, mainNavController, mainViewModel)
     }
 }

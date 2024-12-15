@@ -33,6 +33,7 @@ import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponen
 import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 
@@ -42,7 +43,8 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 @Composable
 fun InsertReviewView(
     writeReviewViewModel: WriteReviewViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
 
 
@@ -116,7 +118,7 @@ fun InsertReviewView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 13.dp, top = 15.dp,start=15.dp),
+                    .padding(end = 13.dp, top = 15.dp, start = 15.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -156,9 +158,10 @@ fun InsertReviewView(
 @Composable
 fun InsertReviewPreview() {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val mainViewModel:MainViewModel= hiltViewModel()
     val mainNavController = rememberNavController()
     WhiskeyReviewerTheme {
-        InsertReviewView(writeReviewViewModel, mainNavController)
+        InsertReviewView(writeReviewViewModel, mainNavController, mainViewModel)
     }
 }
 

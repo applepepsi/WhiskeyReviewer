@@ -33,18 +33,16 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
-import com.example.whiskeyreviewer.component.myReview.ReviewDetail
 import com.example.whiskeyreviewer.component.myReview.ReviewImageLazyRowComponent
-import com.example.whiskeyreviewer.data.ReviewData
-import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
-import java.time.LocalDate
 
 @Composable
 fun ReviewDetailView(
-    navController:NavHostController,
-    writeReviewViewModel: WriteReviewViewModel
+    navController: NavHostController,
+    writeReviewViewModel: WriteReviewViewModel,
+    mainViewModel: MainViewModel
 ){
 
     val scrollState= rememberScrollState()
@@ -108,7 +106,7 @@ fun ReviewDetailView(
         Spacer(modifier = Modifier.height(7.dp))
 
         ReviewImageLazyRowComponent(
-            imageList = writeReviewViewModel.selectWhiskyData.value.imageList,
+            imageList = mainViewModel.selectWhiskyData.value.imageList,
             deleteImage = {
 
             },
@@ -117,7 +115,7 @@ fun ReviewDetailView(
         Spacer(modifier = Modifier.height(7.dp))
 
         Text(
-            text = writeReviewViewModel.selectWhiskyData.value.reviewText,
+            text = mainViewModel.selectWhiskyData.value.reviewText,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 15.sp,
@@ -133,12 +131,12 @@ fun ReviewDetailView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             WhiskeyScoreComponent(
-                score = writeReviewViewModel.selectWhiskyData.value.score
+                score = mainViewModel.selectWhiskyData.value.score
             )
 
             Spacer(modifier = Modifier.width(15.dp))
 
-            TagComponent(text = "개봉 ${writeReviewViewModel.selectWhiskyData.value.openDate}")
+            TagComponent(text = "개봉 ${mainViewModel.selectWhiskyData.value.openDate}")
 
             Spacer(modifier = Modifier.width(4.dp))
 
@@ -167,9 +165,10 @@ fun ReviewDetailPreview(
 
 ){
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
-
+    val mainViewModel:MainViewModel= hiltViewModel()
     ReviewDetailView(
         navController = rememberNavController(),
-        writeReviewViewModel =writeReviewViewModel
+        writeReviewViewModel =writeReviewViewModel,
+        mainViewModel = mainViewModel
     )
 }

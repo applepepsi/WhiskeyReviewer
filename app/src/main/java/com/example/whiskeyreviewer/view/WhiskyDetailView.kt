@@ -35,13 +35,15 @@ import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import java.time.LocalDate
 
 @Composable
 fun WhiskeyDetailView(
     writeReviewViewModel: WriteReviewViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
     val scrollState= rememberScrollState()
 
@@ -82,22 +84,22 @@ fun WhiskeyDetailView(
 
             WhiskeyDetailBottleNumDropDownMenuComponent(
 
-                value = writeReviewViewModel.currentMyReviewBottleNumFilter.value,
-                onValueChange = { writeReviewViewModel.updateMyBottleNumFilter(it) },
-                dropDownMenuOption = writeReviewViewModel.myWhiskyFilterDropDownMenuState.value.bottleNum,
-                toggleDropDownMenuOption = { writeReviewViewModel.toggleMyWhiskeyReviewDropDownMenuState(
+                value = mainViewModel.currentMyReviewBottleNumFilter.value,
+                onValueChange = { mainViewModel.updateMyBottleNumFilter(it) },
+                dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.bottleNum,
+                toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
                     MyReviewFilterItems.BOTTLE_NUM) },
-                menuItems = (1..writeReviewViewModel.myReviewData.value.bottleCount).toList()
+                menuItems = (1..mainViewModel.myReviewData.value.bottleCount).toList()
             )
 
             Spacer(modifier = Modifier.width(10.dp))
 
             WhiskeyDetailDropDownMenuComponent(
 
-                value = writeReviewViewModel.currentMyReviewDayFilter.value,
-                onValueChange = { writeReviewViewModel.updateMyWhiskeyFilter(it) },
-                dropDownMenuOption = writeReviewViewModel.myWhiskyFilterDropDownMenuState.value.day,
-                toggleDropDownMenuOption = { writeReviewViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.DAY) },
+                value = mainViewModel.currentMyReviewDayFilter.value,
+                onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
+                dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.day,
+                toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.DAY) },
                 menuItems = listOf(MyReviewFilterItems.New,MyReviewFilterItems.Old,)
             )
 
@@ -105,10 +107,10 @@ fun WhiskeyDetailView(
 
             WhiskeyDetailDropDownMenuComponent(
 
-                value = writeReviewViewModel.currentMyReviewTypeFilter.value,
-                onValueChange = { writeReviewViewModel.updateMyWhiskeyFilter(it) },
-                dropDownMenuOption = writeReviewViewModel.myWhiskyFilterDropDownMenuState.value.reviewType,
-                toggleDropDownMenuOption = { writeReviewViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.REVIEW_TYPE) },
+                value = mainViewModel.currentMyReviewTypeFilter.value,
+                onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
+                dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.reviewType,
+                toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.REVIEW_TYPE) },
                 menuItems = listOf(MyReviewFilterItems.Review,MyReviewFilterItems.Graph)
             )
         }
@@ -116,16 +118,16 @@ fun WhiskeyDetailView(
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            when(writeReviewViewModel.currentMyReviewTypeFilter.value){
+            when(mainViewModel.currentMyReviewTypeFilter.value){
                 MyReviewFilterItems.Graph->{
                     MyReviewGraphComponent2(
-                        writeReviewViewModel.myReviewDataList.value
+                        mainViewModel.myReviewDataList.value
                     )
                 }
                 MyReviewFilterItems.Review->{
                     MyReviewPost(
                         singleReviewClick = {
-                            writeReviewViewModel.setSelectReviewData(it)
+                            mainViewModel.setSelectReviewData(it)
                             navController.navigate(REVIEW_DETAIL)
                         }
                     )
@@ -233,8 +235,9 @@ val testReviewDataList = listOf(
 @Composable
 fun WhiskeyDetailPreview() {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val mainViewModel:MainViewModel= hiltViewModel()
     val mainNavController = rememberNavController()
     WhiskeyReviewerTheme {
-        WhiskeyDetailView(writeReviewViewModel, mainNavController)
+        WhiskeyDetailView(writeReviewViewModel, mainNavController, mainViewModel)
     }
 }

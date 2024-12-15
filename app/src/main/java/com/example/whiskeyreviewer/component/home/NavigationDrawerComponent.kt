@@ -60,6 +60,7 @@ import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -68,14 +69,14 @@ import kotlinx.coroutines.launch
 fun NavigationDrawerComponent(
     drawerState: DrawerState,
     scope: CoroutineScope,
-    writeReviewViewModel: WriteReviewViewModel,
+    mainViewModel: MainViewModel,
     navController: NavHostController
 ) {
     val context = LocalContext.current
     val mainNavController= rememberNavController()
 
     LaunchedEffect(Unit) {
-        writeReviewViewModel.setRecentSearchTextList(
+        mainViewModel.setRecentSearchTextList(
             recentSearchWordList = RecentSearchWordManager.loadRecentSearchList(context, type = RECENT_SEARCH_WHISKEY_TEXT),
             type = RECENT_SEARCH_WHISKEY_TEXT
         )
@@ -139,15 +140,15 @@ fun NavigationDrawerComponent(
                 horizontalArrangement = Arrangement.Center
             ){
                 CustomSearchBoxComponent(
-                    text=writeReviewViewModel.drawerSearchBarText.value,
+                    text=mainViewModel.drawerSearchBarText.value,
                     onValueChange = {
-                        writeReviewViewModel.updateDrawerSearchBarText(it)
+                        mainViewModel.updateDrawerSearchBarText(it)
                     },
                     search = {
-                        writeReviewViewModel.setRecentSearchTextList(
+                        mainViewModel.setRecentSearchTextList(
                             RecentSearchWordManager.saveSearchText(
                                 context = context,
-                                searchText=writeReviewViewModel.drawerSearchBarText.value,
+                                searchText=mainViewModel.drawerSearchBarText.value,
                                 type = RECENT_SEARCH_WHISKEY_TEXT
                             ),
                             type = RECENT_SEARCH_WHISKEY_TEXT
@@ -155,7 +156,7 @@ fun NavigationDrawerComponent(
 
                         navController.navigate(MainRoute.WHISKEY_SEARCH)
                     },
-                    deleteInputText = {writeReviewViewModel.updateDrawerSearchBarText("") }
+                    deleteInputText = {mainViewModel.updateDrawerSearchBarText("") }
                 )
             }
             LazyRow(
@@ -163,12 +164,12 @@ fun NavigationDrawerComponent(
                 contentPadding = PaddingValues(top=5.dp,bottom=12.dp,end=5.dp,start=7.dp),
             ){
 
-                items(items = writeReviewViewModel.recentSearchWhiskeyTextList.value) { searchWord ->
+                items(items = mainViewModel.recentSearchWhiskeyTextList.value) { searchWord ->
                     if(searchWord!=""){
                         RecentSearchWordComponent(
                             text=searchWord,
                             deleteSearchWord = {
-                                writeReviewViewModel.setRecentSearchTextList(
+                                mainViewModel.setRecentSearchTextList(
                                     RecentSearchWordManager.deleteRecentSearchText(
                                         context = context,
                                         searchText=searchWord,
@@ -179,7 +180,7 @@ fun NavigationDrawerComponent(
 
                             },
                             search = {
-                                writeReviewViewModel.updateDrawerSearchBarText(searchWord)
+                                mainViewModel.updateDrawerSearchBarText(searchWord)
                                 navController.navigate(MainRoute.WHISKEY_SEARCH)
                             }
                         )
@@ -318,9 +319,10 @@ fun ModalNavPreview() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val mainViewModel:MainViewModel= hiltViewModel()
     val navHostController= rememberNavController()
     WhiskeyReviewerTheme {
-        NavigationDrawerComponent(drawerState,scope,writeReviewViewModel,navHostController)
+        NavigationDrawerComponent(drawerState,scope,mainViewModel,navHostController)
     }
 }
 

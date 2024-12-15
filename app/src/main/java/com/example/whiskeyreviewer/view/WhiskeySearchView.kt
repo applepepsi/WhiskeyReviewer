@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,11 +33,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
-import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
@@ -46,16 +43,16 @@ import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
-import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun WhiskeySearchView(
     writeReviewViewModel: WriteReviewViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -64,7 +61,7 @@ fun WhiskeySearchView(
 
 
     LaunchedEffect(Unit) {
-        writeReviewViewModel.toggleDrawerSearchBarState(state = true)
+        mainViewModel.toggleDrawerSearchBarState(state = true)
 //        writeReviewViewModel.updateDrawerSearchBarText(writeReviewViewModel.drawerSearchBarText.value)
     }
 
@@ -100,13 +97,13 @@ fun WhiskeySearchView(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    if (writeReviewViewModel.homeFloatingActionButtonState.value) {
-                        writeReviewViewModel.toggleHomeFloatingActionButtonState()
+                    if (mainViewModel.homeFloatingActionButtonState.value) {
+                        mainViewModel.toggleHomeFloatingActionButtonState()
                     }
                 },
             drawerState=drawerState,
             drawerContent = {
-                NavigationDrawerComponent(drawerState=drawerState,scope=scope,writeReviewViewModel=writeReviewViewModel,navController=navController)
+                NavigationDrawerComponent(drawerState=drawerState,scope=scope,mainViewModel=mainViewModel,navController=navController)
             })
         {
 
@@ -131,14 +128,14 @@ fun WhiskeySearchView(
                         CustomIconComponent(
                             icon = Icons.Default.Search,
                             onClick = {
-                                writeReviewViewModel.toggleDrawerSearchBarState()
+                                mainViewModel.toggleDrawerSearchBarState()
                             },
                             modifier= Modifier
                         )
                     },
                 )
 
-                if(writeReviewViewModel.whiskeySearchBarState.value){
+                if(mainViewModel.whiskeySearchBarState.value){
 
                     Text(
                         modifier = Modifier.padding(start=17.dp),
@@ -153,33 +150,33 @@ fun WhiskeySearchView(
                     Spacer(modifier = Modifier.height(5.dp))
 
                     CustomSearchBoxComponent(
-                        text=writeReviewViewModel.drawerSearchBarText.value,
+                        text=mainViewModel.drawerSearchBarText.value,
                         onValueChange = {
-                            writeReviewViewModel.updateDrawerSearchBarText(it)
+                            mainViewModel.updateDrawerSearchBarText(it)
                         },
                         search = {
-                            writeReviewViewModel.setRecentSearchTextList(
+                            mainViewModel.setRecentSearchTextList(
                                 RecentSearchWordManager.saveSearchText(
                                     context = context,
-                                    searchText=writeReviewViewModel.drawerSearchBarText.value,
+                                    searchText=mainViewModel.drawerSearchBarText.value,
                                     type = RECENT_SEARCH_WHISKEY_TEXT
                                 ),
                                 type = RECENT_SEARCH_WHISKEY_TEXT
                             )
                         },
-                        deleteInputText = {writeReviewViewModel.updateDrawerSearchBarText("")}
+                        deleteInputText = {mainViewModel.updateDrawerSearchBarText("")}
                     )
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(top=5.dp,bottom=12.dp,end=5.dp,start=7.dp),
                     ){
 
-                        items(items = writeReviewViewModel.recentSearchWhiskeyTextList.value) { searchWord ->
+                        items(items = mainViewModel.recentSearchWhiskeyTextList.value) { searchWord ->
                             if(searchWord!=""){
                                 RecentSearchWordComponent(
                                     text=searchWord,
                                     deleteSearchWord = {
-                                        writeReviewViewModel.setRecentSearchTextList(
+                                        mainViewModel.setRecentSearchTextList(
                                             RecentSearchWordManager.deleteRecentSearchText(
                                                 context = context,
                                                 searchText=searchWord,
@@ -202,19 +199,19 @@ fun WhiskeySearchView(
 
                 TapLayoutComponent(
                     customFilter = {
-                        CustomFilterRow(writeReviewViewModel = writeReviewViewModel)
+                        CustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
                         MyReviewComponent(
-                            myReviewItems = writeReviewViewModel.myReviewList.value,
+                            myReviewItems = mainViewModel.myReviewList.value,
                             setSelectReview = {singleWhiskyData->
-                                writeReviewViewModel.updateSelectReview(singleWhiskyData)
+                                mainViewModel.updateSelectReview(singleWhiskyData)
                                 navController.navigate(MainRoute.WHISKY_DETAIL)
                             }
                         )
                     },
                     updateCurrentPage = {
-                        writeReviewViewModel.getFilteredWhiskeyReview(it)
+                        mainViewModel.getFilteredWhiskeyReview(it)
                     },
 
                     )

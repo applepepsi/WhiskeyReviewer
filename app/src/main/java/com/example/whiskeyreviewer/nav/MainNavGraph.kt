@@ -1,9 +1,6 @@
 package com.example.whiskeyreviewer.nav
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,12 +12,14 @@ import com.example.whiskeyreviewer.view.InsertReviewView
 import com.example.whiskeyreviewer.view.ReviewDetailView
 import com.example.whiskeyreviewer.view.WhiskeyDetailView
 import com.example.whiskeyreviewer.view.WhiskeySearchView
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
-    writeReviewViewModel: WriteReviewViewModel
+    writeReviewViewModel: WriteReviewViewModel,
+    mainViewModel: MainViewModel
 ) {
 
 
@@ -30,7 +29,7 @@ fun MainNavGraph(
         navController = navController,
         startDestination = "homeRoute"
     ) {
-        homeRoute(navController,writeReviewViewModel)
+        homeRoute(navController,writeReviewViewModel,mainViewModel)
     }
 }
 
@@ -39,26 +38,27 @@ fun MainNavGraph(
 private fun NavGraphBuilder.homeRoute(
     navController: NavHostController,
     writeReviewViewModel: WriteReviewViewModel,
+    mainViewModel: MainViewModel,
 
-) {
+    ) {
     navigation(
         route = "homeRoute",
         startDestination = MainRoute.HOME
     ) {
         composable(MainRoute.HOME) {
-            HomeView(writeReviewViewModel,navController)
+            HomeView(writeReviewViewModel,navController,mainViewModel)
         }
         composable(MainRoute.WHISKY_DETAIL) {
-            WhiskeyDetailView(writeReviewViewModel,navController)
+            WhiskeyDetailView(writeReviewViewModel,navController,mainViewModel)
         }
         composable(MainRoute.INSERT_REVIEW) {
-            InsertReviewView(writeReviewViewModel,navController)
+            InsertReviewView(writeReviewViewModel,navController,mainViewModel)
         }
         composable(MainRoute.WHISKEY_SEARCH) {
-            WhiskeySearchView(writeReviewViewModel,navController)
+            WhiskeySearchView(writeReviewViewModel,navController,mainViewModel)
         }
         composable(MainRoute.REVIEW_DETAIL) {
-            ReviewDetailView(navController,writeReviewViewModel)
+            ReviewDetailView(navController,writeReviewViewModel,mainViewModel)
         }
     }
 }

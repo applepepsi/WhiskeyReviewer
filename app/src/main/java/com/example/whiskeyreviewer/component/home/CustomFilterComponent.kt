@@ -8,11 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.whiskeyreviewer.component.customComponent.CustomDropDownMenuComponent
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 
 @Composable
 fun CustomFilterRow(
-    writeReviewViewModel: WriteReviewViewModel
+    mainViewModel: MainViewModel
 ) {
 
 
@@ -23,10 +24,10 @@ fun CustomFilterRow(
         item{
             CustomDropDownMenuComponent(
                 category = WhiskeyFilterItems.DAY,
-                value = writeReviewViewModel.currentDayFilter.value,
-                onValueChange = { writeReviewViewModel.updateFilter(it) },
-                dropDownMenuOption = writeReviewViewModel.filterDropDownMenuState.value.day,
-                toggleDropDownMenuOption = { writeReviewViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.DAY) },
+                value = mainViewModel.currentDayFilter.value,
+                onValueChange = { mainViewModel.updateFilter(it) },
+                dropDownMenuOption = mainViewModel.filterDropDownMenuState.value.day,
+                toggleDropDownMenuOption = { mainViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.DAY) },
                 menuItems = listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder)
             )
         }
@@ -34,20 +35,20 @@ fun CustomFilterRow(
         item{
             CustomDropDownMenuComponent(
                 category = WhiskeyFilterItems.SCORE,
-                value = writeReviewViewModel.currentScoreFilter.value,
-                onValueChange = { writeReviewViewModel.updateFilter(it) },
-                dropDownMenuOption = writeReviewViewModel.filterDropDownMenuState.value.score,
-                toggleDropDownMenuOption = { writeReviewViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.SCORE) },
+                value = mainViewModel.currentScoreFilter.value,
+                onValueChange = { mainViewModel.updateFilter(it) },
+                dropDownMenuOption = mainViewModel.filterDropDownMenuState.value.score,
+                toggleDropDownMenuOption = { mainViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.SCORE) },
                 menuItems = listOf(WhiskeyFilterItems.ScoreAscendingOrder,WhiskeyFilterItems.ScoreDescendingOrder)
             )
         }
         item{
             CustomDropDownMenuComponent(
                 category = WhiskeyFilterItems.OPEN_DATE,
-                value = writeReviewViewModel.currentOpenDateFilter.value,
-                onValueChange = { writeReviewViewModel.updateFilter(it) },
-                dropDownMenuOption = writeReviewViewModel.filterDropDownMenuState.value.openDate,
-                toggleDropDownMenuOption = { writeReviewViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.OPEN_DATE) },
+                value = mainViewModel.currentOpenDateFilter.value,
+                onValueChange = { mainViewModel.updateFilter(it) },
+                dropDownMenuOption = mainViewModel.filterDropDownMenuState.value.openDate,
+                toggleDropDownMenuOption = { mainViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.OPEN_DATE) },
                 menuItems = listOf(WhiskeyFilterItems.OpenDateAscendingOrder,WhiskeyFilterItems.OpenDateDescendingOrder)
             )
         }
