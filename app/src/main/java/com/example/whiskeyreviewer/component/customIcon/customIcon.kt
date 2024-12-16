@@ -43,7 +43,9 @@ import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 fun CustomIconComponent(
     icon: ImageVector,
     onClick: () -> Unit,
-    modifier: Modifier=Modifier
+    modifier: Modifier=Modifier.size(35.dp),
+    iconSize: Modifier=Modifier.size(25.dp),
+    onClickAllow:Boolean=true
 ) {
 
     Box(
@@ -51,13 +53,17 @@ fun CustomIconComponent(
             .clip(shape = RoundedCornerShape(7.dp))
             .background(MainColor)
             .size(35.dp)
-            .clickable {
-                onClick()
-            },
+            .then(
+                if (onClickAllow) {
+                    Modifier.clickable { onClick() }
+                } else {
+                    Modifier
+                }
+            ),
         contentAlignment = Alignment.Center
     ){
         Icon(
-            modifier = Modifier
+            modifier = iconSize
                 .size(25.dp),
             imageVector = icon,
             contentDescription = "",

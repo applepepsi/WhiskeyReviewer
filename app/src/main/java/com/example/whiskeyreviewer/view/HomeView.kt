@@ -74,7 +74,6 @@ fun HomeView(
             recentSearchWordList = RecentSearchWordManager.loadRecentSearchList(context, type = RECENT_SEARCH_REVIEW_TEXT),
             type = RECENT_SEARCH_REVIEW_TEXT
         )
-
     }
 
     Scaffold(

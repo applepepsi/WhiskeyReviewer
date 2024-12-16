@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -75,13 +76,25 @@ fun NavigationDrawerComponent(
     val context = LocalContext.current
     val mainNavController= rememberNavController()
 
+
     LaunchedEffect(Unit) {
         mainViewModel.setRecentSearchTextList(
             recentSearchWordList = RecentSearchWordManager.loadRecentSearchList(context, type = RECENT_SEARCH_WHISKEY_TEXT),
             type = RECENT_SEARCH_WHISKEY_TEXT
         )
-
     }
+
+    GetBackupCodeDialog(
+        toggleOption = { mainViewModel.toggleDrawerDialogState(NavigationDrawerItems.Backup) },
+        currentState = mainViewModel.getBackupCodeDialogState.value,
+
+    )
+    InsertBackupCodeDialog(
+        toggleOption = { mainViewModel.toggleDrawerDialogState(NavigationDrawerItems.InsertBackupCode) },
+        currentState = mainViewModel.insertBackupCodeDialogState.value
+    )
+
+
 
     ModalDrawerSheet (
         modifier = Modifier
@@ -195,7 +208,9 @@ fun NavigationDrawerComponent(
 
         NavigationDrawerItemsComponent(
             navController = mainNavController,
-            navigationDrawerController = mainNavController)
+            navigationDrawerController = mainNavController,
+            toggleDialogState = {mainViewModel.toggleDrawerDialogState(it)}
+        )
 
     }
 }
@@ -205,11 +220,12 @@ fun NavigationDrawerComponent(
 fun NavigationDrawerItemsComponent(
     navController: NavHostController,
     navigationDrawerController: NavHostController,
-
+    toggleDialogState:(NavigationDrawerItems)->Unit
     ) {
     val screens = listOf(
         NavigationDrawerItems.Setting,
         NavigationDrawerItems.Backup,
+        NavigationDrawerItems.InsertBackupCode
     )
 
     val currentDestination = navigationDrawerController.currentBackStackEntryAsState().value?.destination
@@ -224,6 +240,7 @@ fun NavigationDrawerItemsComponent(
                         screen = singleItem,
                         currentDestination = currentDestination,
                         modalNavController = navigationDrawerController,
+                        toggleDialogState = {toggleDialogState(it)}
                     )
                 }
             }
@@ -236,7 +253,7 @@ fun NavigationDrawerItem(
     screen: NavigationDrawerItems,
     currentDestination: NavDestination?,
     modalNavController: NavHostController,
-
+    toggleDialogState:(NavigationDrawerItems)->Unit
 ) {
     val selected = currentDestination?.hierarchy?.any { it.route == screen.screenRoute } == true
     val interactionSource = remember { MutableInteractionSource() }
@@ -250,10 +267,14 @@ fun NavigationDrawerItem(
 
                     when (screen.screenRoute) {
                         NavigationDrawerItems.BACKUP -> {
-
+                            toggleDialogState(NavigationDrawerItems.Backup)
                         }
 
-                        else -> {
+                        NavigationDrawerItems.INSERT_BACKUP_CODE -> {
+                            toggleDialogState(NavigationDrawerItems.InsertBackupCode)
+                        }
+
+                        NavigationDrawerItems.SETTING -> {
                             modalNavController.navigate(screen.screenRoute) {
                                 popUpTo(modalNavController.graph.findStartDestination().id)
                                 launchSingleTop = true
@@ -272,15 +293,22 @@ fun NavigationDrawerItem(
             verticalAlignment = Alignment.CenterVertically,
 
             ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(screen.icon),
-                contentDescription = screen.title,
-                modifier = Modifier
-                    .size(25.dp),
-                tint = LightBlackColor
+//            Icon(
+//                imageVector = ImageVector.vectorResource(screen.icon),
+//                contentDescription = screen.title,
+//                modifier = Modifier
+//                    .size(25.dp),
+//                tint = LightBlackColor
+//            )
+            CustomIconComponent(
+                icon = ImageVector.vectorResource(screen.icon),
+                onClick = { /*TODO*/ },
+                modifier = Modifier.size(32.dp),
+                iconSize = Modifier.size(20.dp),
+                onClickAllow = false
             )
 
-            Spacer(modifier = Modifier.width(15.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
             Text(
                 text = screen.title,
@@ -333,6 +361,6 @@ fun NavigationDrawerItemsPreview() {
     val mainNavController= rememberNavController()
 
     WhiskeyReviewerTheme {
-        NavigationDrawerItemsComponent(mainNavController,mainNavController)
+        NavigationDrawerItemsComponent(mainNavController,mainNavController, toggleDialogState = {})
     }
 }

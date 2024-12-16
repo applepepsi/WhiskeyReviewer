@@ -21,6 +21,7 @@ import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
+import com.example.whiskeyreviewer.data.NavigationDrawerItems
 import com.example.whiskeyreviewer.data.ReviewData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
@@ -199,6 +200,13 @@ class MainViewModel @Inject constructor(
     private val _loginResult=mutableStateOf(null)
     val loginResult: State<Boolean?> = _loginResult
 
+    private val _getBackupCodeDialogState= mutableStateOf(false)
+    val getBackupCodeDialogState: State<Boolean> = _getBackupCodeDialogState
+
+    private val _insertBackupCodeDialogState= mutableStateOf(false)
+    val insertBackupCodeDialogState: State<Boolean> = _insertBackupCodeDialogState
+
+
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -320,4 +328,21 @@ class MainViewModel @Inject constructor(
     fun tryLogin(ssaid: String) {
 
     }
+
+
+    fun toggleDrawerDialogState(item: NavigationDrawerItems){
+        when(item){
+            NavigationDrawerItems.Backup->{
+                _getBackupCodeDialogState.value=!_getBackupCodeDialogState.value
+            }
+            NavigationDrawerItems.InsertBackupCode->{
+                _insertBackupCodeDialogState.value=!_insertBackupCodeDialogState.value
+            }
+
+            NavigationDrawerItems.Setting -> {
+
+            }
+        }
+    }
+
 }

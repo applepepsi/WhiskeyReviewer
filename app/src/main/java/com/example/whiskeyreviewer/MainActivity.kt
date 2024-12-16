@@ -53,13 +53,13 @@ fun Greeting(ssaId: String) {
     Log.d("ssaid",ssaId)
 
     mainViewModel.tryLogin( ssaid = ssaId )
+    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
 
-
-    when(mainViewModel.loginResult.value){
-        true -> { MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel) }
-        false -> { }
-        else -> { }
-    }
+//    when(mainViewModel.loginResult.value){
+//        true -> { MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel) }
+//        false -> { }
+//        else -> { }
+//    }
 //    InsertReviewView()
 
 //    TapLayoutComponent()

@@ -15,9 +15,11 @@ sealed class NavigationDrawerItems(
     data object Setting : NavigationDrawerItems("설정", R.drawable.setting_icon, SETTING)
     data object Backup : NavigationDrawerItems("데이터 백업", R.drawable.backup_icon, BACKUP)
 
+    data object InsertBackupCode : NavigationDrawerItems("백업 코드 입력", R.drawable.insert_backup_code_icon, INSERT_BACKUP_CODE)
     companion object {
         const val SETTING = "SETTING"
         const val BACKUP = "BACKUP"
+        const val INSERT_BACKUP_CODE = "INSERT_BACKUP_CODE"
     }
 }
 

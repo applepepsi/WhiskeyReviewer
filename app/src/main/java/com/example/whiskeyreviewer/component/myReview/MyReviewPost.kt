@@ -326,8 +326,9 @@ fun RatingScoreDialog(
             Surface(
                 modifier = Modifier
                     .height(150.dp)
+                    .clip(RoundedCornerShape(10.dp))
                     .background(Color.White),
-                shape = RoundedCornerShape(16.dp),
+
                 ) {
                 Column(
                     modifier = Modifier.fillMaxSize().padding(top=20.dp),
