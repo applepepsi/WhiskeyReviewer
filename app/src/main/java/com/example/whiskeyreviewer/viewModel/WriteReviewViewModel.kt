@@ -97,6 +97,7 @@ class WriteReviewViewModel @Inject constructor(
 
 
 
+
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
         if (item is ToolBarItems.Picture) {
@@ -301,5 +302,6 @@ class WriteReviewViewModel @Inject constructor(
     fun updateScore(score:Double){
         _score.value=score
     }
+
 
 }

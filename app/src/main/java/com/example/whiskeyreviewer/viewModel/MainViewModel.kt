@@ -207,6 +207,9 @@ class MainViewModel @Inject constructor(
     val insertBackupCodeDialogState: State<Boolean> = _insertBackupCodeDialogState
 
 
+    private val _backupCodeResult=mutableStateOf<Boolean?>(null)
+    val backupCodeResult: State<Boolean?> = _backupCodeResult
+
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -345,4 +348,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun submitBackupCode(backupCode:String){
+        //백업 코드 제출 후 결과 구현예정
+        _backupCodeResult.value=false
+
+    }
+    fun resetSubmitBackupCodeResultState(){
+        _backupCodeResult.value=null
+    }
 }
