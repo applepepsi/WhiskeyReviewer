@@ -5,20 +5,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -33,6 +41,8 @@ import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponen
 import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
+import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -44,7 +54,8 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 fun InsertReviewView(
     writeReviewViewModel: WriteReviewViewModel,
     navController: NavHostController,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+
 ) {
 
 
@@ -114,11 +125,42 @@ fun InsertReviewView(
                 },
             )
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 15.dp,start=15.dp)
+            ){
+                Text(
+                    text = "잭 다니엘",
+                    color = Color.Gray,
+                    modifier = Modifier,
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontStyle = FontStyle.Normal,
+                        color = Color.Black
+                    ),
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = "1병",
+                    color = Color.Gray,
+                    modifier = Modifier,
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Normal,
+                        color = Color.Black
+                    ),
+                )
+            }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 13.dp, top = 15.dp, start = 15.dp),
+                    .padding(end = 13.dp, top = 5.dp, start = 15.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

@@ -28,7 +28,8 @@ fun CustomFilterRow(
                 onValueChange = { mainViewModel.updateFilter(it) },
                 dropDownMenuOption = mainViewModel.filterDropDownMenuState.value.day,
                 toggleDropDownMenuOption = { mainViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.DAY) },
-                menuItems = listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder)
+                menuItems = listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder),
+
             )
         }
 

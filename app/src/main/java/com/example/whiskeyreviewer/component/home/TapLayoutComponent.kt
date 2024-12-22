@@ -72,7 +72,7 @@ fun TapLayoutComponent(
 
 ) {
 
-
+//    val whiskeyData=allWhiskyType
     val whiskeyData = listOf(
         TapLayoutItems.AllWhiskey,
         TapLayoutItems.ScotchWhiskey,

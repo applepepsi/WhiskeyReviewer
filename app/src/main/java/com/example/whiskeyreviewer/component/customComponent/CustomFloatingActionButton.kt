@@ -67,12 +67,13 @@ fun CustomFloatingActionButton(
     expendState:Boolean,
     floatingActionButtonClick:()->Unit,
     floatingActionItemClick:(FloatingActionButtonItems)->Unit,
+    items:List<FloatingActionButtonItems>
 ) {
 
 
     val floatingItems = listOf(
-        FloatingActionButtonItems.NewBottle,
-        FloatingActionButtonItems.NewBottle2
+        FloatingActionButtonItems.OldBottle,
+        FloatingActionButtonItems.NewBottle
     )
     Column(
         horizontalAlignment = Alignment.End
@@ -90,7 +91,7 @@ fun CustomFloatingActionButton(
             LazyColumn(
                 modifier= Modifier.padding(bottom = 8.dp)
             ) {
-                items(items=floatingItems) {floatingItem->
+                items(items=items) {floatingItem->
                     SingleFloatingActionButtonItem(
                         icon = ImageVector.vectorResource(floatingItem.icon),
                         title = floatingItem.title,

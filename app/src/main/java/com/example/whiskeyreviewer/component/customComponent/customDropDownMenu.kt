@@ -1,20 +1,26 @@
 package com.example.whiskeyreviewer.component.customComponent
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -35,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -43,11 +50,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
+import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -121,7 +131,9 @@ fun CustomDropDownMenuComponent(
                 )
             }
             ExposedDropdownMenu(
-                modifier = Modifier.width(150.dp).background(Color.White),
+                modifier = Modifier
+                    .width(150.dp)
+                    .background(Color.White),
                 expanded = dropDownMenuOption,
                 onDismissRequest = { toggleDropDownMenuOption() }
             ) {
@@ -250,7 +262,9 @@ fun <T> MyReviewCustomDropdownMenu(
                 CustomTrailingIcon(expanded = dropDownMenuOption, size = 23.dp, tint = textAndIconColor)
             }
             ExposedDropdownMenu(
-                modifier = Modifier.width(150.dp).background(Color.White),
+                modifier = Modifier
+                    .width(150.dp)
+                    .background(Color.White),
                 expanded = dropDownMenuOption,
                 onDismissRequest = { toggleDropDownMenuOption() }
             ) {
@@ -290,6 +304,109 @@ fun CustomTrailingIcon(expanded: Boolean,size: Dp,tint:Color) {
         tint = tint
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WhiskeyFilterDropDownMenuComponent(
+    modifier: Modifier,
+    value: TapLayoutItems,
+    onValueChange: (TapLayoutItems) -> Unit,
+    dropDownMenuOption: Boolean,
+    toggleDropDownMenuOption: () -> Unit,
+    menuItems: List<TapLayoutItems>,
+) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (dropDownMenuOption) MainColor else Color.White, label = ""
+    )
+
+    val selectBorder=  if (dropDownMenuOption) 1.5.dp else 0.5.dp
+
+
+    val textAndIconColor by animateColorAsState(
+        targetValue = if (dropDownMenuOption) LightBlackColor else Color.LightGray, label = ""
+    )
+
+    Column(
+        modifier=modifier
+    ) {
+
+        ExposedDropdownMenuBox(
+            expanded = dropDownMenuOption,
+            onExpandedChange = { toggleDropDownMenuOption() },
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .border(
+                    BorderStroke(
+                        selectBorder,
+                        Color.LightGray
+                    ),
+                    RoundedCornerShape(8.dp)
+                )
+                .width(115.dp)
+
+                .background(backgroundColor)
+
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 10.dp, horizontal = 12.dp)
+                    .menuAnchor(),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text=value.title,
+                    style = TextStyle.Default.copy(
+                        color = textAndIconColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.weight(1f)
+
+                )
+
+                Spacer(modifier = Modifier.width(5.dp))
+
+
+                CustomTrailingIcon(expanded = dropDownMenuOption, size = 23.dp, tint = textAndIconColor)
+            }
+            ExposedDropdownMenu(
+                scrollState = rememberScrollState(),
+                modifier = Modifier
+                    .width(150.dp)
+                    .background(Color.White)
+                    .heightIn(max=200.dp),
+                expanded = dropDownMenuOption,
+                onDismissRequest = { toggleDropDownMenuOption() }
+            ) {
+                menuItems.forEach { item ->
+
+                    DropdownMenuItem(
+
+                        text = {
+                            Text(
+                                text = item.title,
+                                style = TextStyle.Default.copy(
+                                    color = Color.Gray,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        },
+                        onClick = {
+                            onValueChange(item)
+                            toggleDropDownMenuOption()
+                        },
+
+                    )
+                }
+            }
+        }
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable

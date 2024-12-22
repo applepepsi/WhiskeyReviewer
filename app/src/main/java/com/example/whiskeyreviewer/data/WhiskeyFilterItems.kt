@@ -27,10 +27,15 @@ sealed class WhiskeyFilterItems(
     data object OpenDateAscendingOrder : WhiskeyFilterItems("개봉일 오름차순", OPEN_DATE_ASCENDING_ORDER, OPEN_DATE, R.drawable.arrow_up)
     data object OpenDateDescendingOrder : WhiskeyFilterItems("개봉일 내림차순", OPEN_DATE_DESCENDING_ORDER, OPEN_DATE, R.drawable.arrow_down)
 
+    data object NameAscendingOrder : WhiskeyFilterItems("이름 오름차순", NAME_ASCENDING_ORDER, OPEN_DATE, R.drawable.arrow_up)
+    data object NameDateDescendingOrder : WhiskeyFilterItems("이름 내림차순", NAME_DATE_DESCENDING_ORDER, OPEN_DATE, R.drawable.arrow_down)
+
+
     companion object {
         const val DAY = "작성일"
         const val SCORE="점수"
         const val OPEN_DATE="개봉일"
+        const val NAME="이름"
 
         const val DAY_ASCENDING_ORDER = "DAY_ASCENDING_ORDER"
         const val DAY_DESCENDING_ORDER = "DAY_DESCENDING_ORDER"
@@ -40,6 +45,9 @@ sealed class WhiskeyFilterItems(
 
         const val OPEN_DATE_ASCENDING_ORDER = "OPEN_DATE_ASCENDING_ORDER"
         const val OPEN_DATE_DESCENDING_ORDER = "OPEN_DATE_DESCENDING_ORDER"
+
+        const val NAME_ASCENDING_ORDER = "NAME_ASCENDING_ORDER"
+        const val NAME_DATE_DESCENDING_ORDER = "NAME_DATE_DESCENDING_ORDER"
     }
 }
 
@@ -47,6 +55,7 @@ data class FilterDropDownMenuState(
     var day: Boolean = false,
     var score: Boolean = false,
     var openDate: Boolean = false,
+    var name: Boolean=false
 )
 
 

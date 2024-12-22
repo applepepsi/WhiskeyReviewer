@@ -48,6 +48,8 @@ import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
+import com.example.whiskeyreviewer.component.home.SelectCustomWhiskeyDialog
+import com.example.whiskeyreviewer.component.home.SelectWhiskeyDialog
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
@@ -76,24 +78,52 @@ fun HomeView(
         )
     }
 
+    SelectWhiskeyDialog(
+        toggleOption = { mainViewModel.toggleWhiskySelectDialogState() },
+        currentState = mainViewModel.selectWhiskyDialogState.value,
+        text=mainViewModel.selectWhiskyText.value,
+        submitWhiskey = {},
+        updateText = {mainViewModel.updateSelectWhiskey(it)},
+        resetResult = {},
+        mainViewModel = mainViewModel
+    )
+
+    SelectCustomWhiskeyDialog(
+        toggleOption = { mainViewModel.toggleCustomWhiskySelectDialogState() },
+        currentState = mainViewModel.selectCustomWhiskyDialogState.value,
+        text=mainViewModel.selectWhiskyText.value,
+        submitWhiskey = {},
+        updateText = { mainViewModel.updateSelectWhiskey(it) },
+        resetResult = {},
+        mainViewModel = mainViewModel
+    )
+
+
     Scaffold(
         floatingActionButton = {
             CustomFloatingActionButton(
                 expendState = mainViewModel.homeFloatingActionButtonState.value,
-                floatingActionButtonClick = { mainViewModel.toggleHomeFloatingActionButtonState() },
+                floatingActionButtonClick = {
+                    mainViewModel.toggleHomeFloatingActionButtonState() },
+
                 floatingActionItemClick = {
-                    when(it.screenRoute){
-                        FloatingActionButtonItems.NewBottle.screenRoute-> {
-                            Log.d("루트",it.screenRoute)
-                            navController.navigate(MainRoute.INSERT_REVIEW)
+                    when(it){
+                        FloatingActionButtonItems.CustomWhisky -> {
+                            mainViewModel.toggleCustomWhiskySelectDialogState()
                         }
-                        FloatingActionButtonItems.NewBottle2.screenRoute-> {
-                            Log.d("루트",it.screenRoute)
-                            navController.navigate(MainRoute.INSERT_REVIEW)
+                        FloatingActionButtonItems.NewWhisky -> {
+                            mainViewModel.toggleWhiskySelectDialogState()
                         }
-                        else-> Log.d("루트",it.screenRoute)
+                        else->{
+
+                        }
                     }
-                }
+
+                },
+                items = listOf(
+                    FloatingActionButtonItems.NewWhisky,
+                    FloatingActionButtonItems.CustomWhisky,
+                )
             )
         }
     ) {

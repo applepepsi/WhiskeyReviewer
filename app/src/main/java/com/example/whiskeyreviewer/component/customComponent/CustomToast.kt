@@ -60,7 +60,7 @@ object CustomToastUtil {
                     contentDescription = "",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .size(27.dp)
+                        .size(24.dp)
                 )
                 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -69,7 +69,7 @@ object CustomToastUtil {
                     text = text,
                     style = TextStyle.Default.copy(
                         color = LightBlackColor,
-                        fontSize = 15.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Normal
                     ),
                 )

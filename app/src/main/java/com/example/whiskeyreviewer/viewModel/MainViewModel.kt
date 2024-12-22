@@ -61,6 +61,10 @@ class MainViewModel @Inject constructor(
     private val _currentOpenDateFilter = mutableStateOf<WhiskeyFilterItems>(WhiskeyFilterItems.OpenDateAscendingOrder)
     val currentOpenDateFilter: State<WhiskeyFilterItems> = _currentOpenDateFilter
 
+    private val _currentNameFilter = mutableStateOf<WhiskeyFilterItems>(WhiskeyFilterItems.NameAscendingOrder)
+    val currentNameFilter: State<WhiskeyFilterItems> = _currentNameFilter
+
+
     private val _filterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
     val filterDropDownMenuState: State<FilterDropDownMenuState> = _filterDropDownMenuState
 
@@ -210,6 +214,31 @@ class MainViewModel @Inject constructor(
     private val _backupCodeResult=mutableStateOf<Boolean?>(null)
     val backupCodeResult: State<Boolean?> = _backupCodeResult
 
+    private val _selectWhiskyDialogState=mutableStateOf<Boolean>(false)
+    val selectWhiskyDialogState: State<Boolean> = _selectWhiskyDialogState
+
+
+    private val _selectWhiskyText=mutableStateOf<String>("")
+    val selectWhiskyText: State<String> = _selectWhiskyText
+
+    private val _currentWhiskyFilterType=mutableStateOf<TapLayoutItems>(TapLayoutItems.AllWhiskey)
+    val currentWhiskyFilterType: State<TapLayoutItems> = _currentWhiskyFilterType
+
+    private val _currentWhiskyFilterDropDownState=mutableStateOf<Boolean>(false)
+    val currentWhiskyFilterDropDownState: State<Boolean> = _currentWhiskyFilterDropDownState
+
+    private val _currentCustomWhiskyDropDownState=mutableStateOf<Boolean>(false)
+    val currentCustomWhiskyDropDownState: State<Boolean> = _currentCustomWhiskyDropDownState
+
+    private val _selectCustomWhiskyDialogState=mutableStateOf<Boolean>(false)
+    val selectCustomWhiskyDialogState: State<Boolean> = _selectCustomWhiskyDialogState
+
+
+    private val _currentCustomWhiskyType=mutableStateOf<TapLayoutItems>(TapLayoutItems.AmericanWhiskey)
+    val currentCustomWhiskyType: State<TapLayoutItems> = _currentCustomWhiskyType
+
+
+
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -289,7 +318,8 @@ class MainViewModel @Inject constructor(
         _filterDropDownMenuState.value = _filterDropDownMenuState.value.copy(
             day = if (filterKey == WhiskeyFilterItems.DAY) !_filterDropDownMenuState.value.day else false,
             score = if (filterKey == WhiskeyFilterItems.SCORE) !_filterDropDownMenuState.value.score else false,
-            openDate = if (filterKey == WhiskeyFilterItems.OPEN_DATE) !_filterDropDownMenuState.value.openDate else false
+            openDate = if (filterKey == WhiskeyFilterItems.OPEN_DATE) !_filterDropDownMenuState.value.openDate else false,
+            name = if (filterKey == WhiskeyFilterItems.NAME) !_filterDropDownMenuState.value.name else false,
         )
     }
 
@@ -356,4 +386,46 @@ class MainViewModel @Inject constructor(
     fun resetSubmitBackupCodeResultState(){
         _backupCodeResult.value=null
     }
+
+    fun toggleWhiskySelectDialogState(){
+        _selectWhiskyDialogState.value=!_selectWhiskyDialogState.value
+    }
+
+    fun toggleCustomWhiskySelectDialogState(){
+        _selectCustomWhiskyDialogState.value=!_selectCustomWhiskyDialogState.value
+    }
+
+    fun updateSelectWhiskey(text:String){
+        Log.d("text",text)
+        _selectWhiskyText.value=text
+    }
+
+    fun updateCurrentWhiskyFilterType(whisky:TapLayoutItems){
+        _currentWhiskyFilterType.value=whisky
+    }
+
+    fun updateCurrentCustomWhiskyType(whisky:TapLayoutItems){
+        _currentCustomWhiskyType.value=whisky
+    }
+
+    fun toggleWhiskyFilterDropDownMenuState(){
+        _currentWhiskyFilterDropDownState.value=!_currentWhiskyFilterDropDownState.value
+    }
+
+    fun toggleCustomWhiskyDropDownMenuState(){
+        _currentCustomWhiskyDropDownState.value=!_currentCustomWhiskyDropDownState.value
+    }
+
+    fun getWhiskeyData(){
+        _homeSearchBarSText.value //검색
+        _currentWhiskeyFilter.value //위스키 종류
+
+        _currentDayFilter.value //작성일
+        _currentScoreFilter.value //점수
+        _currentOpenDateFilter.value //개봉일
+        _currentNameFilter.value //이름순
+
+
+    }
+
 }

@@ -47,6 +47,7 @@ fun ReviewDetailView(
 
     val scrollState= rememberScrollState()
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -115,7 +116,7 @@ fun ReviewDetailView(
         Spacer(modifier = Modifier.height(7.dp))
 
         Text(
-            text = mainViewModel.selectWhiskyData.value.reviewText,
+            text = mainViewModel.selectWhiskyData.value.reviewStyle,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 15.sp,

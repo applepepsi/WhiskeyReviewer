@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,12 +26,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
+import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
+import com.example.whiskeyreviewer.data.FloatingActionButtonItems
+import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
@@ -47,9 +52,37 @@ fun WhiskeyDetailView(
 ) {
     val scrollState= rememberScrollState()
 
+    Scaffold(
+        floatingActionButton = {
+            CustomFloatingActionButton(
+                expendState = mainViewModel.homeFloatingActionButtonState.value,
+                floatingActionButtonClick = { mainViewModel.toggleHomeFloatingActionButtonState() },
+                floatingActionItemClick = {
+                    when(it.screenRoute){
+                        FloatingActionButtonItems.OldBottle.screenRoute-> {
+                            Log.d("루트",it.screenRoute)
+                            navController.navigate(MainRoute.INSERT_REVIEW)
+                        }
+                        FloatingActionButtonItems.NewBottle.screenRoute-> {
+                            Log.d("루트",it.screenRoute)
+                            navController.navigate(MainRoute.INSERT_REVIEW)
+                        }
+                        else-> Log.d("루트",it.screenRoute)
+                    }
+                },
+                items=
+                    listOf(
+                        FloatingActionButtonItems.OldBottle,
+                        FloatingActionButtonItems.NewBottle
+                    )
+
+            )
+        }
+    ) {
     Column(
         modifier= Modifier
             .fillMaxSize()
+            .padding(it)
             .background(Color.White)
             .verticalScroll(scrollState)
     ) {
@@ -118,13 +151,14 @@ fun WhiskeyDetailView(
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            when(mainViewModel.currentMyReviewTypeFilter.value){
-                MyReviewFilterItems.Graph->{
+            when (mainViewModel.currentMyReviewTypeFilter.value) {
+                MyReviewFilterItems.Graph -> {
                     MyReviewGraphComponent2(
                         mainViewModel.myReviewDataList.value
                     )
                 }
-                MyReviewFilterItems.Review->{
+
+                MyReviewFilterItems.Review -> {
                     MyReviewPost(
                         singleReviewClick = {
                             mainViewModel.setSelectReviewData(it)
@@ -137,7 +171,7 @@ fun WhiskeyDetailView(
                 MyReviewFilterItems.Old -> TODO()
             }
 
-
+            }
         }
 
     }

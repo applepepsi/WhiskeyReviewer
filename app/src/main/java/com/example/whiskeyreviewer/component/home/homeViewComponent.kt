@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.component.home
 
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,38 +21,29 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.whiskeyreviewer.R
-import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
+import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -126,7 +118,7 @@ fun SingleWhiskeyComponent(
             Spacer(modifier = Modifier.height(3.dp))
 
             Text(
-                text = singleWhiskeyData.capacity.toString() + "ml",
+                text = singleWhiskeyData.strength.toString() + "%",
                 style = TextStyle.Default.copy(
                     color = Color.Gray,
                     fontSize = 15.sp,
@@ -174,14 +166,14 @@ fun MyReviewComponent(
     val testData= listOf(
         SingleWhiskeyData(
             name="잭 다니엘 10년",
-            capacity = 700,
+            strength = 20.0,
             score=4.5,
             dday=6,
             picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039"),
             tags = listOf("싱글몰트","더블","트리플","더블","트리플")
         ), SingleWhiskeyData(
             name="글렌 리뱃 12년산",
-            capacity = 1000,
+            strength = 18.5,
             score=3.5,
             dday=3,
             picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037"),
@@ -212,7 +204,52 @@ fun MyReviewComponent(
     }
 }
 
+@Composable
+fun SelectWhiskyComponent(
+    whiskeyName:String="발렌타인 12년산",
+    onSelect:()->Unit,
+    select:Boolean=false
+) {
 
+
+
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(5.dp).padding(end=12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Text(
+            text = whiskeyName,
+            style = TextStyle.Default.copy(
+                color = LightBlackColor,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Normal
+            ),
+            modifier = Modifier.padding(start = 15.dp)
+        )
+        if(select){
+            CustomIconComponent(
+                icon = Icons.Default.Check,
+                onClick = { onSelect() },
+                modifier = Modifier.size(30.dp)
+            )
+        }else{
+            Box(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(7.dp))
+                    .border(
+                        BorderStroke(
+                            0.8.dp,
+                            Color.Gray
+                        ),
+                        RoundedCornerShape(7.dp)
+                    )
+                    .size(30.dp),
+            )
+        }
+
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -220,9 +257,6 @@ fun HomeComponentPreview() {
 
 
     WhiskeyReviewerTheme {
-        SingleWhiskeyComponent(
-            singleWhiskeyData = SingleWhiskeyData(),
-            reviewClick = {}
-        )
+        SelectWhiskyComponent(onSelect = { /*TODO*/ }, select = false)
     }
 }

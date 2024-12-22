@@ -67,32 +67,32 @@ fun MyReviewPost(
 
     val testDataList= listOf(
         WhiskyReviewData(
-            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-            reviewStyle = "",
+            reviewStyle ="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+
             private = false,
             openDate = LocalDate.of(2024, 11, 15),
             score=1.5,
             imageList = emptyList()
         ),
         WhiskyReviewData(
-            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-            reviewStyle = "",
+            reviewStyle="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+
             private = true,
             openDate = LocalDate.of(2024, 11, 10),
             score=1.5,
             imageList = emptyList()
         ),
         WhiskyReviewData(
-            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-            reviewStyle = "",
+            reviewStyle="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+
             private = false,
             openDate = LocalDate.of(2024, 11, 20),
             score=3.5,
             imageList = emptyList()
         ),
         WhiskyReviewData(
-            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-            reviewStyle = "",
+            reviewStyle="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+
             private = true,
             openDate = LocalDate.of(2024, 11, 1),
             score=2.5,
@@ -106,7 +106,7 @@ fun MyReviewPost(
     ) {
         items(items=testDataList){singleReview->
             MyReviewSinglePost(
-                reviewText = singleReview.reviewText,
+                reviewText = singleReview.reviewStyle,
                 score=singleReview.score,
                 drinkingType = WhiskyDrinkingType.Highball,
                 private = singleReview.private,

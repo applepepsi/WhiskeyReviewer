@@ -23,6 +23,21 @@ sealed class TapLayoutItems(
     data object PortWhiskey : TapLayoutItems("포트")
     data object PatentWhiskey : TapLayoutItems("페이턴트")
 
+    companion object {
+//        val allWhiskyType = listOf(
+//            AllWhiskey,
+//            ScotchWhiskey,
+//            IrishWhiskey,
+//            AmericanWhiskey,
+//            CanadianWhiskey,
+//            MaltWhiskey,
+//            GrainWhiskey,
+//            BlendedWhiskey,
+//            PortWhiskey,
+//            PatentWhiskey
+//        )
+    }
+
 }
 
 
