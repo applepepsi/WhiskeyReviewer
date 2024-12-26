@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.example.nextclass.utils.whiskeyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
@@ -73,18 +74,26 @@ fun TapLayoutComponent(
 ) {
 
 //    val whiskeyData=allWhiskyType
-    val whiskeyData = listOf(
-        TapLayoutItems.AllWhiskey,
-        TapLayoutItems.ScotchWhiskey,
-        TapLayoutItems.IrishWhiskey,
-        TapLayoutItems.AmericanWhiskey,
-        TapLayoutItems.CanadianWhiskey,
-        TapLayoutItems.MaltWhiskey,
-        TapLayoutItems.GrainWhiskey,
-        TapLayoutItems.BlendedWhiskey,
-        TapLayoutItems.PortWhiskey,
-        TapLayoutItems.PatentWhiskey,
-    )
+//    val whiskeyData = listOf(
+//        TapLayoutItems.AllWhiskey,
+//        TapLayoutItems.AmericanWhiskey,
+//        TapLayoutItems.Blend,
+//        TapLayoutItems.BlendedGrain,
+//        TapLayoutItems.BlendedMalt,
+//        TapLayoutItems.Bourbon,
+//        TapLayoutItems.CanadianWhiskey,
+//        TapLayoutItems.Corn,
+//        TapLayoutItems.Rice,
+//        TapLayoutItems.Rye,
+//        TapLayoutItems.SingleGrain,
+//        TapLayoutItems.SingleMalt,
+//        TapLayoutItems.SinglePotStill,
+//        TapLayoutItems.Spirit,
+//        TapLayoutItems.Tennessee,
+//        TapLayoutItems.Wheat
+//    )
+
+
     val coroutineScope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState(pageCount = { whiskeyData.size })

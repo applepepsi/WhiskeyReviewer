@@ -23,6 +23,7 @@ import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
 import com.example.whiskeyreviewer.data.ReviewData
+import com.example.whiskeyreviewer.data.SelectWhiskyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
@@ -48,6 +49,9 @@ class MainViewModel @Inject constructor(
 
     private val _myReviewList = mutableStateOf<List<SingleWhiskeyData>>(emptyList())
     val myReviewList: State<List<SingleWhiskeyData>> = _myReviewList
+
+    private val _reviewList = mutableStateOf<List<SingleWhiskeyData>>(emptyList())
+    val reviewList: State<List<SingleWhiskeyData>> = _reviewList
 
     private val _currentWhiskeyFilter = mutableStateOf<TapLayoutItems>(TapLayoutItems.AllWhiskey)
     val currentWhiskeyFilter: State<TapLayoutItems> = _currentWhiskeyFilter
@@ -237,7 +241,20 @@ class MainViewModel @Inject constructor(
     private val _currentCustomWhiskyType=mutableStateOf<TapLayoutItems>(TapLayoutItems.AmericanWhiskey)
     val currentCustomWhiskyType: State<TapLayoutItems> = _currentCustomWhiskyType
 
+    private val _dialogSelectWhiskyData=mutableStateOf<List<SelectWhiskyData>>(
+        listOf(
+            SelectWhiskyData(name = "위스키 A", check = false),
+            SelectWhiskyData(name = "위스키 B", check = false),
+            SelectWhiskyData(name = "위스키 C", check = false),
+            SelectWhiskyData(name = "위스키 D", check = false),
+            SelectWhiskyData(name = "위스키 E", check = false)
+        )
+    )
+    val dialogSelectWhiskyData: State<List<SelectWhiskyData>> = _dialogSelectWhiskyData
 
+
+    private val _selectedImageUri = mutableStateOf<Uri>(Uri.EMPTY)
+    val selectedImageUri: State<Uri> = _selectedImageUri
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -352,7 +369,9 @@ class MainViewModel @Inject constructor(
 
     }
 
+    fun updateOderUserSelectReview(selectReview:SingleWhiskeyData) {
 
+    }
 
     fun setSelectReviewData(reviewData: WhiskyReviewData){
         _selectWhiskyData.value=reviewData
@@ -424,8 +443,16 @@ class MainViewModel @Inject constructor(
         _currentScoreFilter.value //점수
         _currentOpenDateFilter.value //개봉일
         _currentNameFilter.value //이름순
-
-
     }
 
+    fun toggleDialogSelectWhiskyState(index: Int) {
+        _dialogSelectWhiskyData.value = _dialogSelectWhiskyData.value.mapIndexed { i, whiskyData ->
+            whiskyData.copy(check = i == index)
+        }
+    }
+
+    fun setSelectedImage(uri: Uri) {
+        Log.d("이미지",uri.toString())
+        _selectedImageUri.value=uri
+    }
 }

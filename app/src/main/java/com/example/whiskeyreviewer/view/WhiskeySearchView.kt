@@ -1,17 +1,24 @@
 package com.example.whiskeyreviewer.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerValue
@@ -36,14 +43,23 @@ import androidx.navigation.NavHostController
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
+import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
+import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
+import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
+import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
+import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
+import com.example.whiskeyreviewer.component.myReview.MyReviewPost
+import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
+import com.example.whiskeyreviewer.data.MyReviewFilterItems
+import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -203,10 +219,10 @@ fun WhiskeySearchView(
                     },
                     myReview = {
                         MyReviewComponent(
-                            myReviewItems = mainViewModel.myReviewList.value,
+                            myReviewItems = mainViewModel.reviewList.value,
                             setSelectReview = {singleWhiskyData->
-                                mainViewModel.updateSelectReview(singleWhiskyData)
-                                navController.navigate(MainRoute.WHISKY_DETAIL)
+                                mainViewModel.updateOderUserSelectReview(singleWhiskyData)
+                                navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
                             }
                         )
                     },
@@ -218,6 +234,100 @@ fun WhiskeySearchView(
 
             }
         }
+    }
+
+}
+
+@Composable
+fun OtherUserReviewDetailView(
+    writeReviewViewModel: WriteReviewViewModel,
+    navController: NavHostController,
+    mainViewModel: MainViewModel
+) {
+    val scrollState= rememberScrollState()
+
+    Scaffold(
+        floatingActionButton = {
+
+        }
+    ) {
+        Column(
+            modifier= Modifier
+                .fillMaxSize()
+                .padding(it)
+                .background(Color.White)
+                .verticalScroll(scrollState)
+        ) {
+
+            CustomAppBarComponent(
+                titleTextValue = "위스키 검색",
+                leftButton = {
+                    CustomIconComponent(
+                        icon = ImageVector.vectorResource(R.drawable.back_button_icon),
+                        onClick = {
+                            navController.navigateUp()
+                        },
+                        modifier = Modifier
+                    )
+                },
+                rightButton = {
+                    Spacer(modifier = Modifier.size(35.dp))
+                },
+            )
+            SingleWhiskeyComponent(
+                singleWhiskeyData = SingleWhiskeyData(),
+                reviewClick = {}
+            )
+
+
+            Row(
+                modifier= Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp, top = 8.dp),
+                horizontalArrangement = Arrangement.End
+            ){
+
+
+
+                WhiskeyDetailDropDownMenuComponent(
+
+                    value = mainViewModel.currentMyReviewDayFilter.value,
+                    onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
+                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.day,
+                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
+                        MyReviewFilterItems.DAY) },
+                    menuItems = listOf(MyReviewFilterItems.New, MyReviewFilterItems.Old,)
+                )
+
+            }
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                when (mainViewModel.currentMyReviewTypeFilter.value) {
+                    MyReviewFilterItems.Graph -> {
+                        MyReviewGraphComponent2(
+                            mainViewModel.myReviewDataList.value
+                        )
+                    }
+
+                    MyReviewFilterItems.Review -> {
+                        MyReviewPost(
+                            singleReviewClick = {
+                                mainViewModel.setSelectReviewData(it)
+                                navController.navigate(MainRoute.REVIEW_DETAIL)
+                            },
+                            modifyAllow = false
+                        )
+                    }
+
+                    MyReviewFilterItems.New -> TODO()
+                    MyReviewFilterItems.Old -> TODO()
+                }
+
+            }
+        }
+
     }
 
 }

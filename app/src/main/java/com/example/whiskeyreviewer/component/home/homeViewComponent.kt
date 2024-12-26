@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.component.home
 
 import android.net.Uri
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,10 +23,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,11 +35,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
+import com.example.whiskeyreviewer.data.SelectWhiskyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -147,9 +150,13 @@ fun SingleWhiskeyComponent(
                     item{
                         TagComponent(text = "개봉 D + " + singleWhiskeyData.dday.toString())
                     }
-                    items(items=singleWhiskeyData.tags){singleTag->
-                        TagComponent(text = singleTag)
+                    item{
+                        TagComponent(text=singleWhiskeyData.saleDate.toString()+"년")
                     }
+
+//                    items(items=singleWhiskeyData.tags){singleTag->
+//                        TagComponent(text = singleTag)
+//                    }
                 }
             }
 
@@ -192,6 +199,8 @@ fun MyReviewComponent(
 
         items(items = testData){ singleWhiskeyData->
 
+
+
             SingleWhiskeyComponent(
                 singleWhiskeyData = singleWhiskeyData,
                 reviewClick={
@@ -206,33 +215,41 @@ fun MyReviewComponent(
 
 @Composable
 fun SelectWhiskyComponent(
-    whiskeyName:String="발렌타인 12년산",
-    onSelect:()->Unit,
-    select:Boolean=false
+
+    onSelect: () -> Unit,
+
+    whiskeyData: SelectWhiskyData
 ) {
 
-
+    val animatedChecked by animateDpAsState(targetValue = if (whiskeyData.check) 24.dp else 0.dp, label = "")
+    val interactionSource = remember { MutableInteractionSource() }
+    val backgroundColor=if(whiskeyData.check) Color(0xFFF5F5F5) else Color.White
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(5.dp).padding(end=12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onSelect()
+            }
+            .background(backgroundColor)
+            .padding(5.dp)
+            .padding(end = 12.dp)
+            ,
+
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
         Text(
-            text = whiskeyName,
+            text = whiskeyData.name,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
-                fontSize = 20.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Normal
             ),
             modifier = Modifier.padding(start = 15.dp)
         )
-        if(select){
-            CustomIconComponent(
-                icon = Icons.Default.Check,
-                onClick = { onSelect() },
-                modifier = Modifier.size(30.dp)
-            )
+        if(whiskeyData.check){
+            CheckBoxSelected(animatedChecked)
         }else{
             Box(
                 modifier = Modifier
@@ -244,19 +261,56 @@ fun SelectWhiskyComponent(
                         ),
                         RoundedCornerShape(7.dp)
                     )
-                    .size(30.dp),
+                    .size(24.dp)
+
             )
         }
 
     }
 }
 
+@Composable
+fun CheckBoxSelected(
+    animatedChecked: Dp
+) {
+    Box(
+        modifier = Modifier
+            .size(animatedChecked)
+            .clip(RoundedCornerShape(7.dp))
+            .background(MainColor),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(24.dp),
+            imageVector = Icons.Default.Check,
+            contentDescription = "",
+            tint = LightBlackColor
+        )
+    }
+}
+
+@Composable
+fun DialogLabel(
+    selectColor: Color,
+    modifier: Modifier
+) {
+    Spacer(
+        modifier = modifier
+            .fillMaxWidth()
+
+            .background(selectColor)
+            .height(0.5.dp)
+
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HomeComponentPreview() {
 
-
+    val whiskeyData= listOf(SelectWhiskyData())
     WhiskeyReviewerTheme {
-        SelectWhiskyComponent(onSelect = { /*TODO*/ }, select = false)
+        SelectWhiskyComponent(onSelect = { /*TODO*/ }, SelectWhiskyData())
     }
 }

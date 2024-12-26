@@ -232,6 +232,7 @@ fun <T> MyReviewCustomDropdownMenu(
 //        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ExposedDropdownMenuBox(
+
             expanded = dropDownMenuOption,
             onExpandedChange = { toggleDropDownMenuOption() },
             modifier = Modifier
@@ -262,8 +263,12 @@ fun <T> MyReviewCustomDropdownMenu(
                 CustomTrailingIcon(expanded = dropDownMenuOption, size = 23.dp, tint = textAndIconColor)
             }
             ExposedDropdownMenu(
+
+                scrollState = rememberScrollState(),
                 modifier = Modifier
+
                     .width(150.dp)
+                    .heightIn(max=200.dp)
                     .background(Color.White),
                 expanded = dropDownMenuOption,
                 onDismissRequest = { toggleDropDownMenuOption() }
@@ -343,7 +348,7 @@ fun WhiskeyFilterDropDownMenuComponent(
                     RoundedCornerShape(8.dp)
                 )
                 .width(115.dp)
-
+                .height(42.dp)
                 .background(backgroundColor)
 
         ) {

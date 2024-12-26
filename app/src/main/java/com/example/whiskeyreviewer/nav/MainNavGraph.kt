@@ -9,6 +9,7 @@ import androidx.navigation.compose.navigation
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.view.HomeView
 import com.example.whiskeyreviewer.view.InsertReviewView
+import com.example.whiskeyreviewer.view.OtherUserReviewDetailView
 import com.example.whiskeyreviewer.view.ReviewDetailView
 import com.example.whiskeyreviewer.view.WhiskeyDetailView
 import com.example.whiskeyreviewer.view.WhiskeySearchView
@@ -59,6 +60,9 @@ private fun NavGraphBuilder.homeRoute(
         }
         composable(MainRoute.REVIEW_DETAIL) {
             ReviewDetailView(navController,writeReviewViewModel,mainViewModel)
+        }
+        composable(MainRoute.OTHER_USER_REVIEW_DETAIL) {
+            OtherUserReviewDetailView(writeReviewViewModel,navController,mainViewModel)
         }
     }
 }

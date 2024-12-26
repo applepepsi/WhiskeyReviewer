@@ -62,7 +62,8 @@ import java.time.LocalDate
 
 @Composable
 fun MyReviewPost(
-    singleReviewClick:(WhiskyReviewData)->Unit
+    singleReviewClick:(WhiskyReviewData)->Unit,
+    modifyAllow: Boolean=true
 ) {
 
     val testDataList= listOf(
@@ -112,7 +113,8 @@ fun MyReviewPost(
                 private = singleReview.private,
                 openDate = TimeFormatter.dateCalculation(singleReview.openDate),
                 imageList = singleReview.imageList,
-                singleReviewClick = { singleReviewClick(singleReview) }
+                singleReviewClick = { singleReviewClick(singleReview) },
+                modifyAllow = modifyAllow
             )
         }
     }
@@ -128,6 +130,7 @@ fun MyReviewSinglePost(
     openDate:String="",
     imageList:List<String> = emptyList(),
     singleReviewClick:() -> Unit,
+    modifyAllow:Boolean=true
 ) {
 
 
@@ -144,34 +147,38 @@ fun MyReviewSinglePost(
             .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp))
             .padding(horizontal = 15.dp, vertical = 10.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 10.dp),
-            horizontalArrangement = Arrangement.End
-        ){
-            //리치텍스트로 수정예정
-            Text(
-                text = "수정",
-                style = TextStyle.Default.copy(
-                    color = Color.LightGray,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+        if(modifyAllow){
+            Row(
                 modifier = Modifier
-            )
+                    .fillMaxWidth()
+                    .padding(end = 10.dp),
+                horizontalArrangement = Arrangement.End
+            ){
 
-            Spacer(modifier = Modifier.width(15.dp))
 
-            Text(
-                text = "삭제",
-                style = TextStyle.Default.copy(
-                    color = Color.LightGray,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier
-            )
+
+                Text(
+                    text = "수정",
+                    style = TextStyle.Default.copy(
+                        color = Color.LightGray,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                )
+
+                Spacer(modifier = Modifier.width(15.dp))
+
+                Text(
+                    text = "삭제",
+                    style = TextStyle.Default.copy(
+                        color = Color.LightGray,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(7.dp))
@@ -184,7 +191,7 @@ fun MyReviewSinglePost(
         )
 
         Spacer(modifier = Modifier.height(7.dp))
-
+        //리치텍스트로 수정예정
         Text(
             text = reviewText,
             style = TextStyle.Default.copy(
@@ -325,7 +332,7 @@ fun RatingScoreDialog(
         ) {
             Surface(
                 modifier = Modifier
-                    .height(150.dp)
+                    .height(180.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.White),
 
@@ -334,6 +341,35 @@ fun RatingScoreDialog(
                     modifier = Modifier.fillMaxSize().padding(top=20.dp),
 
                 ) {
+                    Text(
+                        text = "점수 입력",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier
+                            .padding(start = 17.dp)
+
+                    )
+
+
+                    Text(
+                        text = "점수를 선택해 주세요.",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+                            .padding(start=17.dp,top=2.dp)
+
+                            .clickable {
+                                toggleOption()
+                            }
+                    )
+
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
@@ -351,20 +387,7 @@ fun RatingScoreDialog(
                         }
                     }
 
-                    Text(
-                        text = "점수를 선택해 주세요.",
-                        style = TextStyle.Default.copy(
-                            color = LightBlackColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        modifier = Modifier
-                            .padding(start=17.dp)
 
-                            .clickable {
-                                toggleOption()
-                            }
-                    )
 
                     Row(
                         modifier = Modifier

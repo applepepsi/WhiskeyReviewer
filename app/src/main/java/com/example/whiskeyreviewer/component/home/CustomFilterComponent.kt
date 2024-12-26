@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.component.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
@@ -18,8 +19,10 @@ fun CustomFilterRow(
 
 
     LazyRow(
-        modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp).fillMaxWidth(),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp),
+
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
         item{
             CustomDropDownMenuComponent(
@@ -51,6 +54,16 @@ fun CustomFilterRow(
                 dropDownMenuOption = mainViewModel.filterDropDownMenuState.value.openDate,
                 toggleDropDownMenuOption = { mainViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.OPEN_DATE) },
                 menuItems = listOf(WhiskeyFilterItems.OpenDateAscendingOrder,WhiskeyFilterItems.OpenDateDescendingOrder)
+            )
+        }
+        item{
+            CustomDropDownMenuComponent(
+                category = WhiskeyFilterItems.NAME,
+                value = mainViewModel.currentNameFilter.value,
+                onValueChange = { mainViewModel.updateFilter(it) },
+                dropDownMenuOption = mainViewModel.filterDropDownMenuState.value.name,
+                toggleDropDownMenuOption = { mainViewModel.toggleFilterDropDownMenuState(WhiskeyFilterItems.NAME) },
+                menuItems = listOf(WhiskeyFilterItems.NameAscendingOrder,WhiskeyFilterItems.NameDescendingOrder)
             )
         }
     }

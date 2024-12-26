@@ -28,7 +28,7 @@ sealed class WhiskeyFilterItems(
     data object OpenDateDescendingOrder : WhiskeyFilterItems("개봉일 내림차순", OPEN_DATE_DESCENDING_ORDER, OPEN_DATE, R.drawable.arrow_down)
 
     data object NameAscendingOrder : WhiskeyFilterItems("이름 오름차순", NAME_ASCENDING_ORDER, OPEN_DATE, R.drawable.arrow_up)
-    data object NameDateDescendingOrder : WhiskeyFilterItems("이름 내림차순", NAME_DATE_DESCENDING_ORDER, OPEN_DATE, R.drawable.arrow_down)
+    data object NameDescendingOrder : WhiskeyFilterItems("이름 내림차순", NAME_DATE_DESCENDING_ORDER, OPEN_DATE, R.drawable.arrow_down)
 
 
     companion object {

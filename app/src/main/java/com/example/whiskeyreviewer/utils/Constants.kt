@@ -1,5 +1,7 @@
 package com.example.nextclass.utils
 
+import com.example.whiskeyreviewer.data.TapLayoutItems
+
 
 //통신 결과
 const val SUCCESS_CODE = 200
@@ -38,3 +40,23 @@ const val REVIEW_SAVE="/review"
 const val REVIEW_MODIFY="/review/{identifier}"
 const val DELETE_REVIEW="/review/{identifier}"
 const val GET_REVIEW="/review/{identifier}"
+
+
+val whiskeyData = listOf(
+    TapLayoutItems.AllWhiskey,
+    TapLayoutItems.AmericanWhiskey,
+    TapLayoutItems.Blend,
+    TapLayoutItems.BlendedGrain,
+    TapLayoutItems.BlendedMalt,
+    TapLayoutItems.Bourbon,
+    TapLayoutItems.CanadianWhiskey,
+    TapLayoutItems.Corn,
+    TapLayoutItems.Rice,
+    TapLayoutItems.Rye,
+    TapLayoutItems.SingleGrain,
+    TapLayoutItems.SingleMalt,
+    TapLayoutItems.SinglePotStill,
+    TapLayoutItems.Spirit,
+    TapLayoutItems.Tennessee,
+    TapLayoutItems.Wheat
+)
