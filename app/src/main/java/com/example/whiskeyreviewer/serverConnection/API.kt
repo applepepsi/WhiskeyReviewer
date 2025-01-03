@@ -2,12 +2,16 @@ package com.example.oneplusone.serverConnection
 
 
 
+import com.example.nextclass.utils.ADD_WHISKY_NAME_SEARCH
 import com.example.nextclass.utils.DELETE_REVIEW
 import com.example.nextclass.utils.GET_REVIEW
+import com.example.nextclass.utils.GET_WHISKY_LIST
 import com.example.nextclass.utils.REGISTER
 import com.example.nextclass.utils.REVIEW_MODIFY
 import com.example.nextclass.utils.REVIEW_SAVE
 import com.example.whiskeyreviewer.data.ServerResponse
+import com.example.whiskeyreviewer.data.TokenData
+import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -20,14 +24,28 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface API {
 
 
 
     @POST(REGISTER)
-    suspend fun getToken(@Body device_id: String): Response<ServerResponse<Any>>
+    suspend fun getToken(@Body device_id: String): Response<ServerResponse<TokenData>>
 
+    @GET(GET_WHISKY_LIST)
+    fun getMyWhiskys(
+        @Query("name") name: String,
+        @Query("category") category: String,
+        @Query("date_order") dateOrder: String,
+        @Query("name_order") nameOrder: String,
+        @Query("score_order") scoreOrder: String
+    ): Response<ServerResponse<Any>>
+
+    @GET(ADD_WHISKY_NAME_SEARCH)
+    fun addWhiskyNameSearch(
+        @Query("name") name: String,
+    ): Response<ServerResponse<List<WhiskyName>>>
 
     @Multipart
     @POST(REVIEW_SAVE)

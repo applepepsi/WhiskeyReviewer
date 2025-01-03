@@ -12,6 +12,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.lifecycle.ViewModel
 import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
+import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.whiskeyreviewer.component.toolBar.TextAlignment
 import com.example.whiskeyreviewer.component.toolBar.TextColors
 
@@ -29,6 +30,7 @@ import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
+import com.example.whiskeyreviewer.repository.MainRepository
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +41,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    @ApplicationContext private val applicationContext: Context
+    @ApplicationContext private val applicationContext: Context,
+    private val mainRepository: MainRepository
 ): ViewModel() {
 
 
@@ -378,7 +381,12 @@ class MainViewModel @Inject constructor(
     }
 
     fun tryLogin(ssaid: String) {
+        mainRepository.register(device_id = ssaid){ postDetailResult->
+            if(postDetailResult !=null) {
 
+            }
+
+        }
     }
 
 
@@ -435,7 +443,7 @@ class MainViewModel @Inject constructor(
         _currentCustomWhiskyDropDownState.value=!_currentCustomWhiskyDropDownState.value
     }
 
-    fun getWhiskeyData(){
+    fun getMyWhiskeyData(){
         _homeSearchBarSText.value //검색
         _currentWhiskeyFilter.value //위스키 종류
 

@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.SelectWhiskyData
@@ -108,7 +107,7 @@ fun SingleWhiskeyComponent(
         ) {
 
             Text(
-                text = singleWhiskeyData.name,
+                text = singleWhiskeyData.whisky_name,
                 style = TextStyle.Default.copy(
                     color = Color.Black,
                     fontSize = 20.sp,
@@ -172,19 +171,19 @@ fun MyReviewComponent(
 ) {
     val testData= listOf(
         SingleWhiskeyData(
-            name="잭 다니엘 10년",
+            whisky_name="잭 다니엘 10년",
             strength = 20.0,
             score=4.5,
             dday=6,
             picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039"),
-            tags = listOf("싱글몰트","더블","트리플","더블","트리플")
+
         ), SingleWhiskeyData(
-            name="글렌 리뱃 12년산",
+            whisky_name="글렌 리뱃 12년산",
             strength = 18.5,
             score=3.5,
             dday=3,
             picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037"),
-            tags = listOf("싱글몰트","더블","트리플","더블","트리플")
+
         ),
         SingleWhiskeyData(
         )

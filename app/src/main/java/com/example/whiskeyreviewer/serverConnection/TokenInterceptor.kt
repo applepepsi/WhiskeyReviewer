@@ -8,6 +8,7 @@ import com.example.nextclass.utils.EXPIRED_ACCESS_TOKEN
 import com.example.nextclass.utils.EXPIRED_REFRESH_TOKEN
 import com.example.nextclass.utils.INVALID_ACCESS_TOKEN
 import com.example.nextclass.utils.INVALID_REFRESH_TOKEN
+import com.example.nextclass.utils.REGISTER
 
 import com.example.nextclass.utils.TOKEN_USER_NOT_EXIST
 import com.example.whiskeyreviewer.data.TokenData
@@ -26,6 +27,7 @@ class TokenInterceptor(
     private val context: Context,
 
     private val excludedPaths: List<String> = listOf(
+        REGISTER
     )
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

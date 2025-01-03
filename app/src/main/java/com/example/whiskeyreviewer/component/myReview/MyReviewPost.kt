@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,10 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,34 +64,34 @@ fun MyReviewPost(
 
     val testDataList= listOf(
         WhiskyReviewData(
-            reviewStyle ="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            content ="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
-            private = false,
-            openDate = LocalDate.of(2024, 11, 15),
+            is_anonymous = false,
+            open_date = LocalDate.of(2024, 11, 15),
             score=1.5,
             imageList = emptyList()
         ),
         WhiskyReviewData(
-            reviewStyle="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
-            private = true,
-            openDate = LocalDate.of(2024, 11, 10),
+            is_anonymous = true,
+            open_date = LocalDate.of(2024, 11, 10),
             score=1.5,
             imageList = emptyList()
         ),
         WhiskyReviewData(
-            reviewStyle="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
-            private = false,
-            openDate = LocalDate.of(2024, 11, 20),
+            is_anonymous = false,
+            open_date = LocalDate.of(2024, 11, 20),
             score=3.5,
             imageList = emptyList()
         ),
         WhiskyReviewData(
-            reviewStyle="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
+            content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
-            private = true,
-            openDate = LocalDate.of(2024, 11, 1),
+            is_anonymous = true,
+            open_date = LocalDate.of(2024, 11, 1),
             score=2.5,
             imageList = emptyList()
         ),
@@ -107,11 +103,11 @@ fun MyReviewPost(
     ) {
         items(items=testDataList){singleReview->
             MyReviewSinglePost(
-                reviewText = singleReview.reviewStyle,
+                reviewText = singleReview.content,
                 score=singleReview.score,
                 drinkingType = WhiskyDrinkingType.Highball,
-                private = singleReview.private,
-                openDate = TimeFormatter.dateCalculation(singleReview.openDate),
+                private = singleReview.is_anonymous,
+                openDate = TimeFormatter.dateCalculation(singleReview.open_date),
                 imageList = singleReview.imageList,
                 singleReviewClick = { singleReviewClick(singleReview) },
                 modifyAllow = modifyAllow

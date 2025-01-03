@@ -2,6 +2,8 @@ package com.example.nextclass.module
 
 
 import com.example.oneplusone.serverConnection.API
+import com.example.whiskeyreviewer.repository.MainRepository
+import com.example.whiskeyreviewer.repository.MainRepositoryImpl
 import com.example.whiskeyreviewer.repository.WriteReviewRepository
 import com.example.whiskeyreviewer.repository.WriteReviewRepositoryImpl
 
@@ -22,6 +24,13 @@ object AppModule {
     fun provideWriteReviewRepository(api: API): WriteReviewRepository {
         return WriteReviewRepositoryImpl(api)
     }
+
+    @Provides
+    @Singleton
+    fun provideMainRepository(api: API): MainRepository {
+        return MainRepositoryImpl(api)
+    }
+
 
     @Provides
     @Singleton

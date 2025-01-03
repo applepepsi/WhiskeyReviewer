@@ -4,10 +4,11 @@ import java.time.LocalDate
 
 data class WhiskyReviewData(
 
-    val reviewStyle:String="",
-    val private:Boolean=false,
-    val openDate: LocalDate= LocalDate.now(),
+    val content:String="",
+    val is_anonymous:Boolean=false,
+    val open_date: LocalDate= LocalDate.now(),
     val score: Double=0.0,
+    val tags:List<String> = listOf(),
     val imageList:List<String> = emptyList()
 )
 

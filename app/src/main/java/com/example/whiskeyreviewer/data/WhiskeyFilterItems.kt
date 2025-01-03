@@ -37,17 +37,17 @@ sealed class WhiskeyFilterItems(
         const val OPEN_DATE="개봉일"
         const val NAME="이름"
 
-        const val DAY_ASCENDING_ORDER = "DAY_ASCENDING_ORDER"
-        const val DAY_DESCENDING_ORDER = "DAY_DESCENDING_ORDER"
+        const val DAY_ASCENDING_ORDER = "asc"
+        const val DAY_DESCENDING_ORDER = "desc"
 
-        const val SCORE_ASCENDING_ORDER = "SCORE_ASCENDING_ORDER"
-        const val SCORE_DESCENDING_ORDER = "SCORE_DESCENDING_ORDER"
+        const val SCORE_ASCENDING_ORDER = "asc"
+        const val SCORE_DESCENDING_ORDER = "desc"
 
-        const val OPEN_DATE_ASCENDING_ORDER = "OPEN_DATE_ASCENDING_ORDER"
-        const val OPEN_DATE_DESCENDING_ORDER = "OPEN_DATE_DESCENDING_ORDER"
+        const val OPEN_DATE_ASCENDING_ORDER = "asc"
+        const val OPEN_DATE_DESCENDING_ORDER = "desc"
 
-        const val NAME_ASCENDING_ORDER = "NAME_ASCENDING_ORDER"
-        const val NAME_DATE_DESCENDING_ORDER = "NAME_DATE_DESCENDING_ORDER"
+        const val NAME_ASCENDING_ORDER = "asc"
+        const val NAME_DATE_DESCENDING_ORDER = "desc"
     }
 }
 
@@ -57,6 +57,8 @@ data class FilterDropDownMenuState(
     var openDate: Boolean = false,
     var name: Boolean=false
 )
+
+
 
 
 

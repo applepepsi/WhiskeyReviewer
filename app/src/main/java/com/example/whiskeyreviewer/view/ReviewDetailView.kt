@@ -116,7 +116,7 @@ fun ReviewDetailView(
         Spacer(modifier = Modifier.height(7.dp))
 
         Text(
-            text = mainViewModel.selectWhiskyData.value.reviewStyle,
+            text = mainViewModel.selectWhiskyData.value.content,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 15.sp,
@@ -137,7 +137,7 @@ fun ReviewDetailView(
 
             Spacer(modifier = Modifier.width(15.dp))
 
-            TagComponent(text = "개봉 ${mainViewModel.selectWhiskyData.value.openDate}")
+            TagComponent(text = "개봉 ${mainViewModel.selectWhiskyData.value.open_date}")
 
             Spacer(modifier = Modifier.width(4.dp))
 
