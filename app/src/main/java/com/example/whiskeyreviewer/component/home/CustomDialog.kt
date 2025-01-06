@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.component.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,6 +38,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -385,16 +387,19 @@ fun SelectWhiskeyDialog(
     toggleOption: () -> Unit,
 
     currentState: Boolean = true,
-    submitWhiskey:(String)->Unit,
+    submitWhiskey:()->Unit,
     text:String="",
     updateText:(String)->Unit,
 
-    resetResult:()->Unit
 ) {
 
 
 
     val customToast = CustomToast(LocalContext.current)
+
+    LaunchedEffect(Unit) {
+        updateText("")
+    }
 
 //    val whiskeyData = listOf(
 //        TapLayoutItems.AllWhiskey,
@@ -415,15 +420,19 @@ fun SelectWhiskeyDialog(
 //        TapLayoutItems.Wheat
 //    )
 
+    if(mainViewModel.errorToastState.value) {
+        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = R.drawable.fail_icon)
+        mainViewModel.resetToastErrorState()
+    }
+
 
     if (currentState) {
         Dialog(
             onDismissRequest = { toggleOption() }
         ) {
-
                 Column(
                     modifier = Modifier
-                        .height(400.dp)
+                        .height(410.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color.White)
                         .padding(top = 20.dp),
@@ -531,7 +540,9 @@ fun SelectWhiskeyDialog(
                                         modifier = Modifier
                                             .size(28.dp)
                                             .padding(start = 8.dp),
-                                        onClick = { submitWhiskey(text) }
+                                        onClick = {
+                                            //서버에서 위스키 검색
+                                        }
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Check,
@@ -549,26 +560,24 @@ fun SelectWhiskeyDialog(
 
                     LazyColumn(
                         modifier = Modifier
-                            .padding(top = 4.dp)
+                            .padding(top = 12.dp)
                             .height(175.dp)
                     ) {
                         itemsIndexed(items= mainViewModel.dialogSelectWhiskyData.value){ index, item->
 
 
-
                             SelectWhiskyComponent(
                                 whiskeyData=item,
                                 onSelect = { mainViewModel.toggleDialogSelectWhiskyState(index) },
-
                             )
-
                         }
                     }
 
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(end = 20.dp, top = 10.dp),
+                            .weight(1f)
+                            .padding(end = 20.dp, bottom = 13.dp, top = 12.dp),
 
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
@@ -582,12 +591,31 @@ fun SelectWhiskeyDialog(
                                 fontWeight = FontWeight.Normal
                             ),
                             modifier = Modifier
+                                .clip(
+                                    RoundedCornerShape(8.dp)
+                                )
+                                .clickable {
+                                    submitWhiskey()
+                                }
+                        )
 
+                        Spacer(modifier = Modifier.width(15.dp))
+
+                        Text(
+                            text = "취소",
+                            style = TextStyle.Default.copy(
+                                color = LightBlackColor,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            modifier = Modifier
+                                .clip(
+                                    RoundedCornerShape(8.dp)
+                                )
                                 .clickable {
                                     toggleOption()
                                 }
                         )
-
                     }
                 }
             }
@@ -605,7 +633,7 @@ fun SelectCustomWhiskeyDialog(
     toggleOption: () -> Unit,
 
     currentState: Boolean = true,
-    submitWhiskey:(String)->Unit,
+    submitWhiskey:()->Unit,
     text:String="",
     updateText:(String)->Unit,
 
@@ -634,6 +662,12 @@ fun SelectCustomWhiskeyDialog(
 //        TapLayoutItems.Tennessee,
 //        TapLayoutItems.Wheat
 //    )
+
+    if(mainViewModel.errorToastState.value) {
+
+        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = R.drawable.fail_icon)
+        mainViewModel.resetToastErrorState()
+    }
 
     var strength by remember { mutableStateOf<String>("") }
     var saleYear by remember { mutableStateOf<String>("") }
@@ -723,7 +757,7 @@ fun SelectCustomWhiskeyDialog(
                         ){
                             BasicTextField(
                                 singleLine = true,
-                                value = strength,
+                                value = mainViewModel.customWhiskyData.value.strength,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 onValueChange = {
 
@@ -733,11 +767,12 @@ fun SelectCustomWhiskeyDialog(
 //                                    }
 
                                     if (it.isEmpty()){
-                                        strength = it
+                                        mainViewModel.updateStrength(it)
+
                                     } else {
-                                        strength = when (it.toDoubleOrNull()) {
-                                            null -> strength
-                                            else -> it
+                                        when (it.toDoubleOrNull()) {
+                                            null -> mainViewModel.customWhiskyData.value.strength
+                                            else -> mainViewModel.updateStrength(it)
                                         }
                                     }
                                 },
@@ -763,7 +798,7 @@ fun SelectCustomWhiskeyDialog(
                                         Box(
                                             contentAlignment = Alignment.CenterStart
                                         ){
-                                            if (strength.isEmpty()) {
+                                            if (mainViewModel.customWhiskyData.value.strength.isEmpty()) {
                                                 Text(
                                                     text = "도수",
                                                     color = Color.LightGray,
@@ -781,7 +816,7 @@ fun SelectCustomWhiskeyDialog(
                                     }
                                 }
                             )
-                            if (strength.isNotEmpty()) {
+                            if (mainViewModel.customWhiskyData.value.strength.isNotEmpty()) {
                                 Text(
                                     text = "%",
                                     color = LightBlackColor,
@@ -811,7 +846,7 @@ fun SelectCustomWhiskeyDialog(
                             ){
                             BasicTextField(
                                 singleLine = true,
-                                value = saleYear,
+                                value = mainViewModel.customWhiskyData.value.sale_year,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 onValueChange = {
 
@@ -821,11 +856,12 @@ fun SelectCustomWhiskeyDialog(
 //                                    }
 
                                     if (it.isEmpty()){
-                                        saleYear = it
+                                        mainViewModel.updateSaleYear(it)
+
                                     } else {
-                                        saleYear = when (it.toIntOrNull()) {
-                                            null -> saleYear
-                                            else -> it
+                                        when (it.toIntOrNull()) {
+                                            null -> mainViewModel.customWhiskyData.value.sale_year
+                                            else -> mainViewModel.updateSaleYear(it)
                                         }
                                     }
                                 },
@@ -851,7 +887,7 @@ fun SelectCustomWhiskeyDialog(
                                         Box(
                                             contentAlignment = Alignment.CenterStart
                                         ){
-                                            if (saleYear.isEmpty()) {
+                                            if (mainViewModel.customWhiskyData.value.sale_year.isEmpty()) {
                                                 Text(
                                                     text = "병입년도",
                                                     color = Color.LightGray,
@@ -869,7 +905,7 @@ fun SelectCustomWhiskeyDialog(
                                     }
                                 }
                             )
-                            if (saleYear.isNotEmpty()) {
+                            if (mainViewModel.customWhiskyData.value.sale_year.isNotEmpty()) {
                                 Text(
                                     text = "년",
                                     color = LightBlackColor,
@@ -955,7 +991,7 @@ fun SelectCustomWhiskeyDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(end = 20.dp, bottom = 8.dp, top = 12.dp),
+                        .padding(end = 20.dp, bottom = 13.dp, top = 12.dp),
 
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.Bottom
@@ -970,11 +1006,33 @@ fun SelectCustomWhiskeyDialog(
                         ),
                         modifier = Modifier
 
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+
+                            .clickable {
+                                submitWhiskey()
+                            }
+
+                    )
+                    
+                    Spacer(modifier = Modifier.width(15.dp))
+                    
+                    Text(
+                        text = "취소",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
                             .clickable {
                                 toggleOption()
                             }
                     )
-
                 }
 
             }

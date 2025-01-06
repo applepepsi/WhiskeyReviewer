@@ -4,35 +4,28 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
 import androidx.lifecycle.ViewModel
 import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.nextclass.utils.SUCCESS_CODE
-import com.example.whiskeyreviewer.component.toolBar.TextAlignment
-import com.example.whiskeyreviewer.component.toolBar.TextColors
+import com.example.whiskeyreviewer.data.CustomWhiskyData
 
-import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
-import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
 import com.example.whiskeyreviewer.data.ReviewData
-import com.example.whiskeyreviewer.data.SelectWhiskyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
-import com.example.whiskeyreviewer.data.WhiskyReviewData
+import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.repository.MainRepository
-import com.example.whiskeyreviewer.utils.ImageConverter
-import com.mohamedrejeb.richeditor.model.RichTextState
+import com.example.whiskeyreviewer.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.LocalDate
@@ -86,6 +79,9 @@ class MainViewModel @Inject constructor(
 
     private val _currentMyReviewBottleNumFilter = mutableIntStateOf(10)
     val currentMyReviewBottleNumFilter: State<Int> = _currentMyReviewBottleNumFilter
+
+    private val _currentMyReviewBottleNum = mutableIntStateOf(1)
+    val currentMyReviewBottleNum: State<Int> = _currentMyReviewBottleNum
 
     private val _myReviewData = mutableStateOf<ReviewData>(ReviewData())
     val myReviewData: State<ReviewData> = _myReviewData
@@ -205,10 +201,10 @@ class MainViewModel @Inject constructor(
     private val _whiskeySearchBarState= mutableStateOf(true)
     val whiskeySearchBarState: State<Boolean> = _whiskeySearchBarState
 
-    private val _selectWhiskyData=mutableStateOf(WhiskyReviewData())
-    val selectWhiskyData: State<WhiskyReviewData> = _selectWhiskyData
+    private val _selectWhiskyData=mutableStateOf(WhiskeyReviewData())
+    val selectWhiskyData: State<WhiskeyReviewData> = _selectWhiskyData
 
-    private val _loginResult=mutableStateOf(null)
+    private val _loginResult=mutableStateOf<Boolean?>(null)
     val loginResult: State<Boolean?> = _loginResult
 
     private val _getBackupCodeDialogState= mutableStateOf(false)
@@ -244,20 +240,32 @@ class MainViewModel @Inject constructor(
     private val _currentCustomWhiskyType=mutableStateOf<TapLayoutItems>(TapLayoutItems.AmericanWhiskey)
     val currentCustomWhiskyType: State<TapLayoutItems> = _currentCustomWhiskyType
 
-    private val _dialogSelectWhiskyData=mutableStateOf<List<SelectWhiskyData>>(
+    private val _customWhiskyData=mutableStateOf<CustomWhiskyData>(CustomWhiskyData())
+    val customWhiskyData: State<CustomWhiskyData> = _customWhiskyData
+
+
+    private val _dialogSelectWhiskyData=mutableStateOf<List<WhiskyName>>(
         listOf(
-            SelectWhiskyData(name = "위스키 A", check = false),
-            SelectWhiskyData(name = "위스키 B", check = false),
-            SelectWhiskyData(name = "위스키 C", check = false),
-            SelectWhiskyData(name = "위스키 D", check = false),
-            SelectWhiskyData(name = "위스키 E", check = false)
+
         )
     )
-    val dialogSelectWhiskyData: State<List<SelectWhiskyData>> = _dialogSelectWhiskyData
+    val dialogSelectWhiskyData: State<List<WhiskyName>> = _dialogSelectWhiskyData
 
 
     private val _selectedImageUri = mutableStateOf<Uri>(Uri.EMPTY)
     val selectedImageUri: State<Uri> = _selectedImageUri
+
+    private val _errorToastState=mutableStateOf<Boolean>(false)
+    val errorToastState: State<Boolean> = _errorToastState
+
+    private val _errorToastMessage=mutableStateOf<String>("")
+    val errorToastMessage: State<String> = _errorToastMessage
+
+    private val _writeReviewWhiskyInfo=mutableStateOf<WhiskyName?>(null)
+    val writeReviewWhiskyInfo: State<WhiskyName?> = _writeReviewWhiskyInfo
+
+    private val _selectWhiskyState=mutableStateOf<Boolean>(false)
+    val selectWhiskyState: State<Boolean> = _selectWhiskyState
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -376,16 +384,23 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun setSelectReviewData(reviewData: WhiskyReviewData){
+    fun setSelectReviewData(reviewData: WhiskeyReviewData){
         _selectWhiskyData.value=reviewData
     }
 
     fun tryLogin(ssaid: String) {
         mainRepository.register(device_id = ssaid){ postDetailResult->
-            if(postDetailResult !=null) {
 
+            if (postDetailResult != null) {
+                if(postDetailResult.code== SUCCESS_CODE){
+                    TokenManager.saveToken(applicationContext, postDetailResult.data!!)
+                    _loginResult.value=true
+                }else{
+                    _loginResult.value=false
+                }
+            }else{
+                _loginResult.value=false
             }
-
         }
     }
 
@@ -423,9 +438,30 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateSelectWhiskey(text:String){
-        Log.d("text",text)
+
+        if(text !=""){
+            mainRepository.addWhiskyNameSearch(name = text) { whiskyNameList ->
+                if (whiskyNameList != null) {
+
+                    val updatedList = whiskyNameList.data!!.map{ oldName ->
+
+                        oldName.copy(check = false)
+                    }
+
+                    _dialogSelectWhiskyData.value = updatedList
+                    Log.d("이름들", updatedList.size.toString())
+                }
+            }
+
+
+        }
         _selectWhiskyText.value=text
     }
+
+    fun updateCustomWhiskyText(text:String){
+        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_name = text)
+    }
+
 
     fun updateCurrentWhiskyFilterType(whisky:TapLayoutItems){
         _currentWhiskyFilterType.value=whisky
@@ -433,6 +469,7 @@ class MainViewModel @Inject constructor(
 
     fun updateCurrentCustomWhiskyType(whisky:TapLayoutItems){
         _currentCustomWhiskyType.value=whisky
+
     }
 
     fun toggleWhiskyFilterDropDownMenuState(){
@@ -457,10 +494,86 @@ class MainViewModel @Inject constructor(
         _dialogSelectWhiskyData.value = _dialogSelectWhiskyData.value.mapIndexed { i, whiskyData ->
             whiskyData.copy(check = i == index)
         }
+
+
     }
 
     fun setSelectedImage(uri: Uri) {
         Log.d("이미지",uri.toString())
         _selectedImageUri.value=uri
+    }
+
+    fun setCurrentBottleNum(num:Int){
+        _currentMyReviewBottleNum.value=num
+    }
+
+    fun submitNewWhiskey(){
+        val info = _dialogSelectWhiskyData.value.find{ whiskyName ->
+            whiskyName.check==true
+        }
+
+
+
+        if (writeReviewWhiskyInfo.value != null) {
+            if(!writeReviewWhiskyInfo.value!!.is_first){
+                setWriteReviewWhiskyInfo(info, bottleNum = 1)
+//                setCurrentBottleNum(num=0)
+                _selectWhiskyState.value=true
+            }else{
+                //기존에 있는거라면 세부 뷰로
+
+            }
+        } else {
+            _errorToastMessage.value="위스키를 선택해 주세요"
+            _errorToastState.value=true
+        }
+    }
+
+    fun submitCustomWhiskey(){
+
+
+        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_type = currentCustomWhiskyType.value.title)
+
+        if(_customWhiskyData.value.whisky_name=="" || _customWhiskyData.value.sale_year=="" || _customWhiskyData.value.strength==""){
+            _errorToastMessage.value="모든 항목을 기입해 주세요."
+            _errorToastState.value=true
+        }else{
+            //서버측에 좀 구체적으로 물어봐야함
+            val info=WhiskyName(
+                whisky_name = _customWhiskyData.value.whisky_name,
+                is_first = false,
+                whisky_uuid = ""
+            )
+
+
+            setWriteReviewWhiskyInfo(info, bottleNum = 1)
+
+            setCurrentBottleNum(num=0)
+            _selectWhiskyState.value=true
+        }
+
+    }
+
+    fun resetToastErrorState() {
+        _errorToastState.value=false
+        _errorToastMessage.value=""
+    }
+
+    fun updateStrength(strength: String) {
+        _customWhiskyData.value=_customWhiskyData.value.copy(strength = strength)
+    }
+
+    fun updateSaleYear(saleYear: String) {
+        _customWhiskyData.value=_customWhiskyData.value.copy(sale_year = saleYear)
+    }
+
+    fun toggleSelectWhiskyState() {
+        _selectWhiskyState.value=!_selectWhiskyState.value
+    }
+
+
+    fun setWriteReviewWhiskyInfo(info: WhiskyName?,bottleNum:Int) {
+        _writeReviewWhiskyInfo.value=info
+        _currentMyReviewBottleNum.value=bottleNum
     }
 }

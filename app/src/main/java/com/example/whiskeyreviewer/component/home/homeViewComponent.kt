@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,7 @@ import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.SelectWhiskyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -217,12 +219,13 @@ fun SelectWhiskyComponent(
 
     onSelect: () -> Unit,
 
-    whiskeyData: SelectWhiskyData
+    whiskeyData: WhiskyName
 ) {
 
-    val animatedChecked by animateDpAsState(targetValue = if (whiskeyData.check) 24.dp else 0.dp, label = "")
+    val animatedChecked by animateDpAsState(targetValue = if (whiskeyData.check == true) 24.dp else 0.dp, label = "")
     val interactionSource = remember { MutableInteractionSource() }
-    val backgroundColor=if(whiskeyData.check) Color(0xFFF5F5F5) else Color.White
+    val backgroundColor=if(whiskeyData.check == true) Color(0xFFF5F5F5) else Color.White
+
 
     Row(
         modifier = Modifier
@@ -239,15 +242,17 @@ fun SelectWhiskyComponent(
         horizontalArrangement = Arrangement.SpaceBetween
     ){
         Text(
-            text = whiskeyData.name,
+            text = whiskeyData.whisky_name,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Normal
             ),
-            modifier = Modifier.padding(start = 15.dp)
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start = 10.dp)
         )
-        if(whiskeyData.check){
+        if(whiskeyData.check == true){
             CheckBoxSelected(animatedChecked)
         }else{
             Box(
@@ -310,6 +315,6 @@ fun HomeComponentPreview() {
 
     val whiskeyData= listOf(SelectWhiskyData())
     WhiskeyReviewerTheme {
-        SelectWhiskyComponent(onSelect = { /*TODO*/ }, SelectWhiskyData())
+//        SelectWhiskyComponent(onSelect = { /*TODO*/ }, WhiskyName())
     }
 }

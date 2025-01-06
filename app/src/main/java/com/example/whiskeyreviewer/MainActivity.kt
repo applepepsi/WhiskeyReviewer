@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.utils.TokenManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,17 +52,24 @@ fun Greeting(ssaId: String) {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
     val mainNavController = rememberNavController()
+    val context = LocalContext.current
 
     Log.d("ssaid",ssaId)
 
-    mainViewModel.tryLogin( ssaid = ssaId )
-    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+    LaunchedEffect(Unit) {
+        mainViewModel.tryLogin( ssaid = ssaId )
+    }
 
-//    when(mainViewModel.loginResult.value){
-//        true -> { MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel) }
-//        false -> { }
-//        else -> { }
-//    }
+//    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+
+    when(mainViewModel.loginResult.value){
+        true -> {
+
+            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+        }
+        false -> { }
+        else -> { }
+    }
 //    InsertReviewView()
 
 //    TapLayoutComponent()

@@ -2,7 +2,7 @@ package com.example.whiskeyreviewer.data
 
 import java.time.LocalDate
 
-data class WhiskyReviewData(
+data class WhiskeyReviewData(
 
     val content:String="",
     val is_anonymous:Boolean=false,

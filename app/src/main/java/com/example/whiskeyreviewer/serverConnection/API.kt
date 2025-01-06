@@ -34,7 +34,7 @@ interface API {
     suspend fun getToken(@Body device_id: String): Response<ServerResponse<TokenData>>
 
     @GET(GET_WHISKY_LIST)
-    fun getMyWhiskys(
+    suspend fun getMyWhiskys(
         @Query("name") name: String,
         @Query("category") category: String,
         @Query("date_order") dateOrder: String,
@@ -43,7 +43,7 @@ interface API {
     ): Response<ServerResponse<Any>>
 
     @GET(ADD_WHISKY_NAME_SEARCH)
-    fun addWhiskyNameSearch(
+    suspend fun addWhiskyNameSearch(
         @Query("name") name: String,
     ): Response<ServerResponse<List<WhiskyName>>>
 
@@ -71,5 +71,19 @@ interface API {
 
     @DELETE(DELETE_REVIEW)
     suspend fun deleteReview(@Path("identifier") identifier:String):Response<ServerResponse<Any>>
+
+
+    @POST(REVIEW_SAVE)
+    suspend fun whiskySave(
+        @Body device_id: String,
+
+    ):Response<ServerResponse<Any>>
+
+    @Multipart
+    @POST(REVIEW_SAVE)
+    suspend fun customWhiskySave(
+        @Part image: MultipartBody.Part,
+        @Part("data") writeReviewData: RequestBody
+    ):Response<ServerResponse<Any>>
 
 }

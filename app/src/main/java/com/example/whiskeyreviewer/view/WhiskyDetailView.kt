@@ -38,6 +38,7 @@ import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -58,13 +59,27 @@ fun WhiskeyDetailView(
                 expendState = mainViewModel.homeFloatingActionButtonState.value,
                 floatingActionButtonClick = { mainViewModel.toggleHomeFloatingActionButtonState() },
                 floatingActionItemClick = {
+                    //이름 수정해야함
+                    val info=WhiskyName(
+                        whisky_name = "test",
+                        is_first = false,
+                        whisky_uuid = ""
+                    )
                     when(it.screenRoute){
                         FloatingActionButtonItems.OldBottle.screenRoute-> {
                             Log.d("루트",it.screenRoute)
+
+
+                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
+
+//                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value)
                             navController.navigate(MainRoute.INSERT_REVIEW)
                         }
                         FloatingActionButtonItems.NewBottle.screenRoute-> {
                             Log.d("루트",it.screenRoute)
+                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value+1)
+
+//                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value+1)
                             navController.navigate(MainRoute.INSERT_REVIEW)
                         }
                         else-> Log.d("루트",it.screenRoute)

@@ -5,27 +5,16 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.lifecycle.ViewModel
-import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
-import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.component.toolBar.TextAlignment
 import com.example.whiskeyreviewer.component.toolBar.TextColors
 
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.data.ToolBarItems
-import com.example.whiskeyreviewer.data.FilterDropDownMenuState
-import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
-import com.example.whiskeyreviewer.data.MyReviewFilterItems
-import com.example.whiskeyreviewer.data.ReviewData
-import com.example.whiskeyreviewer.data.SingleWhiskeyData
-import com.example.whiskeyreviewer.data.TapLayoutItems
-import com.example.whiskeyreviewer.data.WhiskeyFilterItems
-import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.mohamedrejeb.richeditor.model.RichTextState

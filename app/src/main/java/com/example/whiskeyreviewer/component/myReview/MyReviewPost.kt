@@ -30,9 +30,11 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,22 +51,25 @@ import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.WhiskyDrinkingType
-import com.example.whiskeyreviewer.data.WhiskyReviewData
+import com.example.whiskeyreviewer.data.WhiskeyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
+import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
 import com.skydoves.landscapist.glide.GlideImage
 import java.time.LocalDate
 
 @Composable
 fun MyReviewPost(
-    singleReviewClick:(WhiskyReviewData)->Unit,
+    singleReviewClick:(WhiskeyReviewData)->Unit,
     modifyAllow: Boolean=true
 ) {
 
     val testDataList= listOf(
-        WhiskyReviewData(
+        WhiskeyReviewData(
             content ="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
             is_anonymous = false,
@@ -71,7 +77,7 @@ fun MyReviewPost(
             score=1.5,
             imageList = emptyList()
         ),
-        WhiskyReviewData(
+        WhiskeyReviewData(
             content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
             is_anonymous = true,
@@ -79,7 +85,7 @@ fun MyReviewPost(
             score=1.5,
             imageList = emptyList()
         ),
-        WhiskyReviewData(
+        WhiskeyReviewData(
             content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
             is_anonymous = false,
@@ -87,7 +93,7 @@ fun MyReviewPost(
             score=3.5,
             imageList = emptyList()
         ),
-        WhiskyReviewData(
+        WhiskeyReviewData(
             content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
             is_anonymous = true,
@@ -116,6 +122,7 @@ fun MyReviewPost(
     }
 }
 
+@OptIn(ExperimentalRichTextApi::class)
 @Composable
 fun MyReviewSinglePost(
     reviewText:String="",
@@ -129,7 +136,11 @@ fun MyReviewSinglePost(
     modifyAllow:Boolean=true
 ) {
 
+    val richTextState = rememberRichTextState()
 
+    LaunchedEffect(Unit) {
+        richTextState.setHtml("<u>Welcome</u> to <b>Compose Rich Editor Demo</b>")
+    }
 
 
     Column(
@@ -188,15 +199,24 @@ fun MyReviewSinglePost(
 
         Spacer(modifier = Modifier.height(7.dp))
         //리치텍스트로 수정예정
-        Text(
-            text = reviewText,
-            style = TextStyle.Default.copy(
-                color = LightBlackColor,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal
-            ),
+
+
+        RichText(
+            state = richTextState,
+            style = MaterialTheme.typography.displaySmall,
+            textAlign = TextAlign.Center,
             modifier = Modifier
+                .padding(20.dp)
         )
+//        Text(
+//            text = reviewText,
+//            style = TextStyle.Default.copy(
+//                color = LightBlackColor,
+//                fontSize = 12.sp,
+//                fontWeight = FontWeight.Normal
+//            ),
+//            modifier = Modifier
+//        )
         Row(
             modifier = Modifier.padding(start = 1.dp,top=15.dp),
             verticalAlignment = Alignment.CenterVertically

@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -78,22 +77,35 @@ fun HomeView(
         )
     }
 
+    LaunchedEffect(mainViewModel.selectWhiskyState.value) {
+        if(mainViewModel.selectWhiskyState.value){
+            navController.navigate(MainRoute.INSERT_REVIEW)
+        }
+    }
+
     SelectWhiskeyDialog(
         toggleOption = { mainViewModel.toggleWhiskySelectDialogState() },
         currentState = mainViewModel.selectWhiskyDialogState.value,
         text=mainViewModel.selectWhiskyText.value,
-        submitWhiskey = {},
+        submitWhiskey = {
+            //새로운 위스키 등록에 성공했다면 새로운 첫번째 병으로 자동 등록
+            // 기존 위스키라면 기존 위스키의 디테일뷰로 이동
+            mainViewModel.submitNewWhiskey()
+
+        },
         updateText = {mainViewModel.updateSelectWhiskey(it)},
-        resetResult = {},
+
         mainViewModel = mainViewModel
     )
 
     SelectCustomWhiskeyDialog(
         toggleOption = { mainViewModel.toggleCustomWhiskySelectDialogState() },
         currentState = mainViewModel.selectCustomWhiskyDialogState.value,
-        text=mainViewModel.selectWhiskyText.value,
-        submitWhiskey = {},
-        updateText = { mainViewModel.updateSelectWhiskey(it) },
+        text=mainViewModel.customWhiskyData.value.whisky_name,
+        submitWhiskey = {
+            mainViewModel.submitCustomWhiskey()
+        },
+        updateText = { mainViewModel.updateCustomWhiskyText(it) },
         resetResult = {},
         mainViewModel = mainViewModel
     )
@@ -108,10 +120,10 @@ fun HomeView(
 
                 floatingActionItemClick = {
                     when(it){
-                        FloatingActionButtonItems.CustomWhisky -> {
+                        FloatingActionButtonItems.CustomWhiskey -> {
                             mainViewModel.toggleCustomWhiskySelectDialogState()
                         }
-                        FloatingActionButtonItems.NewWhisky -> {
+                        FloatingActionButtonItems.NewWhiskey -> {
                             mainViewModel.toggleWhiskySelectDialogState()
                         }
                         else->{
@@ -121,8 +133,8 @@ fun HomeView(
 
                 },
                 items = listOf(
-                    FloatingActionButtonItems.NewWhisky,
-                    FloatingActionButtonItems.CustomWhisky,
+                    FloatingActionButtonItems.NewWhiskey,
+                    FloatingActionButtonItems.CustomWhiskey,
                 )
             )
         }

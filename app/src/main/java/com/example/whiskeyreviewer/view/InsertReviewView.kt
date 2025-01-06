@@ -24,6 +24,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +42,7 @@ import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponen
 import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -65,6 +67,7 @@ fun InsertReviewView(
 
 
     val currentRichTextState=richTextEditorState.currentSpanStyle
+
     LaunchedEffect(currentRichTextState){
         writeReviewViewModel.updateSpanStyle(currentRichTextState)
     }
@@ -83,6 +86,15 @@ fun InsertReviewView(
         currentScore=writeReviewViewModel.score.value
     )
 
+    LaunchedEffect(Unit) {
+        mainViewModel.toggleSelectWhiskyState()
+        if(mainViewModel.selectWhiskyDialogState.value){
+            mainViewModel.toggleWhiskySelectDialogState()
+        }
+        if(mainViewModel.selectCustomWhiskyDialogState.value){
+            mainViewModel.toggleCustomWhiskySelectDialogState()
+        }
+    }
 
     Column(modifier = Modifier
         .fillMaxSize()) {
@@ -128,15 +140,16 @@ fun InsertReviewView(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 15.dp,start=15.dp)
+                    .padding(top = 15.dp, start = 15.dp),
+                verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = "잭 다니엘",
+                    text = mainViewModel.currentMyReviewBottleNum.value.toString()+"병",
                     color = Color.Gray,
                     modifier = Modifier,
                     style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
                         color = Color.Black
                     ),
@@ -145,15 +158,17 @@ fun InsertReviewView(
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = "1병",
+                    text = mainViewModel.writeReviewWhiskyInfo.value!!.whisky_name,
                     color = Color.Gray,
                     modifier = Modifier,
                     style = TextStyle(
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Normal,
                         fontStyle = FontStyle.Normal,
                         color = Color.Black
                     ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
