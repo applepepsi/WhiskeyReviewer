@@ -27,8 +27,8 @@ sealed class WhiskeyFilterItems(
     data object OpenDateAscendingOrder : WhiskeyFilterItems("개봉일 오름차순", OPEN_DATE_ASCENDING_ORDER, OPEN_DATE, R.drawable.arrow_up)
     data object OpenDateDescendingOrder : WhiskeyFilterItems("개봉일 내림차순", OPEN_DATE_DESCENDING_ORDER, OPEN_DATE, R.drawable.arrow_down)
 
-    data object NameAscendingOrder : WhiskeyFilterItems("이름 오름차순", NAME_ASCENDING_ORDER, OPEN_DATE, R.drawable.arrow_up)
-    data object NameDescendingOrder : WhiskeyFilterItems("이름 내림차순", NAME_DATE_DESCENDING_ORDER, OPEN_DATE, R.drawable.arrow_down)
+    data object NameAscendingOrder : WhiskeyFilterItems("이름 오름차순", NAME_ASCENDING_ORDER, NAME, R.drawable.arrow_up)
+    data object NameDescendingOrder : WhiskeyFilterItems("이름 내림차순", NAME_DESCENDING_ORDER, NAME, R.drawable.arrow_down)
 
 
     companion object {
@@ -47,7 +47,7 @@ sealed class WhiskeyFilterItems(
         const val OPEN_DATE_DESCENDING_ORDER = "desc"
 
         const val NAME_ASCENDING_ORDER = "asc"
-        const val NAME_DATE_DESCENDING_ORDER = "desc"
+        const val NAME_DESCENDING_ORDER = "desc"
     }
 }
 

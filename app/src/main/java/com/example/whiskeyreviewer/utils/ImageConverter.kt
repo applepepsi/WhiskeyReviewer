@@ -68,4 +68,17 @@ object ImageConverter {
 
         return fileList
     }
+
+    fun convertUrisToFiles(context: Context, uri: Uri): File? {
+
+        val file=try {
+
+                toFile(context, uri)
+            } catch (e: Exception) {
+                Log.e("변환 실패", "파일 변환 실패: $uri", e)
+                null
+            }
+        return file
+    }
+
 }

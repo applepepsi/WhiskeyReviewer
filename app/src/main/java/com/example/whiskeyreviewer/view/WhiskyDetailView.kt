@@ -134,7 +134,7 @@ fun WhiskeyDetailView(
 
                 value = mainViewModel.currentMyReviewBottleNumFilter.value,
                 onValueChange = { mainViewModel.updateMyBottleNumFilter(it) },
-                dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.bottleNum,
+                dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.bottleNum,
                 toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
                     MyReviewFilterItems.BOTTLE_NUM) },
                 menuItems = (1..mainViewModel.myReviewData.value.bottleCount).toList()
@@ -146,7 +146,7 @@ fun WhiskeyDetailView(
 
                 value = mainViewModel.currentMyReviewDayFilter.value,
                 onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
-                dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.day,
+                dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.day,
                 toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.DAY) },
                 menuItems = listOf(MyReviewFilterItems.New,MyReviewFilterItems.Old,)
             )
@@ -157,7 +157,7 @@ fun WhiskeyDetailView(
 
                 value = mainViewModel.currentMyReviewTypeFilter.value,
                 onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
-                dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.reviewType,
+                dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.reviewType,
                 toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.REVIEW_TYPE) },
                 menuItems = listOf(MyReviewFilterItems.Review,MyReviewFilterItems.Graph)
             )

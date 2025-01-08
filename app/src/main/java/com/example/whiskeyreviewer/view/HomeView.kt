@@ -44,7 +44,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComp
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
-import com.example.whiskeyreviewer.component.home.CustomFilterRow
+import com.example.whiskeyreviewer.component.home.MyWhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SelectCustomWhiskeyDialog
@@ -69,6 +69,11 @@ fun HomeView(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        mainViewModel.getMyWhiskeyData()
+    }
+
 
     LaunchedEffect(Unit) {
         mainViewModel.setRecentSearchTextList(
@@ -254,7 +259,7 @@ fun HomeView(
 
                 TapLayoutComponent(
                     customFilter = {
-                        CustomFilterRow(mainViewModel = mainViewModel)
+                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
                         MyReviewComponent(
@@ -266,7 +271,7 @@ fun HomeView(
                         )
                     },
                     updateCurrentPage = {
-                        mainViewModel.getFilteredWhiskeyReview(it)
+                        mainViewModel.updateMyWhiskyType(it)
                     },
 
                 )

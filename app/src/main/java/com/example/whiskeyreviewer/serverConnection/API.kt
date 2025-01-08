@@ -2,6 +2,7 @@ package com.example.oneplusone.serverConnection
 
 
 
+import com.example.nextclass.utils.ADD_CUSTOM_WHISKY
 import com.example.nextclass.utils.ADD_WHISKY_NAME_SEARCH
 import com.example.nextclass.utils.DELETE_REVIEW
 import com.example.nextclass.utils.GET_REVIEW
@@ -37,9 +38,9 @@ interface API {
     suspend fun getMyWhiskys(
         @Query("name") name: String,
         @Query("category") category: String,
-        @Query("date_order") dateOrder: String,
-        @Query("name_order") nameOrder: String,
-        @Query("score_order") scoreOrder: String
+        @Query("date_order") date_order: String,
+        @Query("name_order") name_order: String,
+        @Query("score_order") score_order: String
     ): Response<ServerResponse<Any>>
 
     @GET(ADD_WHISKY_NAME_SEARCH)
@@ -80,10 +81,10 @@ interface API {
     ):Response<ServerResponse<Any>>
 
     @Multipart
-    @POST(REVIEW_SAVE)
+    @POST(ADD_CUSTOM_WHISKY)
     suspend fun customWhiskySave(
-        @Part image: MultipartBody.Part,
-        @Part("data") writeReviewData: RequestBody
+        @Part image: MultipartBody.Part?,
+        @Part("data") data: RequestBody
     ):Response<ServerResponse<Any>>
 
 }

@@ -45,7 +45,7 @@ const val REVIEW_SAVE="/review"
 const val REVIEW_MODIFY="/review/{identifier}"
 const val DELETE_REVIEW="/review/{identifier}"
 const val GET_REVIEW="/review/{identifier}"
-
+const val ADD_CUSTOM_WHISKY="/whisky"
 
 val whiskeyData = listOf(
     TapLayoutItems.AllWhiskey,

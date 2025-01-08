@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -43,20 +41,17 @@ import androidx.navigation.NavHostController
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
-import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
-import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
-import com.example.whiskeyreviewer.component.home.CustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
+import com.example.whiskeyreviewer.component.home.WhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
-import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
@@ -215,7 +210,7 @@ fun WhiskeySearchView(
 
                 TapLayoutComponent(
                     customFilter = {
-                        CustomFilterRow(mainViewModel = mainViewModel)
+                        WhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
                         MyReviewComponent(
@@ -227,7 +222,7 @@ fun WhiskeySearchView(
                         )
                     },
                     updateCurrentPage = {
-                        mainViewModel.getFilteredWhiskeyReview(it)
+                        mainViewModel.updateWhiskyType(it)
                     },
 
                     )
@@ -293,7 +288,7 @@ fun OtherUserReviewDetailView(
 
                     value = mainViewModel.currentMyReviewDayFilter.value,
                     onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
-                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.day,
+                    dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.day,
                     toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
                         MyReviewFilterItems.DAY) },
                     menuItems = listOf(MyReviewFilterItems.New, MyReviewFilterItems.Old,)
