@@ -393,12 +393,10 @@ fun SelectWhiskeyDialog(
 
 ) {
 
-
-
     val customToast = CustomToast(LocalContext.current)
 
-    LaunchedEffect(Unit) {
-        updateText("")
+    LaunchedEffect(currentState) {
+        mainViewModel.resetAddWhiskyDialog()
     }
 
 //    val whiskeyData = listOf(
@@ -640,7 +638,9 @@ fun SelectCustomWhiskeyDialog(
     resetResult:()->Unit
 ) {
 
-
+    LaunchedEffect(currentState) {
+        mainViewModel.resetAddCustomWhiskyDialog()
+    }
 
     val customToast = CustomToast(LocalContext.current)
 
@@ -669,8 +669,6 @@ fun SelectCustomWhiskeyDialog(
         mainViewModel.resetToastErrorState()
     }
 
-    var strength by remember { mutableStateOf<String>("") }
-    var saleYear by remember { mutableStateOf<String>("") }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -1043,6 +1041,103 @@ fun SelectCustomWhiskeyDialog(
 
 }
 
+@Composable
+fun ConfirmDialog(
+    title:String,
+    text:String,
+    confirm:()->Unit,
+    toggleOption: () -> Unit,
+    currentState: Boolean = true,
+
+) {
+
+    if (currentState) {
+        Dialog(
+            onDismissRequest = { toggleOption() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .padding(top = 20.dp),
+            ) {
+
+                Text(
+                    text = title,
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp)
+                )
+
+
+                Text(
+                    text = text,
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp,top=3.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(end = 20.dp, bottom = 13.dp, top = 12.dp),
+
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+
+                    Text(
+                        text = "확인",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+
+                            .clickable {
+                                confirm()
+                            }
+
+                    )
+
+                    Spacer(modifier = Modifier.width(15.dp))
+
+                    Text(
+                        text = "취소",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+                            .clickable {
+                                toggleOption()
+                            }
+                    )
+                }
+
+            }
+        }
+    }
+}
 
 
 @Preview(showBackground = true)

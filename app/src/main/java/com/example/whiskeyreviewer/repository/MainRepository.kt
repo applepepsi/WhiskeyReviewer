@@ -16,8 +16,8 @@ interface MainRepository{
     fun register(device_id:String,callback: (ServerResponse<TokenData>?) -> Unit)
 
     fun getMyWhiskyList(
-        name:String,
-        category: String,
+        name:String?,
+        category: String?,
         date_order: String,
         name_order:String,
         score_order:String,
@@ -26,6 +26,7 @@ interface MainRepository{
 
     fun addWhiskyNameSearch(
         name:String,
+        category: String?,
         callback: (ServerResponse<List<WhiskyName>>?) -> Unit
     )
 

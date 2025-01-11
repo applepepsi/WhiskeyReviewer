@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -39,22 +40,33 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.whiskeyreviewer.component.customComponent.WhiskyOptionDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
+import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.SelectWhiskyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyName
+import com.example.whiskeyreviewer.data.WhiskyOptionItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.skydoves.landscapist.glide.GlideImage
+import kotlin.math.sin
 
 
 @Composable
 fun SingleWhiskeyComponent(
     singleWhiskeyData:SingleWhiskeyData,
-    reviewClick:()->Unit
+    reviewClick:()->Unit,
+    deleteWhisky:(SingleWhiskeyData)->Unit,
+    showOption:Boolean=true,
+    dropDownMenuState: Boolean=false,
+    toggleDropDownMenuState:()->Unit={}
 ) {
+
+    val dropDownMenuItems=listOf(WhiskyOptionItems.DeleteWhisky)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -88,6 +100,32 @@ fun SingleWhiskeyComponent(
 //                modifier = Modifier
 //                    .size(200.dp)
 //            )
+
+            if(showOption){
+                Row(
+                    modifier= Modifier
+                        .fillMaxWidth()
+                        .padding(end = 5.dp, top = 8.dp)
+                        .clip(RoundedCornerShape(5.dp)),
+                    horizontalArrangement = Arrangement.End
+                ){
+
+
+                    WhiskyOptionDropDownMenuComponent(
+                        modifier = Modifier,
+                        toggleDropDownMenuOption = { toggleDropDownMenuState() },
+                        dropDownMenuState = dropDownMenuState,
+                        menuItems = dropDownMenuItems,
+                        onClick = {
+                            when(it){
+                                WhiskyOptionItems.DeleteWhisky->{deleteWhisky(singleWhiskeyData)}
+                            }
+                        }
+                    )
+                }
+            }
+
+
             GlideImage(
                 imageModel = singleWhiskeyData.picture,
                 modifier = Modifier
@@ -169,27 +207,30 @@ fun SingleWhiskeyComponent(
 @Composable
 fun MyReviewComponent(
     myReviewItems:List<SingleWhiskeyData>,
-    setSelectReview:(SingleWhiskeyData)->Unit
+    setSelectReview:(SingleWhiskeyData)->Unit,
+    toggleConfirmDialogState:(SingleWhiskeyData)->Unit,
+    dropDownMenuState: List<Boolean> = listOf() ,
+    toggleDropDownMenuState:(Int)->Unit={}
 ) {
-    val testData= listOf(
-        SingleWhiskeyData(
-            whisky_name="잭 다니엘 10년",
-            strength = 20.0,
-            score=4.5,
-            dday=6,
-            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039"),
-
-        ), SingleWhiskeyData(
-            whisky_name="글렌 리뱃 12년산",
-            strength = 18.5,
-            score=3.5,
-            dday=3,
-            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037"),
-
-        ),
-        SingleWhiskeyData(
-        )
-    )
+//    val testData= listOf(
+//        SingleWhiskeyData(
+//            whisky_name="잭 다니엘 10년",
+//            strength = 20.0,
+//            score=4.5,
+//            dday=6,
+//            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039"),
+//
+//        ), SingleWhiskeyData(
+//            whisky_name="글렌 리뱃 12년산",
+//            strength = 18.5,
+//            score=3.5,
+//            dday=3,
+//            picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037"),
+//
+//        ),
+//        SingleWhiskeyData(
+//        )
+//    )
 
     LazyColumn(
 
@@ -198,15 +239,19 @@ fun MyReviewComponent(
     ) {
 
 
-        items(items = testData){ singleWhiskeyData->
-
-
+        itemsIndexed(items = myReviewItems){ index,singleWhiskeyData->
 
             SingleWhiskeyComponent(
                 singleWhiskeyData = singleWhiskeyData,
                 reviewClick={
                     setSelectReview(singleWhiskeyData)
-                }
+                },
+                showOption = true,
+                deleteWhisky = {
+                    toggleConfirmDialogState(it)
+                },
+                dropDownMenuState = dropDownMenuState[index],
+                toggleDropDownMenuState = {toggleDropDownMenuState(index)}
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -315,6 +360,15 @@ fun HomeComponentPreview() {
 
     val whiskeyData= listOf(SelectWhiskyData())
     WhiskeyReviewerTheme {
-//        SelectWhiskyComponent(onSelect = { /*TODO*/ }, WhiskyName())
+        SingleWhiskeyComponent(
+            singleWhiskeyData =
+        SingleWhiskeyData(
+            whisky_name="잭 다니엘 10년",
+            strength = 20.0,
+            score=4.5,
+            dday=6,
+            picture = Uri.EMPTY),
+
+        reviewClick = { /*TODO*/ }, deleteWhisky = {},showOption = true)
     }
 }

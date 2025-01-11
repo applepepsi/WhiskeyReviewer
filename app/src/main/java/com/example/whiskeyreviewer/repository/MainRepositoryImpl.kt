@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.repository
 
+import android.util.Log
 import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
@@ -57,8 +58,8 @@ class MainRepositoryImpl @Inject constructor(
     }
 
     override fun getMyWhiskyList(
-        name: String,
-        category: String,
+        name: String?,
+        category: String?,
         date_order: String,
         name_order: String,
         score_order: String,
@@ -79,9 +80,13 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun addWhiskyNameSearch(name: String, callback: (ServerResponse<List<WhiskyName>>?) -> Unit) {
+    override fun addWhiskyNameSearch(name: String,category:String?, callback: (ServerResponse<List<WhiskyName>>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="위스키 이름 가져오기") { api.addWhiskyNameSearch(name) }
+
+            if (category != null) {
+                Log.d("카테고리",category)
+            }
+            val result = ApiHandler.makeApiCall(tag="위스키 이름 가져오기") { api.addWhiskyNameSearch(name,category=category) }
             withContext(Dispatchers.Main) {
                 callback(result)
             }

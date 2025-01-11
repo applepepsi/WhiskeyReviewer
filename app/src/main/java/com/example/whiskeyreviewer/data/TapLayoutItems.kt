@@ -8,7 +8,7 @@ import com.example.whiskeyreviewer.R
 
 sealed class TapLayoutItems(
     val title: String,
-    val name: String
+    val name: String?
 ) {
 //
 //    data object ScotchWhiskey : TapLayoutItems("스카치")
@@ -23,7 +23,7 @@ sealed class TapLayoutItems(
 //    data object PortWhiskey : TapLayoutItems("포트")
 //    data object PatentWhiskey : TapLayoutItems("페이턴트")
 
-    data object AllWhiskey : TapLayoutItems("전체","All")
+    data object AllWhiskey : TapLayoutItems("전체",null)
     data object AmericanWhiskey : TapLayoutItems("아메리칸", "American Whiskey")
     data object Blend : TapLayoutItems("블렌드", "Blend")
     data object BlendedGrain : TapLayoutItems("블렌디드 그레인", "Blended Grain")

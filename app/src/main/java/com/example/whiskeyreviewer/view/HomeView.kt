@@ -44,6 +44,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComp
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.MyWhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
@@ -74,6 +75,11 @@ fun HomeView(
         mainViewModel.getMyWhiskeyData()
     }
 
+//    LaunchedEffect(mainViewModel.myReviewList.value) {
+//        mainViewModel.initializeDropDownStates(mainViewModel.myReviewList.value.size)
+//    }
+//    mainViewModel.initializeDropDownStates(mainViewModel.myReviewList.value.size)
+
 
     LaunchedEffect(Unit) {
         mainViewModel.setRecentSearchTextList(
@@ -88,6 +94,18 @@ fun HomeView(
         }
     }
 
+
+
+        ConfirmDialog(
+            title = "위스키 제거",
+            text = "위스키를 제거하시겠습니까?",
+            confirm = { /*TODO*/ },
+            toggleOption = { mainViewModel.toggleConfirmDialog() },
+            currentState = mainViewModel.confirmDialogState.value
+        )
+
+
+
     SelectWhiskeyDialog(
         toggleOption = { mainViewModel.toggleWhiskySelectDialogState() },
         currentState = mainViewModel.selectWhiskyDialogState.value,
@@ -96,7 +114,6 @@ fun HomeView(
             //새로운 위스키 등록에 성공했다면 새로운 첫번째 병으로 자동 등록
             // 기존 위스키라면 기존 위스키의 디테일뷰로 이동
             mainViewModel.submitNewWhiskey()
-
         },
         updateText = {mainViewModel.updateSelectWhiskey(it)},
 
@@ -267,6 +284,14 @@ fun HomeView(
                             setSelectReview = {singleWhiskyData->
                                 mainViewModel.updateSelectReview(singleWhiskyData)
                                 navController.navigate(MainRoute.WHISKY_DETAIL)
+                            },
+                            toggleConfirmDialogState = {
+                                mainViewModel.updateSelectReview(it)
+                                mainViewModel.toggleConfirmDialog()
+                            },
+                            dropDownMenuState = mainViewModel.whiskyOptionDropDownMenuState,
+                            toggleDropDownMenuState = { index->
+                                mainViewModel.toggleWhiskyOptionDropDownMenuState(index)
                             }
                         )
                     },

@@ -119,7 +119,9 @@ fun WhiskeyDetailView(
         )
         SingleWhiskeyComponent(
             singleWhiskeyData = SingleWhiskeyData(),
-            reviewClick = {}
+            reviewClick = {},
+            deleteWhisky = {},
+            showOption = false
         )
 
 

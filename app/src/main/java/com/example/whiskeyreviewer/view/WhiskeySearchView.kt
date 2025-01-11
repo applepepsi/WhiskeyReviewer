@@ -218,7 +218,8 @@ fun WhiskeySearchView(
                             setSelectReview = {singleWhiskyData->
                                 mainViewModel.updateOderUserSelectReview(singleWhiskyData)
                                 navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
-                            }
+                            },
+                            toggleConfirmDialogState = {}
                         )
                     },
                     updateCurrentPage = {
@@ -271,7 +272,9 @@ fun OtherUserReviewDetailView(
             )
             SingleWhiskeyComponent(
                 singleWhiskeyData = SingleWhiskeyData(),
-                reviewClick = {}
+                reviewClick = {},
+                deleteWhisky = {},
+                showOption = false
             )
 
 

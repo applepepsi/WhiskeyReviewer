@@ -7,12 +7,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -24,12 +26,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -59,6 +64,7 @@ import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
+import com.example.whiskeyreviewer.data.WhiskyOptionItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -268,7 +274,7 @@ fun <T> MyReviewCustomDropdownMenu(
                 modifier = Modifier
 
                     .width(150.dp)
-                    .heightIn(max=200.dp)
+                    .heightIn(max = 200.dp)
                     .background(Color.White),
                 expanded = dropDownMenuOption,
                 onDismissRequest = { toggleDropDownMenuOption() }
@@ -381,7 +387,7 @@ fun WhiskeyFilterDropDownMenuComponent(
                 modifier = Modifier
                     .width(150.dp)
                     .background(Color.White)
-                    .heightIn(max=200.dp),
+                    .heightIn(max = 200.dp),
                 expanded = dropDownMenuOption,
                 onDismissRequest = { toggleDropDownMenuOption() }
             ) {
@@ -411,6 +417,103 @@ fun WhiskeyFilterDropDownMenuComponent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WhiskyOptionDropDownMenuComponent(
+    modifier: Modifier,
+    toggleDropDownMenuOption: () -> Unit,
+    dropDownMenuState:Boolean,
+    menuItems: List<WhiskyOptionItems>,
+    onClick:(WhiskyOptionItems)->Unit,
+) {
+
+    Log.d("상태",dropDownMenuState.toString())
+    Column(
+        modifier=modifier
+    ) {
+        IconButton(
+            onClick = { toggleDropDownMenuOption() },
+            modifier=Modifier.size(40.dp)
+        ) {
+        Icon(
+            imageVector = Icons.Default.MoreVert,
+            contentDescription = "",
+            modifier = Modifier
+                .size(30.dp),
+        ) }
+        DropdownMenu(
+            expanded = dropDownMenuState,
+            onDismissRequest = { toggleDropDownMenuOption() }
+        ) {
+            menuItems.forEach { item ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = item.title,
+                            style = TextStyle.Default.copy(
+                                color = Color.Gray,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    },
+                    onClick = {
+                        onClick(item)
+                        toggleDropDownMenuOption()
+                    },
+                )
+            }
+        }
+//
+//
+//        ExposedDropdownMenuBox(
+//            expanded = dropDownMenuState,
+//            onExpandedChange = { toggleDropDownMenuOption() },
+//            modifier = Modifier
+//                .size(30.dp)
+//        ) {
+//
+//
+//            Icon(
+//                imageVector = Icons.Default.MoreVert,
+//                contentDescription = "",
+//                modifier = Modifier
+//                    .size(30.dp)
+//                    .menuAnchor(),
+//            )
+//
+//
+//            ExposedDropdownMenu(
+//                scrollState = rememberScrollState(),
+//                modifier = Modifier
+//                    .width(150.dp)
+//                    .background(Color.White)
+//                    .heightIn(max = 170.dp),
+//                expanded = dropDownMenuState,
+//                onDismissRequest = { toggleDropDownMenuOption() }
+//            ) {
+//                menuItems.forEach { item ->
+//                    DropdownMenuItem(
+//                        text = {
+//                            Text(
+//                                text = item.title,
+//                                style = TextStyle.Default.copy(
+//                                    color = Color.Gray,
+//                                    fontSize = 11.sp,
+//                                    fontWeight = FontWeight.Bold
+//                                )
+//                            )
+//                        },
+//                        onClick = {
+//                            toggleDropDownMenuOption()
+//                        },
+//                    )
+//                }
+//            }
+//        }
+//    }
+    }
+}
 
 
 @Preview(showBackground = true)
@@ -418,15 +521,13 @@ fun WhiskeyFilterDropDownMenuComponent(
 fun DropDownMenuPreview() {
 
     val testList= listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder)
+    val dropDownMenuItems=listOf(WhiskyOptionItems.DeleteWhisky)
 
-    WhiskeyReviewerTheme {
-        CustomDropDownMenuComponent(
-            value=WhiskeyFilterItems.DayAscendingOrder,
-            onValueChange = {},
-            dropDownMenuOption = false,
-            toggleDropDownMenuOption = { /*TODO*/ },
-            menuItems = testList,
-
-        )
-    }
+    WhiskyOptionDropDownMenuComponent(
+        modifier = Modifier,
+        toggleDropDownMenuOption = { /*TODO*/ },
+        dropDownMenuState = false,
+        menuItems =dropDownMenuItems,
+        onClick = {}
+    )
 }
