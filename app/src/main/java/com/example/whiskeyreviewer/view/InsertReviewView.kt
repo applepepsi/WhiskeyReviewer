@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -33,6 +34,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
+import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.PrivateCheckboxComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.myReview.RatingScoreDialog
@@ -59,11 +61,16 @@ fun InsertReviewView(
     mainViewModel: MainViewModel,
 
 ) {
-
+    val customToast = CustomToast(LocalContext.current)
 
     val richTextEditorState = rememberRichTextState()
     val scrollState = rememberScrollState()
 
+
+    if(writeReviewViewModel.errorToastState.value) {
+        customToast.MakeText(text = writeReviewViewModel.errorToastMessage.value, icon = R.drawable.fail_icon)
+        writeReviewViewModel.resetToastErrorState()
+    }
 
 
     val currentRichTextState=richTextEditorState.currentSpanStyle

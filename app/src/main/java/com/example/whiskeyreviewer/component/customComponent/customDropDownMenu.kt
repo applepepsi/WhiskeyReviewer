@@ -433,13 +433,13 @@ fun WhiskyOptionDropDownMenuComponent(
     ) {
         IconButton(
             onClick = { toggleDropDownMenuOption() },
-            modifier=Modifier.size(40.dp)
+            modifier=Modifier.size(30.dp).padding(top=5.dp,end=5.dp)
         ) {
         Icon(
             imageVector = Icons.Default.MoreVert,
             contentDescription = "",
             modifier = Modifier
-                .size(30.dp),
+                .size(25.dp),
         ) }
         DropdownMenu(
             expanded = dropDownMenuState,
@@ -461,6 +461,7 @@ fun WhiskyOptionDropDownMenuComponent(
                         onClick(item)
                         toggleDropDownMenuOption()
                     },
+                    modifier=Modifier.height(25.dp)
                 )
             }
         }

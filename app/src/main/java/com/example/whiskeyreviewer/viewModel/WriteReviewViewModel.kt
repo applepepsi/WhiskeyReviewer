@@ -2,7 +2,9 @@ package com.example.whiskeyreviewer.viewModel
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -84,7 +86,11 @@ class WriteReviewViewModel @Inject constructor(
     private val _scoreDialogState= mutableStateOf(false)
     val scoreDialogState: State<Boolean> = _scoreDialogState
 
+    private val _errorToastState=mutableStateOf<Boolean>(false)
+    val errorToastState: State<Boolean> = _errorToastState
 
+    private val _errorToastMessage=mutableStateOf<String>("")
+    val errorToastMessage: State<String> = _errorToastMessage
 
 
     fun selectItem(item: ToolBarItems) {
@@ -234,10 +240,15 @@ class WriteReviewViewModel @Inject constructor(
 
     }
 
+
     fun exportReview(richTextEditorState: RichTextState,) {
 
         Log.d("richTextEditorState",richTextEditorState.toHtml())
         Log.d("richTextEditorState",richTextEditorState.annotatedString.text)
+
+        _writeReviewDate.value=_writeReviewDate.value.copy(
+            content = richTextEditorState.toHtml()
+        )
 
         val imageFiles=if(selectedImageUri.value.isNotEmpty()){
             ImageConverter.convertUrisToFiles(applicationContext,selectedImageUri.value)
@@ -245,10 +256,26 @@ class WriteReviewViewModel @Inject constructor(
             null
         }
         Log.d("imageFiles", imageFiles.toString())
+
+        if(_writeReviewDate.value.open_date > LocalDate.now()){
+            _errorToastState.value=true
+            _errorToastMessage.value="현재 시간보다 이전 시간을 선택해 주세요"
+        }else if(richTextEditorState.annotatedString.text.isBlank()){
+
+            _errorToastState.value=true
+            _errorToastMessage.value="내용을 입력해 주세요."
+        }else{
+            //서버로 전송
+        }
+
+
         _writeReviewDate.value
     }
 
-
+    fun resetToastErrorState() {
+        _errorToastState.value=false
+        _errorToastMessage.value=""
+    }
     fun toggleDateSelectBottomSheetState(){
         _selectDateBottomSheetState.value=!_selectDateBottomSheetState.value
     }

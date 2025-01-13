@@ -164,14 +164,14 @@ fun SingleFloatingActionButtonItem(
             onClick = {
                 onClick()
             },
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(45.dp),
             containerColor = OrangeColor
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = "",
 
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(34.dp)
 
             )
         }
