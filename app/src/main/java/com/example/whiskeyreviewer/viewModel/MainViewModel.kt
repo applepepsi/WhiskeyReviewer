@@ -67,6 +67,7 @@ class MainViewModel @Inject constructor(
             SingleWhiskeyData(
             )
         )
+//        emptyList()
     )
     val myReviewList: State<List<SingleWhiskeyData>> = _myReviewList
 
@@ -119,95 +120,10 @@ class MainViewModel @Inject constructor(
     private val _whiskyFilterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
     val whiskyFilterDropDownMenuState: State<FilterDropDownMenuState> = _whiskyFilterDropDownMenuState
 
-    private val _myReviewDataList=mutableStateOf<List<WriteReviewData>>(
-        listOf(
-            WriteReviewData(
-                content = "스타일 A",
-                is_anonymous = false,
-                open_date = LocalDate.of(2024, 1, 10),
-                tags = listOf(""),
-                score = 4.0
-            ),
-            WriteReviewData(
-                content = "스타일 B",
-                is_anonymous = true,
-                open_date = LocalDate.of(2025, 2, 15),
-                tags = listOf(""),
-                score = 3.0
-            ),
-            WriteReviewData(
-                content = "스타일 C",
-                is_anonymous = false,
-                open_date = LocalDate.of(2022, 3, 20),
-                tags = listOf(""),
-                score = 5.0
-            ),
-            WriteReviewData(
-                content = "스타일 D",
-                is_anonymous = true,
-                open_date = LocalDate.of(2021, 4, 5),
-                tags = listOf(""),
-                score = 2.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 4.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 4.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 2.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 3.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 2.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 5.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 3.0
-            ),
-            WriteReviewData(
-                content = "스타일 E",
-                is_anonymous = false,
-                open_date = LocalDate.of(2020, 5, 30),
-                tags = listOf(""),
-                score = 1.0
-            ),
-        )
+    private val _myReviewDataList=mutableStateOf<List<WhiskeyReviewData>>(
+        emptyList()
     )
-    val myReviewDataList: State<List<WriteReviewData>> = _myReviewDataList
+    val myReviewDataList: State<List<WhiskeyReviewData>> = _myReviewDataList
 
     private val _homeSearchBarState= mutableStateOf(false)
     val homeSearchBarState: State<Boolean> = _homeSearchBarState
@@ -280,6 +196,12 @@ class MainViewModel @Inject constructor(
 
     private val _selectedImageUri = mutableStateOf<Uri>(Uri.EMPTY)
     val selectedImageUri: State<Uri> = _selectedImageUri
+
+    private val _selectedWhiskyImageUri = mutableStateOf<Uri>(Uri.EMPTY)
+    val selectedWhiskyImageUri: State<Uri> = _selectedWhiskyImageUri
+
+    private val _selectedWhiskyImageUriState=mutableStateOf<Boolean>(false)
+    val selectedWhiskyImageUriState: State<Boolean> = _selectedWhiskyImageUriState
 
     private val _errorToastState=mutableStateOf<Boolean>(false)
     val errorToastState: State<Boolean> = _errorToastState
@@ -607,6 +529,17 @@ class MainViewModel @Inject constructor(
         _selectedImageUri.value=uri
     }
 
+    fun setSelectedWhiskyImage(uri: Uri) {
+        Log.d("이미지",uri.toString())
+        _selectedWhiskyImageUri.value=uri
+    }
+
+    fun toggleSelectedWhiskyDialogState(){
+
+        _selectedWhiskyImageUriState.value=!_selectedWhiskyImageUriState.value
+        Log.d("상태2", _selectedWhiskyImageUriState.value.toString())
+    }
+
     fun setCurrentBottleNum(num:Int){
         _currentMyReviewBottleNum.value=num
     }
@@ -692,8 +625,8 @@ class MainViewModel @Inject constructor(
         _customWhiskyData.value=_customWhiskyData.value.copy(sale_year = saleYear)
     }
 
-    fun toggleSelectWhiskyState() {
-        _selectWhiskyState.value=!_selectWhiskyState.value
+    fun toggleSelectWhiskyState(state:Boolean) {
+        _selectWhiskyState.value=state
     }
 
 

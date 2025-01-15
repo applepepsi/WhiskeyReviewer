@@ -1,6 +1,10 @@
 package com.example.whiskeyreviewer.view
 
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -27,9 +32,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
+import com.example.whiskeyreviewer.component.customComponent.EmptyReviewDataComponent
+import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
@@ -52,6 +60,34 @@ fun WhiskeyDetailView(
     mainViewModel: MainViewModel
 ) {
     val scrollState= rememberScrollState()
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                mainViewModel.setSelectedWhiskyImage(uri)
+            }
+        }
+    )
+
+//    LaunchedEffect(mainViewModel.selectedWhiskyImageUri.value) {
+//        Log.d("값", mainViewModel.selectedWhiskyImageUri.value.toString())
+//
+//        if(mainViewModel.selectedWhiskyImageUri.value != Uri.EMPTY){
+//            mainViewModel.toggleSelectedWhiskyDialogState()
+//        }
+//    }
+
+    ConfirmDialog(
+        title = "위스키 이미지 변경",
+        text = "대표 이미지를 변경 하시겠습니까?",
+        confirm = {
+            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            mainViewModel.toggleSelectedWhiskyDialogState()
+        },
+        toggleOption = { mainViewModel.toggleSelectedWhiskyDialogState() },
+        currentState = mainViewModel.selectedWhiskyImageUriState.value
+    )
 
     Scaffold(
         floatingActionButton = {
@@ -108,7 +144,10 @@ fun WhiskeyDetailView(
                 CustomIconComponent(
                     icon = ImageVector.vectorResource(R.drawable.back_button_icon),
                     onClick = {
-                        navController.navigateUp()
+                        navController.popBackStack()
+//                        navController.navigate(MainRoute.HOME) {
+//                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+//                        }
                     },
                     modifier = Modifier
                 )
@@ -121,7 +160,11 @@ fun WhiskeyDetailView(
             singleWhiskeyData = SingleWhiskeyData(),
             reviewClick = {},
             deleteWhisky = {},
-            showOption = false
+            showOption = false,
+            imageClick={
+                mainViewModel.toggleSelectedWhiskyDialogState()
+            },
+            imageClickAllow = true
         )
 
 
@@ -169,19 +212,37 @@ fun WhiskeyDetailView(
             modifier = Modifier.weight(1f)
         ) {
             when (mainViewModel.currentMyReviewTypeFilter.value) {
+
+
+
                 MyReviewFilterItems.Graph -> {
-                    MyReviewGraphComponent2(
-                        mainViewModel.myReviewDataList.value
-                    )
+                    if(mainViewModel.myReviewDataList.value.isEmpty()){
+                        EmptyReviewDataComponent(
+                            text="리뷰가 존재하지 않습니다.",
+                            icon=ImageVector.vectorResource(R.drawable.graph)
+                        )
+                    }else{
+                        MyReviewGraphComponent2(
+                            mainViewModel.myReviewDataList.value
+                        )
+                    }
                 }
 
                 MyReviewFilterItems.Review -> {
-                    MyReviewPost(
-                        singleReviewClick = {
-                            mainViewModel.setSelectReviewData(it)
-                            navController.navigate(REVIEW_DETAIL)
-                        }
-                    )
+                    if(mainViewModel.myReviewDataList.value.isEmpty()){
+                        EmptyReviewDataComponent(
+                            text="리뷰가 존재하지 않습니다.",
+                            icon=ImageVector.vectorResource(R.drawable.empty_bottle)
+                        )
+                    }else {
+                        MyReviewPost(
+                            reviewDataList = mainViewModel.myReviewDataList.value,
+                            singleReviewClick = {
+                                mainViewModel.setSelectReviewData(it)
+                                navController.navigate(REVIEW_DETAIL)
+                            }
+                        )
+                    }
                 }
 
                 MyReviewFilterItems.New -> TODO()
@@ -195,92 +256,92 @@ fun WhiskeyDetailView(
 
 }
 
-val testReviewDataList = listOf(
-    WriteReviewData(
-        content = "스타일 A",
-        is_anonymous = false,
-        open_date = LocalDate.of(2024, 1, 10),
-        tags = listOf(""),
-        score = 4.0
-    ),
-    WriteReviewData(
-        content = "스타일 B",
-        is_anonymous = true,
-        open_date = LocalDate.of(2025, 2, 15),
-        tags = listOf(""),
-        score = 3.0
-    ),
-    WriteReviewData(
-        content = "스타일 C",
-        is_anonymous = false,
-        open_date = LocalDate.of(2022, 3, 20),
-        tags = listOf(""),
-        score = 5.0
-    ),
-    WriteReviewData(
-        content = "스타일 D",
-        is_anonymous = true,
-        open_date = LocalDate.of(2021, 4, 5),
-        tags = listOf(""),
-        score = 2.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 4.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 4.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 2.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 3.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 2.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 5.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 3.0
-    ),
-    WriteReviewData(
-        content = "스타일 E",
-        is_anonymous = false,
-        open_date = LocalDate.of(2020, 5, 30),
-        tags = listOf(""),
-        score = 1.0
-    ),
-)
+//val testReviewDataList = listOf(
+//    WriteReviewData(
+//        content = "스타일 A",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2024, 1, 10),
+//        tags = listOf(""),
+//        score = 4.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 B",
+//        is_anonymous = true,
+//        open_date = LocalDate.of(2025, 2, 15),
+//        tags = listOf(""),
+//        score = 3.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 C",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2022, 3, 20),
+//        tags = listOf(""),
+//        score = 5.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 D",
+//        is_anonymous = true,
+//        open_date = LocalDate.of(2021, 4, 5),
+//        tags = listOf(""),
+//        score = 2.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 4.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 4.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 2.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 3.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 2.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 5.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 3.0
+//    ),
+//    WriteReviewData(
+//        content = "스타일 E",
+//        is_anonymous = false,
+//        open_date = LocalDate.of(2020, 5, 30),
+//        tags = listOf(""),
+//        score = 1.0
+//    ),
+//)
 
 @Preview(showBackground = true)
 @Composable

@@ -11,4 +11,5 @@ data class WriteReviewData(
     val tags:List<String> = listOf(),
     val score: Double=0.0,
     val bottle_num:Int=0,
+    val imageList:List<String>?=null
 )

@@ -62,7 +62,9 @@ fun SingleWhiskeyComponent(
     deleteWhisky:(SingleWhiskeyData)->Unit,
     showOption:Boolean=true,
     dropDownMenuState: Boolean=false,
-    toggleDropDownMenuState:()->Unit={}
+    toggleDropDownMenuState:()->Unit={},
+    imageClick:()->Unit={},
+    imageClickAllow:Boolean=false
 ) {
 
     val dropDownMenuItems=listOf(WhiskyOptionItems.DeleteWhisky)
@@ -130,6 +132,19 @@ fun SingleWhiskeyComponent(
                 imageModel = singleWhiskeyData.picture,
                 modifier = Modifier
                     .size(200.dp)
+                    .then(
+                        if (imageClickAllow) {
+                            Modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ){
+                                imageClick()
+                            }
+                        } else {
+                            Modifier
+                        }
+                    ),
+
             )
             
             Spacer(modifier = Modifier.height(10.dp))
@@ -295,7 +310,7 @@ fun SelectWhiskyComponent(
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(start = 10.dp)
+            modifier = Modifier.padding(start = 10.dp,end=10.dp)
         )
         if(whiskeyData.check == true){
             CheckBoxSelected(animatedChecked)
@@ -311,7 +326,6 @@ fun SelectWhiskyComponent(
                         RoundedCornerShape(7.dp)
                     )
                     .size(24.dp)
-
             )
         }
 

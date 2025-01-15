@@ -42,6 +42,7 @@ import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
+import com.example.whiskeyreviewer.component.customComponent.EmptyMyWhiskyReviewComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
@@ -213,14 +214,20 @@ fun WhiskeySearchView(
                         WhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
-                        MyReviewComponent(
-                            myReviewItems = mainViewModel.reviewList.value,
-                            setSelectReview = {singleWhiskyData->
-                                mainViewModel.updateOderUserSelectReview(singleWhiskyData)
-                                navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
-                            },
-                            toggleConfirmDialogState = {}
-                        )
+                        if(mainViewModel.reviewList.value.isEmpty()){
+                            EmptyMyWhiskyReviewComponent(
+                                text="해당 위스키가 존재하지 않습니다."
+                            )
+                        }else {
+                            MyReviewComponent(
+                                myReviewItems = mainViewModel.reviewList.value,
+                                setSelectReview = { singleWhiskyData ->
+                                    mainViewModel.updateOderUserSelectReview(singleWhiskyData)
+                                    navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
+                                },
+                                toggleConfirmDialogState = {}
+                            )
+                        }
                     },
                     updateCurrentPage = {
                         mainViewModel.updateWhiskyType(it)
@@ -315,7 +322,8 @@ fun OtherUserReviewDetailView(
                                 mainViewModel.setSelectReviewData(it)
                                 navController.navigate(MainRoute.REVIEW_DETAIL)
                             },
-                            modifyAllow = false
+                            modifyAllow = false,
+                            reviewDataList = mainViewModel.myReviewDataList.value
                         )
                     }
 

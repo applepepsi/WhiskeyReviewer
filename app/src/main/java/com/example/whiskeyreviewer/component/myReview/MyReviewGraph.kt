@@ -18,12 +18,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
+import com.example.whiskeyreviewer.data.WhiskeyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
-import com.example.whiskeyreviewer.view.testReviewDataList
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
@@ -150,12 +150,12 @@ fun Holder(
 
 @Composable
 fun MyReviewGraphComponent2(
-    writeReviewDataList: List<WriteReviewData> = (emptyList())
+    whiskeyReviewDataList: List<WhiskeyReviewData> = (emptyList())
 ) {
 
     val TRANSACTION_INTERVAL_MS = 2000L
 
-    val sortedReviewDataList = writeReviewDataList.sortedBy { it.open_date }
+    val sortedReviewDataList = whiskeyReviewDataList.sortedBy { it.open_date }
 
     val reviewDataMapList: Map<Int, Float> = sortedReviewDataList.mapIndexed { index, writeReviewData ->
         index to writeReviewData.score.toFloat()
@@ -299,7 +299,7 @@ fun MyReviewGraphComponent2(
 internal fun rememberMarker(
     labelPosition: DefaultCartesianMarker.LabelPosition = DefaultCartesianMarker.LabelPosition.Top,
     showIndicator: Boolean = true,
-    sortedReviewDataList:List<WriteReviewData>
+    sortedReviewDataList:List<WhiskeyReviewData>
 ): CartesianMarker {
     val labelBackgroundShape = markerCorneredShape(
         CorneredShape.Companion.rounded(10f)
@@ -419,7 +419,7 @@ fun GraphPreview() {
 
     WhiskeyReviewerTheme {
         MyReviewGraphComponent(
-            writeReviewDataList = testReviewDataList
+//            writeReviewDataList = testReviewDataList
         )
     }
 }
@@ -430,8 +430,8 @@ fun GraphPreview2() {
 
 
     WhiskeyReviewerTheme {
-        MyReviewGraphComponent2(
-            writeReviewDataList = testReviewDataList
-        )
+//        MyReviewGraphComponent2(
+//            writeReviewDataList = testReviewDataList
+//        )
     }
 }

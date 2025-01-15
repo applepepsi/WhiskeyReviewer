@@ -56,20 +56,24 @@ fun Greeting(ssaId: String) {
 
     Log.d("ssaid",ssaId)
 
-    LaunchedEffect(Unit) {
-        mainViewModel.tryLogin( ssaid = ssaId )
-    }
+//    LaunchedEffect(Unit) {
+//        mainViewModel.tryLogin( ssaid = ssaId )
+//    }
 
-//    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
 
-    when(mainViewModel.loginResult.value){
-        true -> {
 
-            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
-        }
-        false -> { }
-        else -> { }
-    }
+
+//    when(mainViewModel.loginResult.value){
+//        true -> {
+//
+//            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+//        }
+//        false -> { }
+//        else -> { }
+//    }
+
+
 //    InsertReviewView()
 
 //    TapLayoutComponent()

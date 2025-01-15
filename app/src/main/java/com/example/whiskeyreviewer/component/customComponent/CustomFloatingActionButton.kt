@@ -171,7 +171,7 @@ fun SingleFloatingActionButtonItem(
                 imageVector = icon,
                 contentDescription = "",
 
-                modifier = Modifier.size(34.dp)
+                modifier = Modifier.size(30.dp)
 
             )
         }

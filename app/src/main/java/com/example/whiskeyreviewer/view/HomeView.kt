@@ -41,6 +41,7 @@ import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
+import com.example.whiskeyreviewer.component.customComponent.EmptyMyWhiskyReviewComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
@@ -279,21 +280,27 @@ fun HomeView(
                         MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
-                        MyReviewComponent(
-                            myReviewItems = mainViewModel.myReviewList.value,
-                            setSelectReview = {singleWhiskyData->
-                                mainViewModel.updateSelectReview(singleWhiskyData)
-                                navController.navigate(MainRoute.WHISKY_DETAIL)
-                            },
-                            toggleConfirmDialogState = {
-                                mainViewModel.updateSelectReview(it)
-                                mainViewModel.toggleConfirmDialog()
-                            },
-                            dropDownMenuState = mainViewModel.whiskyOptionDropDownMenuState,
-                            toggleDropDownMenuState = { index->
-                                mainViewModel.toggleWhiskyOptionDropDownMenuState(index)
-                            }
-                        )
+                        if(mainViewModel.myReviewList.value.isEmpty()){
+                            EmptyMyWhiskyReviewComponent(
+                                text="작성된 리뷰가 없습니다."
+                            )
+                        }else{
+                            MyReviewComponent(
+                                myReviewItems = mainViewModel.myReviewList.value,
+                                setSelectReview = {singleWhiskyData->
+                                    mainViewModel.updateSelectReview(singleWhiskyData)
+                                    navController.navigate(MainRoute.WHISKY_DETAIL)
+                                },
+                                toggleConfirmDialogState = {
+                                    mainViewModel.updateSelectReview(it)
+                                    mainViewModel.toggleConfirmDialog()
+                                },
+                                dropDownMenuState = mainViewModel.whiskyOptionDropDownMenuState,
+                                toggleDropDownMenuState = { index->
+                                    mainViewModel.toggleWhiskyOptionDropDownMenuState(index)
+                                }
+                            )
+                        }
                     },
                     updateCurrentPage = {
                         mainViewModel.updateMyWhiskyType(it)

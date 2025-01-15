@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.nextclass.utils.whiskeyData
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
+import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchComponent
 import com.example.whiskeyreviewer.component.customComponent.ImageComponent
 import com.example.whiskeyreviewer.component.customComponent.SearchBarDivider
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
@@ -561,13 +562,19 @@ fun SelectWhiskeyDialog(
                             .padding(top = 12.dp)
                             .height(175.dp)
                     ) {
-                        itemsIndexed(items= mainViewModel.dialogSelectWhiskyData.value){ index, item->
+                        if(mainViewModel.dialogSelectWhiskyData.value.isEmpty() && text.isNotBlank()){
+                            item{
+                                EmptyWhiskySearchComponent()
+                            }
+                        }else{
+                            itemsIndexed(items= mainViewModel.dialogSelectWhiskyData.value){ index, item->
 
 
-                            SelectWhiskyComponent(
-                                whiskeyData=item,
-                                onSelect = { mainViewModel.toggleDialogSelectWhiskyState(index) },
-                            )
+                                SelectWhiskyComponent(
+                                    whiskeyData=item,
+                                    onSelect = { mainViewModel.toggleDialogSelectWhiskyState(index) },
+                                )
+                            }
                         }
                     }
 

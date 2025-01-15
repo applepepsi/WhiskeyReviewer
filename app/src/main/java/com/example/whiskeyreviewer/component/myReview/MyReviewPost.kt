@@ -52,6 +52,7 @@ import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.WhiskyDrinkingType
 import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -64,6 +65,7 @@ import java.time.LocalDate
 
 @Composable
 fun MyReviewPost(
+    reviewDataList:List<WhiskeyReviewData>,
     singleReviewClick:(WhiskeyReviewData)->Unit,
     modifyAllow: Boolean=true
 ) {
@@ -107,7 +109,7 @@ fun MyReviewPost(
         modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        items(items=testDataList){singleReview->
+        items(items=reviewDataList){singleReview->
             MyReviewSinglePost(
                 reviewText = singleReview.content,
                 score=singleReview.score,
@@ -131,7 +133,7 @@ fun MyReviewSinglePost(
     private:Boolean=true,
 
     openDate:String="",
-    imageList:List<String> = emptyList(),
+    imageList:List<String>? = null,
     singleReviewClick:() -> Unit,
     modifyAllow:Boolean=true
 ) {
@@ -190,12 +192,14 @@ fun MyReviewSinglePost(
 
         Spacer(modifier = Modifier.height(7.dp))
 
-        ReviewImageLazyRowComponent(
-            imageList = imageList,
-            deleteImage = {
+        if (imageList != null) {
+            ReviewImageLazyRowComponent(
+                imageList = imageList,
+                deleteImage = {
 
-            },
-        )
+                },
+            )
+        }
 
         Spacer(modifier = Modifier.height(7.dp))
         //리치텍스트로 수정예정

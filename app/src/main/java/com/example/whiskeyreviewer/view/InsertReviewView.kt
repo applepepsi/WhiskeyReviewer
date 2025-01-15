@@ -94,7 +94,7 @@ fun InsertReviewView(
     )
 
     LaunchedEffect(Unit) {
-        mainViewModel.toggleSelectWhiskyState()
+        mainViewModel.toggleSelectWhiskyState(state=false)
         if(mainViewModel.selectWhiskyDialogState.value){
             mainViewModel.toggleWhiskySelectDialogState()
         }
@@ -113,7 +113,7 @@ fun InsertReviewView(
                 CustomIconComponent(
                     icon = ImageVector.vectorResource(R.drawable.back_button_icon),
                     onClick = {
-                        navController.navigateUp()
+                        navController.popBackStack()
                     },
                     modifier = Modifier
                 )
