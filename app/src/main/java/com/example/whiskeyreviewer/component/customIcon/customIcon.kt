@@ -45,13 +45,15 @@ fun CustomIconComponent(
     onClick: () -> Unit,
     modifier: Modifier=Modifier.size(35.dp),
     iconSize: Modifier=Modifier.size(25.dp),
-    onClickAllow:Boolean=true
+    onClickAllow:Boolean=true,
+    backGroundColor:Color= MainColor,
+    tint:Color=Color.White
 ) {
 
     Box(
         modifier = modifier
             .clip(shape = RoundedCornerShape(7.dp))
-            .background(MainColor)
+            .background(backGroundColor)
             .size(35.dp)
             .then(
                 if (onClickAllow) {
@@ -67,7 +69,7 @@ fun CustomIconComponent(
                 .size(25.dp),
             imageVector = icon,
             contentDescription = "",
-            tint = Color.White,
+            tint = tint,
         )
     }
 }

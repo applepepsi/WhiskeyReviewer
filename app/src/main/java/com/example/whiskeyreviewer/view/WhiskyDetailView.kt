@@ -5,6 +5,11 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,28 +25,41 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.camea.CameraComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
+import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.EmptyReviewDataComponent
 import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
+import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
+import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
+import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
@@ -51,6 +69,7 @@ import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
+import java.io.File
 import java.time.LocalDate
 
 @Composable
@@ -60,6 +79,12 @@ fun WhiskeyDetailView(
     mainViewModel: MainViewModel
 ) {
     val scrollState= rememberScrollState()
+    val context = LocalContext.current
+    val imageCapture = remember { ImageCapture.Builder().build() }
+
+
+    var imageFile by remember { mutableStateOf<File?>(null) }
+
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -78,16 +103,54 @@ fun WhiskeyDetailView(
 //        }
 //    }
 
+//    if(mainViewModel.cameraState.value){
+//        CameraComponent(
+//            mainViewModel = mainViewModel,
+//        )
+//    }
+    if(mainViewModel.errorToastState.value) {
+        val customToast = CustomToast(LocalContext.current)
+        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
+        mainViewModel.resetToastErrorState()
+    }
+
+
     ConfirmDialog(
         title = "위스키 이미지 변경",
         text = "대표 이미지를 변경 하시겠습니까?",
         confirm = {
-            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
             mainViewModel.toggleSelectedWhiskyDialogState()
+            mainViewModel.toggleImageTypeSelectDialogState()
         },
         toggleOption = { mainViewModel.toggleSelectedWhiskyDialogState() },
         currentState = mainViewModel.selectedWhiskyImageUriState.value
     )
+
+    ImageTypeSelectDialog(
+        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
+        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
+        confirm = {
+            when {
+                mainViewModel.imageTypeSelectState.value.albumSelected -> {
+                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
+                }
+                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
+
+                    mainViewModel.setCameraTag(AddImageTag.ChangeWhiskyImage)
+                    navController.navigate(MainRoute.CAMERA)
+                }
+
+                else -> {}
+            }.also {
+                mainViewModel.toggleImageTypeSelectDialogState()
+            }
+        },
+        onSelect = { mainViewModel.updateSelectImageType(it) },
+        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
+        currentState = mainViewModel.imageTypeSelectDialogState.value
+    )
+
 
     Scaffold(
         floatingActionButton = {
@@ -128,7 +191,8 @@ fun WhiskeyDetailView(
                     )
 
             )
-        }
+        },
+
     ) {
     Column(
         modifier= Modifier

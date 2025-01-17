@@ -9,13 +9,18 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+
 import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.nextclass.utils.SUCCESS_CODE
+import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
+import com.example.whiskeyreviewer.data.ImageSelectState
+import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
@@ -32,7 +37,6 @@ import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.LocalDate
 import javax.inject.Inject
 
 
@@ -209,6 +213,9 @@ class MainViewModel @Inject constructor(
     private val _errorToastMessage=mutableStateOf<String>("")
     val errorToastMessage: State<String> = _errorToastMessage
 
+    private val _errorToastIcon=mutableStateOf<Int>(R.drawable.fail_icon)
+    val errorToastIcon: State<Int> = _errorToastIcon
+
     private val _writeReviewWhiskyInfo=mutableStateOf<WhiskyName?>(null)
     val writeReviewWhiskyInfo: State<WhiskyName?> = _writeReviewWhiskyInfo
 
@@ -232,6 +239,18 @@ class MainViewModel @Inject constructor(
         }
     }
     val whiskyOptionDropDownMenuState: SnapshotStateList<Boolean> = _whiskyOptionDropDownMenuState
+
+    private val _imageTypeSelectState = mutableStateOf(ImageSelectState())
+    val imageTypeSelectState: State<ImageSelectState> = _imageTypeSelectState
+
+    private val _imageTypeSelectDialogState=mutableStateOf<Boolean>(false)
+    val imageTypeSelectDialogState: State<Boolean> = _imageTypeSelectDialogState
+
+    private val _cameraState=mutableStateOf<Boolean>(false)
+    val cameraState: State<Boolean> = _cameraState
+
+    private val _cameraTag=mutableStateOf<AddImageTag>(AddImageTag.ChangeWhiskyImage)
+    val cameraTag: State<AddImageTag> = _cameraTag
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -716,5 +735,49 @@ class MainViewModel @Inject constructor(
         repeat(count) {
             _whiskyOptionDropDownMenuState.add(false)
         }
+    }
+
+    fun updateSelectImageType(type: ImageSelectType) {
+        _imageTypeSelectState.value = when (type) {
+            ImageSelectType.ALBUM -> ImageSelectState(albumSelected = true, cameraSelected = false)
+            ImageSelectType.CAMERA -> ImageSelectState(albumSelected = false, cameraSelected = true)
+        }
+    }
+
+    fun toggleImageTypeSelectDialogState(){
+        _imageTypeSelectDialogState.value=!_imageTypeSelectDialogState.value
+    }
+
+    fun addImage(uri: Uri?) {
+
+        Log.d("이미지", uri.toString())
+
+        if(uri==null){
+            _errorToastMessage.value="이미지 저장에 실패했습니다."
+            _errorToastIcon.value=R.drawable.fail_icon
+            _errorToastState.value=true
+        }else{
+            _errorToastMessage.value="이미지 저장에 성공했습니다."
+            _errorToastIcon.value=R.drawable.success_icon
+            _errorToastState.value=true
+
+        }
+
+        when(cameraTag.value){
+            AddImageTag.ChangeWhiskyImage->{
+
+            }
+            AddImageTag.AddWhisky->{
+
+            }
+            AddImageTag.InsertReview->{
+
+            }
+        }
+    }
+
+    fun setCameraTag(tag: AddImageTag){
+//        _cameraState.value=!_cameraState.value
+        _cameraTag.value=tag
     }
 }

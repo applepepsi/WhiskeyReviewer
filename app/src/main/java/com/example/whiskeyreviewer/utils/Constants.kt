@@ -65,3 +65,7 @@ val whiskeyData = listOf(
     TapLayoutItems.Tennessee,
     TapLayoutItems.Wheat
 )
+
+
+const val ALBUM="album"
+const val CAMERA="camera"

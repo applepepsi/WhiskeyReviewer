@@ -29,7 +29,9 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PhotoLibrary
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
@@ -66,6 +69,8 @@ import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchCo
 import com.example.whiskeyreviewer.component.customComponent.ImageComponent
 import com.example.whiskeyreviewer.component.customComponent.SearchBarDivider
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
+import com.example.whiskeyreviewer.data.ImageSelectState
+import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.TapLayoutItems
 
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
@@ -1146,6 +1151,184 @@ fun ConfirmDialog(
     }
 }
 
+@Composable
+fun ImageTypeSelectDialog(
+    albumSelectState: Boolean,
+    cameraSelectState: Boolean,
+    onSelect: (ImageSelectType) -> Unit,
+    confirm: ()->Unit,
+    toggleOption: () -> Unit,
+    currentState: Boolean = true,
+    ) {
+
+
+
+    if (currentState) {
+        Dialog(
+            onDismissRequest = { toggleOption() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .height(260.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .padding(top = 20.dp),
+            ) {
+
+                Text(
+                    text = "이미지 추가 방식",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp)
+                )
+
+
+                Text(
+                    text = "이미지 추가 방식을 선택해 주세요.",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp,top=3.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top=15.dp,bottom=5.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    MethodSelectComponent(
+                        icon=Icons.Default.PhotoLibrary,
+                        onSelect = {
+                            onSelect(ImageSelectType.ALBUM)
+                        },
+                        selectState = albumSelectState,
+                        text="앨범"
+                    )
+
+                    MethodSelectComponent(
+                        icon=Icons.Default.CameraAlt,
+                        onSelect = {
+                            onSelect(ImageSelectType.CAMERA)
+                        },
+                        selectState = cameraSelectState,
+                        text="카메라"
+                    )
+                }
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(end = 20.dp, bottom = 13.dp, top = 12.dp),
+
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+
+                    Text(
+                        text = "확인",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+
+                            .clickable {
+                                confirm()
+                            }
+
+                    )
+
+                    Spacer(modifier = Modifier.width(15.dp))
+
+                    Text(
+                        text = "취소",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+                            .clickable {
+                                toggleOption()
+                            }
+                    )
+                }
+
+            }
+        }
+    }
+}
+
+@Composable
+fun MethodSelectComponent(
+    onSelect:()->Unit,
+    icon:ImageVector,
+    text:String,
+    selectState:Boolean
+){
+
+    val itemColor=if(selectState) MainColor else Color.LightGray
+    val backgroundColor=if(selectState) Color.White else Color.White
+
+    Column(
+        Modifier
+            .height(100.dp).width(100.dp)
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = remember{ MutableInteractionSource() },
+                indication = null
+            ) {
+                onSelect()
+            }
+            .clip(
+                RoundedCornerShape(10.dp)
+            )
+            .border(
+                BorderStroke(
+                    1.dp,
+                    itemColor
+                ),
+                RoundedCornerShape(10.dp)
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = itemColor,
+            modifier = Modifier.size(50.dp),
+        )
+        
+//        Spacer(modifier = Modifier.height(5.dp))
+        
+        Text(
+            text = text,
+            style = TextStyle.Default.copy(
+                color = itemColor,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Normal
+            ),
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

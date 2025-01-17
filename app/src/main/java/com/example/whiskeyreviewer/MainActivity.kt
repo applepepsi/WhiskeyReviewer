@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer
 
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -14,6 +15,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.nav.MainNavGraph
@@ -30,6 +33,12 @@ class MainActivity : ComponentActivity() {
 
         val ssaId=Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
 
+        if (!hasRequiredPermissions()) {
+            ActivityCompat.requestPermissions(
+                this, CAMERAX_PERMISSIONS, 0
+            )
+        }
+
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -44,6 +53,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun hasRequiredPermissions(): Boolean {
+        return CAMERAX_PERMISSIONS.all {
+            ContextCompat.checkSelfPermission(
+                applicationContext,
+                it
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    companion object {
+        private val CAMERAX_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
     }
 }
 
@@ -86,3 +108,4 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
