@@ -130,7 +130,8 @@ fun HomeView(
         },
         updateText = { mainViewModel.updateCustomWhiskyText(it) },
         resetResult = {},
-        mainViewModel = mainViewModel
+        mainViewModel = mainViewModel,
+        navController=navController
     )
 
 

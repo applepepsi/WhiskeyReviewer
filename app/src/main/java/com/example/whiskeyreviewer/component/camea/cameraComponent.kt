@@ -75,16 +75,6 @@ fun CameraComponent(
     val context= LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var toastState by remember { mutableStateOf(false) }
-    var toastMessage by remember { mutableStateOf("") }
-    var toastIcon:Int=R.drawable.success_icon
-
-    if(toastState) {
-        val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(text = toastMessage, icon = toastIcon)
-        toastState = false
-    }
-
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
@@ -206,6 +196,7 @@ private fun saveBitmapToFile(context: Context, bitmap: Bitmap): Uri? {
     val fileName = "${System.currentTimeMillis()}.jpg"
     var outputStream: OutputStream? = null
 
+    //원래 촬영은 가능하지만 갤러리에 이미지가 보이지 않는 문제가 있었음
     try {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
@@ -215,7 +206,7 @@ private fun saveBitmapToFile(context: Context, bitmap: Bitmap): Uri? {
                     put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
                 }
-                //기존 방식: 모든 앱이 공유하는 저장공간
+                //새로운 방식: 모든 앱이 공유하는 저장공간(갤러리에 보임)
                 val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                 outputStream = imageUri?.let { resolver.openOutputStream(it) }
 

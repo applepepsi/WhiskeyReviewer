@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.lifecycle.ViewModel
+import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.toolBar.TextAlignment
 import com.example.whiskeyreviewer.component.toolBar.TextColors
 
@@ -92,6 +93,9 @@ class WriteReviewViewModel @Inject constructor(
     private val _errorToastMessage=mutableStateOf<String>("")
     val errorToastMessage: State<String> = _errorToastMessage
 
+    private val _errorToastIcon=mutableStateOf<Int>(R.drawable.fail_icon)
+    val errorToastIcon: State<Int> = _errorToastIcon
+
 
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
@@ -133,10 +137,35 @@ class WriteReviewViewModel @Inject constructor(
         _textStyleState.value = _textStyleState.value.copy(textSize = false, textColor = false, textBackgroundColor = false)
     }
 
-    fun setSelectedImage(uri: List<Uri>) {
+    fun setSelectedImage(uris: List<Uri>) {
+        val currentSize = _selectedImageUri.value.size
+        val maxItems = 3
 
-        _selectedImageUri.value += uri
-        Log.d("이미지", _selectedImageUri.value.toString())
+        if (currentSize >= maxItems) {
+            setErrorToastMessage(
+                icon = R.drawable.fail_icon,
+                text = "사진은 최대 세 장까지 선택할 수 있습니다."
+            )
+            return
+        }
+
+        val availableSpace = maxItems - currentSize
+
+        val itemsToAdd =
+            if (uris.size > availableSpace) {
+
+            val items = uris.take(availableSpace)
+
+            setErrorToastMessage(
+                icon = R.drawable.fail_icon,
+                text = "사진은 최대 세 장까지 선택할 수 있습니다."
+            )
+            items
+        } else {
+            uris
+        }
+
+        _selectedImageUri.value += itemsToAdd
     }
 
     fun deleteImage(index: Int){
@@ -260,10 +289,12 @@ class WriteReviewViewModel @Inject constructor(
         if(_writeReviewDate.value.open_date > LocalDate.now()){
             _errorToastState.value=true
             _errorToastMessage.value="현재 시간보다 이전 시간을 선택해 주세요"
+            _errorToastIcon.value=R.drawable.fail_icon
         }else if(richTextEditorState.annotatedString.text.isBlank()){
 
             _errorToastState.value=true
             _errorToastMessage.value="내용을 입력해 주세요."
+            _errorToastIcon.value=R.drawable.success_icon
         }else{
             //서버로 전송
         }
@@ -317,6 +348,12 @@ class WriteReviewViewModel @Inject constructor(
 
     fun updateScore(score:Double){
         _score.value=score
+    }
+
+    fun setErrorToastMessage(icon: Int, text: String) {
+        _errorToastState.value=true
+        _errorToastMessage.value=text
+        _errorToastIcon.value=icon
     }
 
 

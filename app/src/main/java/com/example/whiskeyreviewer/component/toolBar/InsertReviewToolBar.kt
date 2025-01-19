@@ -40,6 +40,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
 import com.example.whiskeyreviewer.component.writeReivew.InsertTagComponent
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -48,6 +51,9 @@ import com.example.whiskeyreviewer.component.writeReivew.TextColorPickerComponen
 import com.example.whiskeyreviewer.component.writeReivew.TextSizePickerComponent
 import com.example.whiskeyreviewer.component.writeReivew.TextStyleController
 import com.example.whiskeyreviewer.component.writeReivew.TimePickerComponent
+import com.example.whiskeyreviewer.data.AddImageTag
+import com.example.whiskeyreviewer.data.MainRoute
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -56,7 +62,9 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 @Composable
 fun InsertReviewToolBarComponent(
     writeReviewViewModel: WriteReviewViewModel,
-    richTextEditorState:RichTextState
+    richTextEditorState:RichTextState,
+    mainViewModel:MainViewModel,
+    navController:NavHostController,
 ) {
 
 
@@ -68,11 +76,40 @@ fun InsertReviewToolBarComponent(
 //        }
 //    }
 
-    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 3),
-        onResult = { uris ->
-            writeReviewViewModel.setSelectedImage(uris)
-        }
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickMultipleVisualMedia(
+                maxItems = 3
+            ),
+            onResult = { uris ->
+                writeReviewViewModel.setSelectedImage(uris)
+            }
+        )
+
+
+
+    ImageTypeSelectDialog(
+        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
+        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
+        confirm = {
+            when {
+                mainViewModel.imageTypeSelectState.value.albumSelected -> {
+                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
+                }
+                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
+
+                    mainViewModel.setCameraTag(AddImageTag.InsertReview)
+                    navController.navigate(MainRoute.CAMERA)
+                }
+
+                else -> {}
+            }.also {
+                mainViewModel.toggleImageTypeSelectDialogState()
+            }
+        },
+        onSelect = { mainViewModel.updateSelectImageType(it) },
+        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
+        currentState = mainViewModel.imageTypeSelectDialogState.value
     )
 
 
@@ -161,10 +198,12 @@ fun InsertReviewToolBarComponent(
                 }
                 is ToolBarItems.Picture -> {
 
-                    multiplePhotoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    //이미지는 한번 실행되면 선택된 아이템을 초기화 할 필요가 있음
-                    writeReviewViewModel.resetItem()
-                    writeReviewViewModel.resetTextStyleItem()
+
+                        //이미지는 한번 실행되면 선택된 아이템을 초기화 할 필요가 있음
+                        writeReviewViewModel.resetItem()
+                        writeReviewViewModel.resetTextStyleItem()
+                        mainViewModel.toggleImageTypeSelectDialogState()
+
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(
@@ -261,6 +300,6 @@ fun BottomNavPreview() {
     val richTextEditorState = rememberRichTextState()
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     WhiskeyReviewerTheme {
-        InsertReviewToolBarComponent(writeReviewViewModel,richTextEditorState)
+//        InsertReviewToolBarComponent(writeReviewViewModel,richTextEditorState)
     }
 }

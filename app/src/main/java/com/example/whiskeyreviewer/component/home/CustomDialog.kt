@@ -1,7 +1,6 @@
 package com.example.whiskeyreviewer.component.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.nextclass.utils.whiskeyData
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
@@ -69,9 +68,9 @@ import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchCo
 import com.example.whiskeyreviewer.component.customComponent.ImageComponent
 import com.example.whiskeyreviewer.component.customComponent.SearchBarDivider
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
-import com.example.whiskeyreviewer.data.ImageSelectState
+import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.ImageSelectType
-import com.example.whiskeyreviewer.data.TapLayoutItems
+import com.example.whiskeyreviewer.data.MainRoute
 
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -425,7 +424,7 @@ fun SelectWhiskeyDialog(
 //    )
 
     if(mainViewModel.errorToastState.value) {
-        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = R.drawable.fail_icon)
+        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
         mainViewModel.resetToastErrorState()
     }
 
@@ -639,20 +638,21 @@ fun SelectWhiskeyDialog(
 
 @Composable
 fun SelectCustomWhiskeyDialog(
-    mainViewModel:MainViewModel,
+    mainViewModel: MainViewModel,
     toggleOption: () -> Unit,
 
     currentState: Boolean = true,
-    submitWhiskey:()->Unit,
-    text:String="",
-    updateText:(String)->Unit,
+    submitWhiskey: () -> Unit,
+    text: String = "",
+    updateText: (String) -> Unit,
 
-    resetResult:()->Unit
+    resetResult: () -> Unit,
+    navController: NavHostController
 ) {
 
-    LaunchedEffect(currentState) {
-        mainViewModel.resetAddCustomWhiskyDialog()
-    }
+//    LaunchedEffect(currentState) {
+//        mainViewModel.resetAddCustomWhiskyDialog()
+//    }
 
     val customToast = CustomToast(LocalContext.current)
 
@@ -677,7 +677,7 @@ fun SelectCustomWhiskeyDialog(
 
     if(mainViewModel.errorToastState.value) {
 
-        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = R.drawable.fail_icon)
+        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
         mainViewModel.resetToastErrorState()
     }
 
@@ -691,6 +691,30 @@ fun SelectCustomWhiskeyDialog(
         }
     )
 
+    ImageTypeSelectDialog(
+        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
+        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
+        confirm = {
+            when {
+                mainViewModel.imageTypeSelectState.value.albumSelected -> {
+                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
+                }
+                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
+
+                    mainViewModel.setCameraTag(AddImageTag.AddWhisky)
+                    navController.navigate(MainRoute.CAMERA)
+                }
+
+                else -> {}
+            }.also {
+                mainViewModel.toggleImageTypeSelectDialogState()
+            }
+        },
+        onSelect = { mainViewModel.updateSelectImageType(it) },
+        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
+        currentState = mainViewModel.imageTypeSelectDialogState.value
+    )
 
     if (currentState) {
         Dialog(
@@ -728,7 +752,7 @@ fun SelectCustomWhiskeyDialog(
 
                     ImageComponent(
                         imageClick = {
-                            photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            mainViewModel.toggleImageTypeSelectDialogState()
                         },
                         image = mainViewModel.selectedImageUri.value,
                         modifier = Modifier.padding(start=17.dp,top=20.dp)
@@ -1199,7 +1223,9 @@ fun ImageTypeSelectDialog(
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top=15.dp,bottom=5.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp, bottom = 5.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ){
@@ -1289,10 +1315,11 @@ fun MethodSelectComponent(
 
     Column(
         Modifier
-            .height(100.dp).width(100.dp)
+            .height(100.dp)
+            .width(100.dp)
             .background(backgroundColor)
             .clickable(
-                interactionSource = remember{ MutableInteractionSource() },
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
                 onSelect()
@@ -1337,10 +1364,17 @@ fun CustomDialogPreview() {
 //    val scope = rememberCoroutineScope()
 //    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
-//    val navHostController= rememberNavController()
+    val navHostController= rememberNavController()
     WhiskeyReviewerTheme {
-        SelectCustomWhiskeyDialog(mainViewModel=mainViewModel,toggleOption = { /*TODO*/ }, submitWhiskey = {}, updateText = {}) {
+        SelectCustomWhiskeyDialog(
+            mainViewModel=mainViewModel,
+            toggleOption = { /*TODO*/ },
+            submitWhiskey = {},
+            updateText = {},
+            resetResult = {
 
-        }
+            },
+            navController = navHostController
+        )
     }
 }

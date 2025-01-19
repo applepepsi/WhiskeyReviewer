@@ -456,6 +456,8 @@ class MainViewModel @Inject constructor(
     }
 
     fun toggleCustomWhiskySelectDialogState(){
+        resetAddCustomWhiskyDialog()
+
         _selectCustomWhiskyDialogState.value=!_selectCustomWhiskyDialogState.value
     }
 
@@ -761,23 +763,24 @@ class MainViewModel @Inject constructor(
             _errorToastIcon.value=R.drawable.success_icon
             _errorToastState.value=true
 
+            when(cameraTag.value){
+                AddImageTag.ChangeWhiskyImage->{
+
+                }
+                AddImageTag.AddWhisky->{
+                    setSelectedImage(uri)
+                }
+                AddImageTag.InsertReview->{
+                    setSelectedImage(uri)
+                }
+            }
         }
 
-        when(cameraTag.value){
-            AddImageTag.ChangeWhiskyImage->{
-
-            }
-            AddImageTag.AddWhisky->{
-
-            }
-            AddImageTag.InsertReview->{
-
-            }
-        }
     }
 
     fun setCameraTag(tag: AddImageTag){
 //        _cameraState.value=!_cameraState.value
+
         _cameraTag.value=tag
     }
 }

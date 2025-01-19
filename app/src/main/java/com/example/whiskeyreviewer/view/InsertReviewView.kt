@@ -68,8 +68,13 @@ fun InsertReviewView(
 
 
     if(writeReviewViewModel.errorToastState.value) {
-        customToast.MakeText(text = writeReviewViewModel.errorToastMessage.value, icon = R.drawable.fail_icon)
+        customToast.MakeText(text = writeReviewViewModel.errorToastMessage.value, icon = writeReviewViewModel.errorToastIcon.value)
         writeReviewViewModel.resetToastErrorState()
+    }
+
+    if(mainViewModel.errorToastState.value) {
+        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
+        mainViewModel.resetToastErrorState()
     }
 
 
@@ -92,6 +97,7 @@ fun InsertReviewView(
         currentState = writeReviewViewModel.scoreDialogState.value,
         currentScore=writeReviewViewModel.score.value
     )
+
 
     LaunchedEffect(Unit) {
         mainViewModel.toggleSelectWhiskyState(state=false)
@@ -213,7 +219,12 @@ fun InsertReviewView(
 //            tagList = writeReviewViewModel.tagList.value
 //        )
 
-        InsertReviewToolBarComponent(writeReviewViewModel, richTextEditorState = richTextEditorState)
+        InsertReviewToolBarComponent(
+            writeReviewViewModel,
+            richTextEditorState = richTextEditorState,
+            mainViewModel=mainViewModel,
+            navController=navController
+        )
     }
 }
 
