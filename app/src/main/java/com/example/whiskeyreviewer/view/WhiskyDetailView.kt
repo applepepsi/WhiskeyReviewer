@@ -54,6 +54,7 @@ import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDo
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
+import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
@@ -151,6 +152,11 @@ fun WhiskeyDetailView(
         currentState = mainViewModel.imageTypeSelectDialogState.value
     )
 
+    ImageViewerDialog(
+        currentImage = mainViewModel.selectImageUrl.value,
+        toggleOption = { mainViewModel.toggleImageDialogState() },
+        currentState = mainViewModel.imageDialogState.value
+    )
 
     Scaffold(
         floatingActionButton = {
@@ -277,8 +283,6 @@ fun WhiskeyDetailView(
         ) {
             when (mainViewModel.currentMyReviewTypeFilter.value) {
 
-
-
                 MyReviewFilterItems.Graph -> {
                     if(mainViewModel.myReviewDataList.value.isEmpty()){
                         EmptyReviewDataComponent(
@@ -304,6 +308,10 @@ fun WhiskeyDetailView(
                             singleReviewClick = {
                                 mainViewModel.setSelectReviewData(it)
                                 navController.navigate(REVIEW_DETAIL)
+                            },
+                            onImageSelect = {
+                                mainViewModel.setSelectImage(it)
+                                mainViewModel.toggleImageDialogState()
                             }
                         )
                     }

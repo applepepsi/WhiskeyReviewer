@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.component.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,10 +30,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheetDefaults.properties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 
@@ -58,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -76,6 +81,7 @@ import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.MainViewModel
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun GetBackupCodeDialog(
@@ -1356,6 +1362,59 @@ fun MethodSelectComponent(
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ImageViewerDialog(
+    currentImage:String="",
+    toggleOption: () -> Unit,
+    currentState: Boolean = true,
+){
+
+
+    if (currentState) {
+        Log.d("현재이미지",currentImage)
+        Dialog(
+            onDismissRequest = { toggleOption() },
+            properties = properties.let {
+                DialogProperties(
+
+                    securePolicy = it.securePolicy,
+                    usePlatformDefaultWidth = false
+                )
+            },
+        ) {
+
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+            ){
+                IconButton(
+                    onClick = {
+                        toggleOption()
+                    },
+                    modifier = Modifier.size(50.dp).align(Alignment.TopEnd).padding(end=10.dp,top=10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        tint = Color.LightGray,
+                        modifier = Modifier.size(23.dp)
+                    )
+
+                }
+
+                GlideImage(
+                    imageModel = currentImage,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

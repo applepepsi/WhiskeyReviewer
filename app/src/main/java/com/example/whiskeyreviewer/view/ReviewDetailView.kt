@@ -111,6 +111,7 @@ fun ReviewDetailView(
             deleteImage = {
 
             },
+            deleteImageAllow = false
         )
 
         Spacer(modifier = Modifier.height(7.dp))

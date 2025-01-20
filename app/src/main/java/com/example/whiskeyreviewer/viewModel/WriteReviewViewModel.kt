@@ -138,8 +138,12 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun setSelectedImage(uris: List<Uri>) {
+
+
         val currentSize = _selectedImageUri.value.size
         val maxItems = 3
+
+        Log.d("이미지들",uris.toString())
 
         if (currentSize >= maxItems) {
             setErrorToastMessage(

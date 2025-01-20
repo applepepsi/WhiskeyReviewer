@@ -37,6 +37,7 @@ import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.LocalDate
 import javax.inject.Inject
 
 
@@ -125,7 +126,48 @@ class MainViewModel @Inject constructor(
     val whiskyFilterDropDownMenuState: State<FilterDropDownMenuState> = _whiskyFilterDropDownMenuState
 
     private val _myReviewDataList=mutableStateOf<List<WhiskeyReviewData>>(
-        emptyList()
+        listOf(
+            WhiskeyReviewData(
+                content = "이 위스키는 정말 부드럽고 향이 풍부합니다.",
+                is_anonymous = false,
+                open_date = LocalDate.of(2023, 1, 15),
+                score = 4.5,
+                tags = listOf("부드러운", "향긋한", "프루티"),
+                imageList = listOf("content://media/picker/0/com.android.providers.media.photopicker/media/1000000073", "content://media/picker/0/com.android.providers.media.photopicker/media/1000000064")
+            ),
+            WhiskeyReviewData(
+                content = "이 가격에 이 맛은 정말 훌륭합니다.",
+                is_anonymous = true,
+                open_date = LocalDate.of(2023, 2, 10),
+                score = 4.0,
+                tags = listOf("가성비", "추천"),
+                imageList = emptyList()
+            ),
+            WhiskeyReviewData(
+                content = "약간의 스파이시함과 함께 깊은 맛이 느껴집니다.",
+                is_anonymous = false,
+                open_date = LocalDate.of(2023, 3, 5),
+                score = 4.2,
+                tags = listOf("스파이시", "깊은맛"),
+                imageList = listOf("image3.jpg")
+            ),
+            WhiskeyReviewData(
+                content = "너무 강한 맛이어서 개인적으로는 별로였습니다.",
+                is_anonymous = true,
+                open_date = LocalDate.of(2023, 4, 20),
+                score = 2.5,
+                tags = listOf("강한맛"),
+                imageList = listOf("image4.jpg", "image5.jpg")
+            ),
+            WhiskeyReviewData(
+                content = "달콤한 맛과 함께 부드러운 목넘김이 인상적입니다.",
+                is_anonymous = false,
+                open_date = LocalDate.of(2023, 5, 30),
+                score = 4.8,
+                tags = listOf("달콤한", "부드러운"),
+                imageList = listOf("image6.jpg")
+            )
+        )
     )
     val myReviewDataList: State<List<WhiskeyReviewData>> = _myReviewDataList
 
@@ -251,6 +293,12 @@ class MainViewModel @Inject constructor(
 
     private val _cameraTag=mutableStateOf<AddImageTag>(AddImageTag.ChangeWhiskyImage)
     val cameraTag: State<AddImageTag> = _cameraTag
+
+    private val _imageDialogState=mutableStateOf<Boolean>(false)
+    val imageDialogState: State<Boolean> = _imageDialogState
+
+    private val _selectImageUrl=mutableStateOf<String>("")
+    val selectImageUrl: State<String> = _selectImageUrl
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -782,5 +830,13 @@ class MainViewModel @Inject constructor(
 //        _cameraState.value=!_cameraState.value
 
         _cameraTag.value=tag
+    }
+
+    fun toggleImageDialogState(){
+        _imageDialogState.value=!_imageDialogState.value
+    }
+
+    fun setSelectImage(url:String){
+        _selectImageUrl.value=url
     }
 }

@@ -52,7 +52,6 @@ import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.WhiskyDrinkingType
 import com.example.whiskeyreviewer.data.WhiskeyReviewData
-import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -67,7 +66,8 @@ import java.time.LocalDate
 fun MyReviewPost(
     reviewDataList:List<WhiskeyReviewData>,
     singleReviewClick:(WhiskeyReviewData)->Unit,
-    modifyAllow: Boolean=true
+    modifyAllow: Boolean=true,
+    onImageSelect: (String) -> Unit={}
 ) {
 
     val testDataList= listOf(
@@ -118,7 +118,11 @@ fun MyReviewPost(
                 openDate = TimeFormatter.dateCalculation(singleReview.open_date),
                 imageList = singleReview.imageList,
                 singleReviewClick = { singleReviewClick(singleReview) },
-                modifyAllow = modifyAllow
+                modifyAllow = modifyAllow,
+                onImageSelect = {
+                    onImageSelect(it)
+                },
+                tags=singleReview.tags
             )
         }
     }
@@ -127,21 +131,23 @@ fun MyReviewPost(
 @OptIn(ExperimentalRichTextApi::class)
 @Composable
 fun MyReviewSinglePost(
-    reviewText:String="",
-    score:Double=0.0,
+    reviewText: String = "",
+    score: Double = 0.0,
     drinkingType: WhiskyDrinkingType,
-    private:Boolean=true,
+    private: Boolean = true,
 
-    openDate:String="",
-    imageList:List<String>? = null,
-    singleReviewClick:() -> Unit,
-    modifyAllow:Boolean=true
+    openDate: String = "",
+    imageList: List<String>? = null,
+    singleReviewClick: () -> Unit,
+    modifyAllow: Boolean = true,
+    onImageSelect: (String) -> Unit = {},
+    tags: List<String>
 ) {
 
     val richTextState = rememberRichTextState()
 
     LaunchedEffect(Unit) {
-        richTextState.setHtml("<u>Welcome</u> to <b>Compose Rich Editor Demo</b>")
+        richTextState.setHtml(reviewText)
     }
 
 
@@ -154,13 +160,13 @@ fun MyReviewSinglePost(
 
             .clip(RoundedCornerShape(8.dp))
             .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp))
-            .padding(horizontal = 15.dp, vertical = 10.dp)
+            .padding(horizontal = 15.dp, vertical = 12.dp)
     ) {
         if(modifyAllow){
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 10.dp),
+                    .padding(end = 10.dp, top = 6.dp),
                 horizontalArrangement = Arrangement.End
             ){
 
@@ -198,6 +204,10 @@ fun MyReviewSinglePost(
                 deleteImage = {
 
                 },
+                deleteImageAllow = false,
+                onImageSelect = {
+                    onImageSelect(it)
+                }
             )
         }
 
@@ -210,7 +220,7 @@ fun MyReviewSinglePost(
             style = MaterialTheme.typography.displaySmall,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(20.dp)
+                .padding(start=10.dp,end=10.dp,top=3.dp, bottom = 5.dp)
         )
 //        Text(
 //            text = reviewText,
@@ -231,11 +241,17 @@ fun MyReviewSinglePost(
 
             Spacer(modifier = Modifier.width(15.dp))
 
-            TagComponent(text = "개봉 $openDate")
 
-            Spacer(modifier = Modifier.width(4.dp))
-
-            TagComponent(text = drinkingType.type)
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                item{
+                    TagComponent(text = "개봉 $openDate")
+                }
+                items(items=tags){singleTag->
+                    TagComponent(text = singleTag)
+                }
+            }
         }
     }
 }
@@ -244,6 +260,8 @@ fun MyReviewSinglePost(
 fun ReviewImageLazyRowComponent(
     imageList:List<String>,
     deleteImage:(Int)->Unit,
+    deleteImageAllow:Boolean=true,
+    onImageSelect:(String)->Unit={},
 ) {
     val scrollState = rememberLazyListState()
 
@@ -258,7 +276,7 @@ fun ReviewImageLazyRowComponent(
         itemsIndexed(imageList) { index,image ->
             Box(
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(120.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.TopEnd
             ) {
@@ -273,19 +291,23 @@ fun ReviewImageLazyRowComponent(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
-                )
-
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = null,
-                    tint = Color.LightGray,
-                    modifier = Modifier
-                        .size(25.dp)
-                        .padding(top = 5.dp, end = 5.dp)
                         .clickable {
-                            deleteImage(index)
+                            onImageSelect(image)
                         }
                 )
+                if(deleteImageAllow){
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = null,
+                        tint = Color.LightGray,
+                        modifier = Modifier
+                            .size(25.dp)
+                            .padding(top = 5.dp, end = 5.dp)
+                            .clickable {
+                                deleteImage(index)
+                            }
+                    )
+                }
             }
         }
     }
@@ -358,7 +380,9 @@ fun RatingScoreDialog(
 
                 ) {
                 Column(
-                    modifier = Modifier.fillMaxSize().padding(top=20.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 20.dp),
 
                 ) {
                     Text(
@@ -382,7 +406,7 @@ fun RatingScoreDialog(
                             fontWeight = FontWeight.Normal
                         ),
                         modifier = Modifier
-                            .padding(start=17.dp,top=2.dp)
+                            .padding(start = 17.dp, top = 2.dp)
 
                             .clickable {
                                 toggleOption()
@@ -412,7 +436,7 @@ fun RatingScoreDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(end=20.dp,bottom=10.dp),
+                            .padding(end = 20.dp, bottom = 10.dp),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.Bottom
                     ) {
@@ -461,11 +485,11 @@ fun SingleStar(
             .padding(5.dp)
             .size(50.dp)
             .clickable(
-                interactionSource = remember{ MutableInteractionSource() },
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) {
                 onRatingChanged(
-                    ((starIndex+1).toDouble())
+                    ((starIndex + 1).toDouble())
                 )
             },
 
@@ -487,7 +511,8 @@ fun MyReviewPostPreview() {
             reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
             score=3.5,
             drinkingType = WhiskyDrinkingType.Highball,
-            singleReviewClick = {}
+            singleReviewClick = {},
+            tags = listOf()
         )
     }
 }
