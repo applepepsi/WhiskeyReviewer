@@ -128,7 +128,7 @@ class MainViewModel @Inject constructor(
     private val _myReviewDataList=mutableStateOf<List<WhiskeyReviewData>>(
         listOf(
             WhiskeyReviewData(
-                content = "이 위스키는 정말 부드럽고 향이 풍부합니다.",
+                content = "<p>이 위스키는 정말 부드럽고 향이 풍부합니다&period;wfaf<span style=\"font-size: 31.0px;\">wfqwqwfqwfqwf<span style=\"background: rgba(0, 128, 0, 1.0);\">qwfqwfqwfqwfqwf</span></span></p>",
                 is_anonymous = false,
                 open_date = LocalDate.of(2023, 1, 15),
                 score = 4.5,
@@ -189,8 +189,8 @@ class MainViewModel @Inject constructor(
     private val _whiskeySearchBarState= mutableStateOf(true)
     val whiskeySearchBarState: State<Boolean> = _whiskeySearchBarState
 
-    private val _selectWhiskyData=mutableStateOf(WhiskeyReviewData())
-    val selectWhiskyData: State<WhiskeyReviewData> = _selectWhiskyData
+    private val _selectWhiskyReviewData=mutableStateOf(WhiskeyReviewData())
+    val selectWhiskyReviewData: State<WhiskeyReviewData> = _selectWhiskyReviewData
 
     private val _loginResult=mutableStateOf<Boolean?>(null)
     val loginResult: State<Boolean?> = _loginResult
@@ -299,6 +299,10 @@ class MainViewModel @Inject constructor(
 
     private val _selectImageUrl=mutableStateOf<String>("")
     val selectImageUrl: State<String> = _selectImageUrl
+
+    private val _selectWhiskyData=mutableStateOf<SingleWhiskeyData>(SingleWhiskeyData())
+    val selectWhiskyData: State<SingleWhiskeyData> = _selectWhiskyData
+
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -447,7 +451,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateSelectReview(selectReview:SingleWhiskeyData) {
-
+        _selectWhiskyData.value=selectReview
     }
 
     fun updateOderUserSelectReview(selectReview:SingleWhiskeyData) {
@@ -455,12 +459,13 @@ class MainViewModel @Inject constructor(
     }
 
     fun setSelectReviewData(reviewData: WhiskeyReviewData){
-        _selectWhiskyData.value=reviewData
+        _selectWhiskyReviewData.value=reviewData
     }
 
     fun tryLogin(ssaid: String) {
         mainRepository.register(device_id = ssaid){ postDetailResult->
 
+            Log.d("로그인 결과",postDetailResult.toString())
             if (postDetailResult != null) {
                 if(postDetailResult.code== SUCCESS_CODE){
                     TokenManager.saveToken(applicationContext, postDetailResult.data!!)
@@ -839,4 +844,6 @@ class MainViewModel @Inject constructor(
     fun setSelectImage(url:String){
         _selectImageUrl.value=url
     }
+
+
 }

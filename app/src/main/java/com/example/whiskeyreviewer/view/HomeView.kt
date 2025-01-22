@@ -95,8 +95,6 @@ fun HomeView(
         }
     }
 
-
-
         ConfirmDialog(
             title = "위스키 제거",
             text = "위스키를 제거하시겠습니까?",

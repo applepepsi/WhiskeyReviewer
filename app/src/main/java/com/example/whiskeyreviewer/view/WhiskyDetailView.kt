@@ -1,15 +1,10 @@
 package com.example.whiskeyreviewer.view
 
-import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,19 +30,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.R
-import com.example.whiskeyreviewer.component.camea.CameraComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.EmptyReviewDataComponent
-import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
@@ -60,18 +49,15 @@ import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
 import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
-import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyName
-import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import java.io.File
-import java.time.LocalDate
 
 @Composable
 fun WhiskeyDetailView(
@@ -158,6 +144,21 @@ fun WhiskeyDetailView(
         currentState = mainViewModel.imageDialogState.value
     )
 
+    ConfirmDialog(
+        title = "리뷰 제거",
+        text = "리뷰를 제거하시겠습니까?",
+        confirm = { /*TODO*/ },
+        toggleOption = { mainViewModel.toggleConfirmDialog() },
+        currentState = mainViewModel.confirmDialogState.value
+    )
+
+    val info=WhiskyName(
+        whisky_name = mainViewModel.selectWhiskyData.value.whisky_name,
+        is_first = false,
+        whisky_uuid = ""
+    )
+
+
     Scaffold(
         floatingActionButton = {
             CustomFloatingActionButton(
@@ -165,11 +166,7 @@ fun WhiskeyDetailView(
                 floatingActionButtonClick = { mainViewModel.toggleHomeFloatingActionButtonState() },
                 floatingActionItemClick = {
                     //이름 수정해야함
-                    val info=WhiskyName(
-                        whisky_name = "test",
-                        is_first = false,
-                        whisky_uuid = ""
-                    )
+
                     when(it.screenRoute){
                         FloatingActionButtonItems.OldBottle.screenRoute-> {
                             Log.d("루트",it.screenRoute)
@@ -312,6 +309,29 @@ fun WhiskeyDetailView(
                             onImageSelect = {
                                 mainViewModel.setSelectImage(it)
                                 mainViewModel.toggleImageDialogState()
+                            },
+                            deleteReview = {
+
+                                mainViewModel.toggleConfirmDialog()
+                            },
+                            //todo 지금 구조가 너무 난잡함 하나의 데이터로 통합하던지 해야함
+                            modifyReview={whiskyReviewData->
+
+                                writeReviewViewModel.synchronizationWhiskyData(
+                                    whiskyReviewData,
+                                    bottleNum=mainViewModel.currentMyReviewBottleNumFilter.value
+                                )
+                                val info=WhiskyName(
+                                    whisky_name = SingleWhiskeyData().whisky_name,
+                                    is_first = false,
+                                    whisky_uuid = ""
+                                )
+
+                                mainViewModel.setWriteReviewWhiskyInfo(
+                                    info,
+                                    bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
+
+                                navController.navigate(MainRoute.INSERT_REVIEW)
                             }
                         )
                     }

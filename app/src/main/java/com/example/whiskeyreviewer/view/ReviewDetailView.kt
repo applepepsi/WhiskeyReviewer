@@ -1,5 +1,7 @@
 package com.example.whiskeyreviewer.view
 
+import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,10 +38,14 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
+import com.example.whiskeyreviewer.component.home.ConfirmDialog
+import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.myReview.ReviewImageLazyRowComponent
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichText
 
 @Composable
 fun ReviewDetailView(
@@ -46,7 +55,26 @@ fun ReviewDetailView(
 ){
 
     val scrollState= rememberScrollState()
+    val richTextState = rememberRichTextState()
 
+    LaunchedEffect(Unit) {
+        richTextState.setHtml(mainViewModel.selectWhiskyReviewData.value.content)
+        Log.d("텍스트", richTextState.toText())
+    }
+
+    ConfirmDialog(
+        title = "리뷰 제거",
+        text = "리뷰를 제거하시겠습니까?",
+        confirm = { /*TODO*/ },
+        toggleOption = { mainViewModel.toggleConfirmDialog() },
+        currentState = mainViewModel.confirmDialogState.value
+    )
+
+    ImageViewerDialog(
+        currentImage = mainViewModel.selectImageUrl.value,
+        toggleOption = { mainViewModel.toggleImageDialogState() },
+        currentState = mainViewModel.imageDialogState.value
+    )
 
     Column(
         modifier = Modifier
@@ -77,7 +105,7 @@ fun ReviewDetailView(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = 10.dp),
+                .padding(end = 14.dp),
             horizontalArrangement = Arrangement.End
         ){
             //리치텍스트로 수정예정
@@ -89,56 +117,76 @@ fun ReviewDetailView(
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
+
+                    .clickable {
+
+                    }
             )
 
             Spacer(modifier = Modifier.width(15.dp))
 
             Text(
-                text = "삭제",
+                text = "제거",
                 style = TextStyle.Default.copy(
                     color = Color.LightGray,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
+
+                    .clickable {
+                        mainViewModel.toggleConfirmDialog()
+                    }
             )
         }
 
         Spacer(modifier = Modifier.height(7.dp))
 
         ReviewImageLazyRowComponent(
-            imageList = mainViewModel.selectWhiskyData.value.imageList,
+            imageList = mainViewModel.selectWhiskyReviewData.value.imageList,
             deleteImage = {
 
             },
-            deleteImageAllow = false
+            deleteImageAllow = false,
+            onImageSelect = {
+                mainViewModel.setSelectImage(it)
+                mainViewModel.toggleImageDialogState()
+            },
         )
 
         Spacer(modifier = Modifier.height(7.dp))
 
-        Text(
-            text = mainViewModel.selectWhiskyData.value.content,
-            style = TextStyle.Default.copy(
-                color = LightBlackColor,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal
-            ),
+        RichText(
+            state = richTextState,
+            style = MaterialTheme.typography.displaySmall,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(horizontal = 15.dp)
-                .padding(bottom = 15.dp)
-                .heightIn(min = 150.dp)
+                .padding(start=10.dp,end=10.dp,top=3.dp, bottom = 5.dp)
         )
+
+//        Text(
+//            text = mainViewModel.selectWhiskyReviewData.value.content,
+//            style = TextStyle.Default.copy(
+//                color = LightBlackColor,
+//                fontSize = 15.sp,
+//                fontWeight = FontWeight.Normal
+//            ),
+//            modifier = Modifier
+//                .padding(horizontal = 15.dp)
+//                .padding(bottom = 15.dp)
+//                .heightIn(min = 150.dp)
+//        )
         Row(
             modifier = Modifier.padding(start = 10.dp,top=15.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             WhiskeyScoreComponent(
-                score = mainViewModel.selectWhiskyData.value.score
+                score = mainViewModel.selectWhiskyReviewData.value.score
             )
 
             Spacer(modifier = Modifier.width(15.dp))
 
-            TagComponent(text = "개봉 ${mainViewModel.selectWhiskyData.value.open_date}")
+            TagComponent(text = "개봉 ${mainViewModel.selectWhiskyReviewData.value.open_date}")
 
             Spacer(modifier = Modifier.width(4.dp))
 

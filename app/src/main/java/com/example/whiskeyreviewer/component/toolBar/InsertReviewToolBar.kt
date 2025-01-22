@@ -219,7 +219,7 @@ fun InsertReviewToolBarComponent(
                         onValueChange = {
                             writeReviewViewModel.updateCurrentTag(it)
                         },
-                        tagList = writeReviewViewModel.tagList.value,
+                        tagList = writeReviewViewModel.writeReviewDate.value.tags,
                         deleteClick = {
                             writeReviewViewModel.deleteTag(it)
                         }

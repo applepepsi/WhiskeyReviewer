@@ -2,9 +2,7 @@ package com.example.whiskeyreviewer.viewModel
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +15,9 @@ import com.example.whiskeyreviewer.component.toolBar.TextColors
 
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.TextStyleState
+import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.ToolBarItems
+import com.example.whiskeyreviewer.data.WhiskeyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.mohamedrejeb.richeditor.model.RichTextState
@@ -331,7 +331,10 @@ class WriteReviewViewModel @Inject constructor(
     fun updateCurrentTag(currentTag:String){
 
         if (currentTag.contains(" ") && currentTag.isNotEmpty()) {
-            _tagList.value+=currentTag
+
+            _writeReviewDate.value = _writeReviewDate.value.copy(
+                tags = _writeReviewDate.value.tags + currentTag
+            )
             _currentTag.value=""
         } else {
             _currentTag.value=currentTag
@@ -339,10 +342,12 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun deleteTag(index: Int) {
-        val tagList=_tagList.value.toMutableList()
+        val tagList=_writeReviewDate.value.tags.toMutableList()
         if (index in tagList.indices) {
             tagList.removeAt(index)
-            _tagList.value = tagList
+            _writeReviewDate.value = _writeReviewDate.value.copy(
+                tags = tagList
+            )
         }
     }
 
@@ -351,7 +356,7 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateScore(score:Double){
-        _score.value=score
+        _writeReviewDate.value=_writeReviewDate.value.copy(score=score)
     }
 
     fun setErrorToastMessage(icon: Int, text: String) {
@@ -360,5 +365,27 @@ class WriteReviewViewModel @Inject constructor(
         _errorToastIcon.value=icon
     }
 
+    fun synchronizationWhiskyData(whiskyData: WhiskeyReviewData, bottleNum: Int) {
+        //todo 수정 기능 구현해야함
+        _writeReviewDate.value=_writeReviewDate.value.copy(
+            whiskey_uuid = "",
+            content = whiskyData.content,
+            is_anonymous = whiskyData.is_anonymous,
+            open_date = whiskyData.open_date,
+            tags= whiskyData.tags,
+            score=whiskyData.score,
+            bottle_num = bottleNum,
+            imageList = whiskyData.imageList
+        )
+    }
+
+    //todo 새로운 병을 추가했을떄 한번 데이터를 리셋하고 시작해야함 지금 어떤걸 리셋해야할지 고민중 서버측에서 알려줘야함
+    fun resetWriteReviewData(selectWhiskyData:SingleWhiskeyData){
+        _writeReviewDate.value=_writeReviewDate.value.copy(
+            whiskey_uuid = "",
+            imageList = emptyList(),
+            content = "",
+        )
+    }
 
 }

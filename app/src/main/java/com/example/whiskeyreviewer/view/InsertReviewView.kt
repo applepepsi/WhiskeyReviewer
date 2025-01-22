@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -66,6 +67,10 @@ fun InsertReviewView(
     val richTextEditorState = rememberRichTextState()
     val scrollState = rememberScrollState()
 
+    LaunchedEffect(Unit) {
+        richTextEditorState.setHtml(writeReviewViewModel.writeReviewDate.value.content)
+        Log.d("텍스트", richTextEditorState.toText())
+    }
 
     if(writeReviewViewModel.errorToastState.value) {
         customToast.MakeText(text = writeReviewViewModel.errorToastMessage.value, icon = writeReviewViewModel.errorToastIcon.value)
@@ -95,7 +100,7 @@ fun InsertReviewView(
         toggleOption = { writeReviewViewModel.toggleRatingScoreDialogState() },
         scoreChange = { writeReviewViewModel.updateScore(it) },
         currentState = writeReviewViewModel.scoreDialogState.value,
-        currentScore=writeReviewViewModel.score.value
+        currentScore=writeReviewViewModel.writeReviewDate.value.score
     )
 
 
@@ -143,12 +148,14 @@ fun InsertReviewView(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            ImageLazyRowComponent(
-                imageList = writeReviewViewModel.selectedImageUri.value,
-                deleteImage = {
-                    writeReviewViewModel.deleteImage(it)
-                },
-            )
+            writeReviewViewModel.writeReviewDate.value.imageList?.let {
+                ImageLazyRowComponent(
+                    imageList = it,
+                    deleteImage = {
+                        writeReviewViewModel.deleteImage(it)
+                    },
+                )
+            }
 
             Row(
                 modifier = Modifier
@@ -193,7 +200,7 @@ fun InsertReviewView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RatingStarComponent(
-                    score=writeReviewViewModel.score.value,
+                    score=writeReviewViewModel.writeReviewDate.value.score,
                     option=writeReviewViewModel.scoreDialogState.value,
                     toggleOption = { writeReviewViewModel.toggleRatingScoreDialogState() }
                 )

@@ -103,6 +103,10 @@ fun RichTextInputComponent(
     val coroutineScope = rememberCoroutineScope()
 
     var prevHeight by remember { mutableStateOf(0) }
+
+
+
+
     RichTextEditor(
         state = state,
         modifier = Modifier
@@ -580,7 +584,7 @@ fun ControlWrapper(
 
 @Composable
 fun ImageLazyRowComponent(
-    imageList:List<Uri>,
+    imageList:List<Any>,
     deleteImage:(Int)->Unit,
 ) {
     val scrollState = rememberLazyListState()

@@ -67,7 +67,9 @@ fun MyReviewPost(
     reviewDataList:List<WhiskeyReviewData>,
     singleReviewClick:(WhiskeyReviewData)->Unit,
     modifyAllow: Boolean=true,
-    onImageSelect: (String) -> Unit={}
+    onImageSelect: (String) -> Unit={},
+    deleteReview:(WhiskeyReviewData)->Unit={},
+    modifyReview:(WhiskeyReviewData)->Unit={},
 ) {
 
     val testDataList= listOf(
@@ -111,18 +113,18 @@ fun MyReviewPost(
     ) {
         items(items=reviewDataList){singleReview->
             MyReviewSinglePost(
-                reviewText = singleReview.content,
-                score=singleReview.score,
-                drinkingType = WhiskyDrinkingType.Highball,
-                private = singleReview.is_anonymous,
-                openDate = TimeFormatter.dateCalculation(singleReview.open_date),
-                imageList = singleReview.imageList,
+                singleReview=singleReview,
                 singleReviewClick = { singleReviewClick(singleReview) },
                 modifyAllow = modifyAllow,
                 onImageSelect = {
                     onImageSelect(it)
                 },
-                tags=singleReview.tags
+                deleteReview={
+                    deleteReview(it)
+                },
+                modifyReview={
+                    modifyReview(it)
+                }
             )
         }
     }
@@ -131,23 +133,19 @@ fun MyReviewPost(
 @OptIn(ExperimentalRichTextApi::class)
 @Composable
 fun MyReviewSinglePost(
-    reviewText: String = "",
-    score: Double = 0.0,
-    drinkingType: WhiskyDrinkingType,
-    private: Boolean = true,
+    singleReview: WhiskeyReviewData,
 
-    openDate: String = "",
-    imageList: List<String>? = null,
     singleReviewClick: () -> Unit,
     modifyAllow: Boolean = true,
     onImageSelect: (String) -> Unit = {},
-    tags: List<String>
+    deleteReview: (WhiskeyReviewData) -> Unit={},
+    modifyReview: (WhiskeyReviewData) -> Unit={}
 ) {
 
     val richTextState = rememberRichTextState()
 
     LaunchedEffect(Unit) {
-        richTextState.setHtml(reviewText)
+        richTextState.setHtml(singleReview.content)
     }
 
 
@@ -180,27 +178,31 @@ fun MyReviewSinglePost(
                         fontWeight = FontWeight.Bold
                     ),
                     modifier = Modifier
+                        .clickable {
+                            modifyReview(singleReview)
+                        }
                 )
 
                 Spacer(modifier = Modifier.width(15.dp))
 
                 Text(
-                    text = "삭제",
+                    text = "제거",
                     style = TextStyle.Default.copy(
                         color = Color.LightGray,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold
                     ),
                     modifier = Modifier
+                        .clickable { deleteReview(singleReview) }
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(7.dp))
 
-        if (imageList != null) {
+        if (singleReview.imageList != null) {
             ReviewImageLazyRowComponent(
-                imageList = imageList,
+                imageList = singleReview.imageList,
                 deleteImage = {
 
                 },
@@ -236,7 +238,7 @@ fun MyReviewSinglePost(
             verticalAlignment = Alignment.CenterVertically
         ) {
             WhiskeyScoreComponent(
-                score = score
+                score = singleReview.score
             )
 
             Spacer(modifier = Modifier.width(15.dp))
@@ -246,9 +248,9 @@ fun MyReviewSinglePost(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 item{
-                    TagComponent(text = "개봉 $openDate")
+                    TagComponent(text = "개봉 ${singleReview.open_date}")
                 }
-                items(items=tags){singleTag->
+                items(items=singleReview.tags){singleTag->
                     TagComponent(text = singleTag)
                 }
             }
@@ -291,9 +293,16 @@ fun ReviewImageLazyRowComponent(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            onImageSelect(image)
-                        }
+                        .then(
+                            if(image!=null && image!=""){
+                                Modifier.clickable {
+                                    onImageSelect(image)
+                                }
+                            }else{
+                                Modifier
+                            }
+                        )
+
                 )
                 if(deleteImageAllow){
                     Icon(
@@ -508,11 +517,9 @@ fun MyReviewPostPreview() {
 
     WhiskeyReviewerTheme {
         MyReviewSinglePost(
-            reviewText="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-            score=3.5,
-            drinkingType = WhiskyDrinkingType.Highball,
+            singleReview = WhiskeyReviewData(),
             singleReviewClick = {},
-            tags = listOf()
+
         )
     }
 }
