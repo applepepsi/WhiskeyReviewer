@@ -15,6 +15,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Buffer
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -35,7 +36,10 @@ class WriteReviewRepositoryImpl @Inject constructor(
             // 리뷰 데이터 json으로 변환
             val json = Gson().toJson(reviewData)
             val reviewRequestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
-
+            val buffer = Buffer()
+            reviewRequestBody.writeTo(buffer)
+            Log.d("게시물 내용", buffer.readUtf8())
+            Log.d("게시물 내용2", reviewData.toString())
             val result = try {
                 val response = api.reviewSave(imageParts,reviewRequestBody)
                 Log.d("게시물 전송 결과", response.toString())

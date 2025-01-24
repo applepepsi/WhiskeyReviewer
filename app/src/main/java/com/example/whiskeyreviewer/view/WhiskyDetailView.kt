@@ -53,6 +53,7 @@ import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.WhiskeyReviewData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -152,11 +153,11 @@ fun WhiskeyDetailView(
         currentState = mainViewModel.confirmDialogState.value
     )
 
-    val info=WhiskyName(
-        whisky_name = mainViewModel.selectWhiskyData.value.whisky_name,
-        is_first = false,
-        whisky_uuid = ""
-    )
+//    val info=WhiskyName(
+//        whisky_name = mainViewModel.selectWhiskyData.value.whisky_name,
+//        is_first = false,
+//        whisky_uuid = ""
+//    )
 
 
     Scaffold(
@@ -171,15 +172,27 @@ fun WhiskeyDetailView(
                         FloatingActionButtonItems.OldBottle.screenRoute-> {
                             Log.d("루트",it.screenRoute)
 
+                            //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
+//                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
 
-                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
+                            writeReviewViewModel.synchronizationWhiskyData(
+                                WhiskeyReviewData(),
+                                mainViewModel.selectWhiskyData.value.whisky_name,
+                                bottleNum=mainViewModel.currentMyReviewBottleNumFilter.value
+                            )
 
 //                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value)
                             navController.navigate(MainRoute.INSERT_REVIEW)
                         }
                         FloatingActionButtonItems.NewBottle.screenRoute-> {
                             Log.d("루트",it.screenRoute)
-                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value+1)
+                            //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
+//                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value+1)
+                            writeReviewViewModel.synchronizationWhiskyData(
+                                WhiskeyReviewData(),
+                                mainViewModel.selectWhiskyData.value.whisky_name,
+                                bottleNum=mainViewModel.myReviewData.value.bottleCount+1
+                            )
 
 //                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value+1)
                             navController.navigate(MainRoute.INSERT_REVIEW)
@@ -319,17 +332,18 @@ fun WhiskeyDetailView(
 
                                 writeReviewViewModel.synchronizationWhiskyData(
                                     whiskyReviewData,
+                                    mainViewModel.selectWhiskyData.value.whisky_name,
                                     bottleNum=mainViewModel.currentMyReviewBottleNumFilter.value
                                 )
-                                val info=WhiskyName(
-                                    whisky_name = SingleWhiskeyData().whisky_name,
-                                    is_first = false,
-                                    whisky_uuid = ""
-                                )
-
-                                mainViewModel.setWriteReviewWhiskyInfo(
-                                    info,
-                                    bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
+//                                val info=WhiskyName(
+//                                    whisky_name = SingleWhiskeyData().whisky_name,
+//                                    is_first = false,
+//                                    whisky_uuid = ""
+//                                )
+//
+//                                mainViewModel.setWriteReviewWhiskyInfo(
+//                                    info,
+//                                    bottleNum = mainViewModel.currentMyReviewBottleNum.value)
 
                                 navController.navigate(MainRoute.INSERT_REVIEW)
                             }

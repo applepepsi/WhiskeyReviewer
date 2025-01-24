@@ -324,7 +324,7 @@ fun ReviewImageLazyRowComponent(
 
 @Composable
 fun RatingStarComponent(
-    score: Double=0.0,
+    score: Double=1.0,
     option:Boolean=false,
     toggleOption:()->Unit,
 ) {

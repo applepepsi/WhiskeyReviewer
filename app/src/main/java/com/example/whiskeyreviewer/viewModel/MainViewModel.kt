@@ -258,8 +258,8 @@ class MainViewModel @Inject constructor(
     private val _errorToastIcon=mutableStateOf<Int>(R.drawable.fail_icon)
     val errorToastIcon: State<Int> = _errorToastIcon
 
-    private val _writeReviewWhiskyInfo=mutableStateOf<WhiskyName?>(null)
-    val writeReviewWhiskyInfo: State<WhiskyName?> = _writeReviewWhiskyInfo
+    private val _writeReviewWhiskyName=mutableStateOf<String>("")
+    val writeReviewWhiskyName: State<String> = _writeReviewWhiskyName
 
     private val _selectWhiskyState=mutableStateOf<Boolean>(false)
     val selectWhiskyState: State<Boolean> = _selectWhiskyState
@@ -304,6 +304,17 @@ class MainViewModel @Inject constructor(
     val selectWhiskyData: State<SingleWhiskeyData> = _selectWhiskyData
 
 
+    private val _progressIndicatorText=mutableStateOf<String>("")
+    val progressIndicatorText: State<String> = _progressIndicatorText
+
+    private val _progressIndicatorState=mutableStateOf<Boolean>(false)
+    val progressIndicatorState: State<Boolean> = _progressIndicatorState
+
+    private val _smallProgressIndicatorState = mutableStateOf<Boolean>(false)
+    val smallProgressIndicatorState: State<Boolean> = _smallProgressIndicatorState
+
+    private val _searchButtonState=mutableStateOf<Boolean>(false)
+    val searchButtonState: State<Boolean> = _searchButtonState
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -450,8 +461,10 @@ class MainViewModel @Inject constructor(
         _homeFloatingActionButtonState.value=!_homeFloatingActionButtonState.value
     }
 
-    fun updateSelectReview(selectReview:SingleWhiskeyData) {
-        _selectWhiskyData.value=selectReview
+    fun updateSelectWhisky(selectWhisky:SingleWhiskeyData) {
+
+        Log.d("선택된 위스키",selectWhisky.toString())
+        _selectWhiskyData.value=selectWhisky
     }
 
     fun updateOderUserSelectReview(selectReview:SingleWhiskeyData) {
@@ -463,8 +476,9 @@ class MainViewModel @Inject constructor(
     }
 
     fun tryLogin(ssaid: String) {
-        mainRepository.register(device_id = ssaid){ postDetailResult->
 
+        toggleProgressIndicatorState(state = true,text="로그인 중입니다.")
+        mainRepository.register(device_id = ssaid){ postDetailResult->
             Log.d("로그인 결과",postDetailResult.toString())
             if (postDetailResult != null) {
                 if(postDetailResult.code== SUCCESS_CODE){
@@ -476,6 +490,8 @@ class MainViewModel @Inject constructor(
             }else{
                 _loginResult.value=false
             }
+
+            toggleProgressIndicatorState(state = false,text="")
         }
     }
 
@@ -514,10 +530,17 @@ class MainViewModel @Inject constructor(
         _selectCustomWhiskyDialogState.value=!_selectCustomWhiskyDialogState.value
     }
 
-    fun updateSelectWhiskey(text:String){
+    fun updateWhiskySearchText(text:String){
         Log.d("텍스트",text)
-        if(text !=""){
-            mainRepository.addWhiskyNameSearch(name = text,category=currentWhiskyFilterType.value.name) { whiskyNameList ->
+
+        _selectWhiskyText.value=text
+    }
+
+    fun whiskySearch(){
+        if(selectWhiskyText.value !=""){
+            _searchButtonState.value=true
+            _smallProgressIndicatorState.value=true
+            mainRepository.addWhiskyNameSearch(name = selectWhiskyText.value,category=currentWhiskyFilterType.value.name) { whiskyNameList ->
                 if (whiskyNameList != null) {
 
                     val updatedList = whiskyNameList.data!!.map{ oldName ->
@@ -527,9 +550,10 @@ class MainViewModel @Inject constructor(
                     _dialogSelectWhiskyData.value = updatedList
                     Log.d("이름들", updatedList.size.toString())
                 }
+                _smallProgressIndicatorState.value=false
             }
+
         }
-        _selectWhiskyText.value=text
     }
 
     fun updateCustomWhiskyText(text:String){
@@ -539,7 +563,6 @@ class MainViewModel @Inject constructor(
 
     fun updateCurrentWhiskyFilterType(whisky:TapLayoutItems){
         _currentWhiskyFilterType.value=whisky
-        updateSelectWhiskey(selectWhiskyText.value)
 
     }
 
@@ -627,7 +650,7 @@ class MainViewModel @Inject constructor(
 
         if (info != null) {
             if(!info.is_first){
-                setWriteReviewWhiskyInfo(info, bottleNum = 1)
+                setWriteReviewWhiskyInfo(info.whisky_name)
 //                setCurrentBottleNum(num=0)
                 _selectWhiskyState.value=true
             }else{
@@ -651,14 +674,16 @@ class MainViewModel @Inject constructor(
 
             mainRepository.addCustomWhisky(image = customWhiskyImage, data=_customWhiskyData.value){serverResponse ->
                 if(serverResponse!=null){
-                    if(serverResponse.code== SUCCESS_CODE){
-                        val info=WhiskyName(
-                            whisky_name = _customWhiskyData.value.whisky_name,
-                            is_first = false,
-                            whisky_uuid = ""
-                        )
 
-                        setWriteReviewWhiskyInfo(info, bottleNum = 1)
+                    //새로운 병이라면 데이터를 넣어주고
+                    if(serverResponse.code== SUCCESS_CODE){
+//                        val info=WhiskyName(
+//                            whisky_name = _customWhiskyData.value.whisky_name,
+//                            is_first = false,
+//                            whisky_uuid = ""
+//                        )
+//
+                        setWriteReviewWhiskyInfo(customWhiskyData.value.whisky_name)
 
 //                        setCurrentBottleNum(num=0)
                         _selectWhiskyState.value=true
@@ -704,9 +729,10 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun setWriteReviewWhiskyInfo(info: WhiskyName?,bottleNum:Int) {
-        _writeReviewWhiskyInfo.value=info
-        _currentMyReviewBottleNum.value=bottleNum
+    fun setWriteReviewWhiskyInfo(info: String) {
+        _writeReviewWhiskyName.value=info
+//        _currentMyReviewBottleNum.value=bottleNum
+        Log.d("병번호", currentMyReviewBottleNum.value.toString())
     }
 
     fun toggleWhiskyFilterDropDownMenuState(filterKey: String) {
@@ -766,7 +792,8 @@ class MainViewModel @Inject constructor(
 
 
     fun resetAddWhiskyDialog(){
-        updateSelectWhiskey("")
+        updateWhiskySearchText("")
+        _searchButtonState.value=false
         _dialogSelectWhiskyData.value= emptyList()
     }
 
@@ -845,5 +872,9 @@ class MainViewModel @Inject constructor(
         _selectImageUrl.value=url
     }
 
+    fun toggleProgressIndicatorState(state:Boolean,text:String){
+        _progressIndicatorState.value=state
+        _progressIndicatorText.value=text
+    }
 
 }

@@ -19,6 +19,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.whiskeyreviewer.component.customComponent.FullSizeProgressIndicator
+import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDialog
 import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TokenManager
@@ -49,6 +51,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+//                    FullSizeProgressIndicator()
+
                     Greeting(ssaId)
                 }
             }
@@ -78,22 +82,29 @@ fun Greeting(ssaId: String) {
 
     Log.d("ssaid",ssaId)
 
-//    LaunchedEffect(Unit) {
-//        mainViewModel.tryLogin( ssaid = ssaId )
-//    }
+    ProgressIndicatorDialog(
+        toggleOption = {  mainViewModel.toggleProgressIndicatorState(state=false,text="")  },
+        currentState = mainViewModel.progressIndicatorState.value,
+        text=mainViewModel.progressIndicatorText.value
+    )
 
-    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+    LaunchedEffect(Unit) {
+        mainViewModel.tryLogin( ssaid = ssaId )
+    }
+
+//    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
 
 
 
-//    when(mainViewModel.loginResult.value){
-//        true -> {
-//
-//            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
-//        }
-//        false -> { }
-//        else -> { }
-//    }
+    when(mainViewModel.loginResult.value){
+        true -> {
+            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+        }
+        false -> { }
+        else -> { }
+    }
+
+
 
 
 //    InsertReviewView()

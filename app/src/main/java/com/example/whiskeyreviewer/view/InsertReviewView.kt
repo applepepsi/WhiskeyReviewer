@@ -164,7 +164,7 @@ fun InsertReviewView(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = mainViewModel.currentMyReviewBottleNum.value.toString()+"병",
+                    text = writeReviewViewModel.writeReviewDate.value.bottle_num.toString()+"병",
                     color = Color.Gray,
                     modifier = Modifier,
                     style = TextStyle(
@@ -178,7 +178,7 @@ fun InsertReviewView(
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = mainViewModel.writeReviewWhiskyInfo.value!!.whisky_name,
+                    text = writeReviewViewModel.writeReviewDate.value.whiskyName,
                     color = Color.Gray,
                     modifier = Modifier,
                     style = TextStyle(

@@ -72,6 +72,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchComponent
 import com.example.whiskeyreviewer.component.customComponent.ImageComponent
 import com.example.whiskeyreviewer.component.customComponent.SearchBarDivider
+import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
 import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.ImageSelectType
@@ -394,19 +395,20 @@ fun InsertBackupCodeDialog(
 
 @Composable
 fun SelectWhiskeyDialog(
-    mainViewModel:MainViewModel,
+    mainViewModel: MainViewModel,
     toggleOption: () -> Unit,
 
     currentState: Boolean = true,
-    submitWhiskey:()->Unit,
-    text:String="",
-    updateText:(String)->Unit,
-
-) {
+    submitWhiskey: () -> Unit,
+    text: String = "",
+    updateText: (String) -> Unit,
+    searchWhisky: () -> Unit,
+    ) {
 
     val customToast = CustomToast(LocalContext.current)
 
     LaunchedEffect(currentState) {
+
         mainViewModel.resetAddWhiskyDialog()
     }
 
@@ -550,7 +552,7 @@ fun SelectWhiskeyDialog(
                                             .size(28.dp)
                                             .padding(start = 8.dp),
                                         onClick = {
-                                            //서버에서 위스키 검색
+                                            searchWhisky()
                                         }
                                     ) {
                                         Icon(
@@ -572,14 +574,20 @@ fun SelectWhiskeyDialog(
                             .padding(top = 12.dp)
                             .height(175.dp)
                     ) {
-                        if(mainViewModel.dialogSelectWhiskyData.value.isEmpty() && text.isNotBlank()){
+                        if(mainViewModel.smallProgressIndicatorState.value){
+                            Log.d("로딩상태",
+                                mainViewModel.smallProgressIndicatorState.value.toString()
+                            )
+                            item{
+                                SmallSizeProgressIndicator(modifier = Modifier.size(60.dp).padding(top=20.dp))
+                            }
+                        }
+                        else if(mainViewModel.dialogSelectWhiskyData.value.isEmpty() && mainViewModel.searchButtonState.value){
                             item{
                                 EmptyWhiskySearchComponent()
                             }
                         }else{
                             itemsIndexed(items= mainViewModel.dialogSelectWhiskyData.value){ index, item->
-
-
                                 SelectWhiskyComponent(
                                     whiskeyData=item,
                                     onSelect = { mainViewModel.toggleDialogSelectWhiskyState(index) },
@@ -1393,7 +1401,10 @@ fun ImageViewerDialog(
                     onClick = {
                         toggleOption()
                     },
-                    modifier = Modifier.size(50.dp).align(Alignment.TopEnd).padding(end=10.dp,top=10.dp)
+                    modifier = Modifier
+                        .size(50.dp)
+                        .align(Alignment.TopEnd)
+                        .padding(end = 10.dp, top = 10.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,

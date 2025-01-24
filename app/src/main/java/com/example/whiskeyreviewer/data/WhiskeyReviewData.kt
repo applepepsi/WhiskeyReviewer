@@ -7,7 +7,7 @@ data class WhiskeyReviewData(
     val content:String="",
     val is_anonymous:Boolean=false,
     val open_date: LocalDate= LocalDate.now(),
-    val score: Double=0.0,
+    val score: Double=1.0,
     val tags:List<String> = listOf(),
     val imageList:List<String> = emptyList()
 )

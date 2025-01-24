@@ -54,6 +54,7 @@ import com.example.whiskeyreviewer.component.home.SelectWhiskeyDialog
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
+import com.example.whiskeyreviewer.data.WhiskeyReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -76,6 +77,8 @@ fun HomeView(
         mainViewModel.getMyWhiskeyData()
     }
 
+
+
 //    LaunchedEffect(mainViewModel.myReviewList.value) {
 //        mainViewModel.initializeDropDownStates(mainViewModel.myReviewList.value.size)
 //    }
@@ -91,7 +94,13 @@ fun HomeView(
 
     LaunchedEffect(mainViewModel.selectWhiskyState.value) {
         if(mainViewModel.selectWhiskyState.value){
+            writeReviewViewModel.synchronizationWhiskyData(
+                WhiskeyReviewData(),
+                mainViewModel.writeReviewWhiskyName.value,
+                bottleNum=1
+            )
             navController.navigate(MainRoute.INSERT_REVIEW)
+
         }
     }
 
@@ -114,8 +123,8 @@ fun HomeView(
             // 기존 위스키라면 기존 위스키의 디테일뷰로 이동
             mainViewModel.submitNewWhiskey()
         },
-        updateText = {mainViewModel.updateSelectWhiskey(it)},
-
+        updateText = { mainViewModel.updateWhiskySearchText(it) },
+        searchWhisky={mainViewModel.whiskySearch()},
         mainViewModel = mainViewModel
     )
 
@@ -287,11 +296,11 @@ fun HomeView(
                             MyReviewComponent(
                                 myReviewItems = mainViewModel.myReviewList.value,
                                 setSelectReview = {singleWhiskyData->
-                                    mainViewModel.updateSelectReview(singleWhiskyData)
+                                    mainViewModel.updateSelectWhisky(singleWhiskyData)
                                     navController.navigate(MainRoute.WHISKY_DETAIL)
                                 },
                                 toggleConfirmDialogState = {
-                                    mainViewModel.updateSelectReview(it)
+                                    mainViewModel.updateSelectWhisky(it)
                                     mainViewModel.toggleConfirmDialog()
                                 },
                                 dropDownMenuState = mainViewModel.whiskyOptionDropDownMenuState,

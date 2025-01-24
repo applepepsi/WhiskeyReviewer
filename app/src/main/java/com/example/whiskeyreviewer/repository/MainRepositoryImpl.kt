@@ -67,6 +67,13 @@ class MainRepositoryImpl @Inject constructor(
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = ApiHandler.makeApiCall(tag="나의 위스키 목록 가져오기") {
+
+                Log.d("WhiskyList", "이름: ${name ?: "없음"}")
+                Log.d("WhiskyList", "카테고리: ${category ?: "없음"}")
+                Log.d("WhiskyList", "날짜 정렬: $date_order")
+                Log.d("WhiskyList", "이름 정렬: $name_order")
+                Log.d("WhiskyList", "점수 정렬: $score_order")
+
                 api.getMyWhiskys(
                 name=name,
                 category=category,

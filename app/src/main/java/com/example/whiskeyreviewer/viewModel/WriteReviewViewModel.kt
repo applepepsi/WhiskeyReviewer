@@ -18,7 +18,10 @@ import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
+import com.example.whiskeyreviewer.repository.MainRepository
+import com.example.whiskeyreviewer.repository.WriteReviewRepository
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +32,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WriteReviewViewModel @Inject constructor(
-    @ApplicationContext private val applicationContext: Context
+    @ApplicationContext private val applicationContext: Context,
+    private val writeReviewRepository: WriteReviewRepository
 ): ViewModel() {
 
 
@@ -288,7 +292,7 @@ class WriteReviewViewModel @Inject constructor(
         }else{
             null
         }
-        Log.d("imageFiles", imageFiles.toString())
+
 
         if(_writeReviewDate.value.open_date > LocalDate.now()){
             _errorToastState.value=true
@@ -298,13 +302,20 @@ class WriteReviewViewModel @Inject constructor(
 
             _errorToastState.value=true
             _errorToastMessage.value="내용을 입력해 주세요."
-            _errorToastIcon.value=R.drawable.success_icon
+            _errorToastIcon.value=R.drawable.fail_icon
         }else{
-            //서버로 전송
+            //            writeReviewRepository.reviewSave(
+//                imageFiles=imageFiles,
+//                reviewData = writeReviewDate.value
+//            ){ saveResult->
+//
+//            }
+            Log.d("작성이미지", imageFiles.toString())
+            Log.d("작성내용", writeReviewDate.value.toString())
         }
-
-
-        _writeReviewDate.value
+//
+//
+//        _writeReviewDate.value
     }
 
     fun resetToastErrorState() {
@@ -365,7 +376,7 @@ class WriteReviewViewModel @Inject constructor(
         _errorToastIcon.value=icon
     }
 
-    fun synchronizationWhiskyData(whiskyData: WhiskeyReviewData, bottleNum: Int) {
+    fun synchronizationWhiskyData(whiskyData: WhiskeyReviewData, whiskyName: String, bottleNum: Int) {
         //todo 수정 기능 구현해야함
         _writeReviewDate.value=_writeReviewDate.value.copy(
             whiskey_uuid = "",
@@ -375,7 +386,8 @@ class WriteReviewViewModel @Inject constructor(
             tags= whiskyData.tags,
             score=whiskyData.score,
             bottle_num = bottleNum,
-            imageList = whiskyData.imageList
+            imageList = whiskyData.imageList,
+            whiskyName=whiskyName
         )
     }
 
