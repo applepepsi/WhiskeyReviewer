@@ -76,7 +76,27 @@ class MainViewModel @Inject constructor(
     )
     val myReviewList: State<List<SingleWhiskeyData>> = _myReviewList
 
-    private val _reviewList = mutableStateOf<List<SingleWhiskeyData>>(emptyList())
+    private val _reviewList = mutableStateOf<List<SingleWhiskeyData>>(
+        listOf(
+            SingleWhiskeyData(
+                whisky_name="잭 다니엘 10년",
+                strength = 20.0,
+                score=4.5,
+                dday=6,
+                picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000039"),
+
+                ), SingleWhiskeyData(
+                whisky_name="글렌 리뱃 12년산",
+                strength = 18.5,
+                score=3.5,
+                dday=3,
+                picture = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000037"),
+
+                ),
+            SingleWhiskeyData(
+            )
+        )
+    )
     val reviewList: State<List<SingleWhiskeyData>> = _reviewList
 
 //    private val _currentWhiskeyFilter = mutableStateOf<TapLayoutItems>(TapLayoutItems.AllWhiskey)
@@ -121,6 +141,9 @@ class MainViewModel @Inject constructor(
 
     private val _currentMyReviewTypeFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.Review)
     val currentMyReviewTypeFilter: State<MyReviewFilterItems> = _currentMyReviewTypeFilter
+
+    private val _currentMyReviewVoteFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.Best)
+    val currentMyReviewVoteFilter: State<MyReviewFilterItems> = _currentMyReviewVoteFilter
 
     private val _whiskyFilterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
     val whiskyFilterDropDownMenuState: State<FilterDropDownMenuState> = _whiskyFilterDropDownMenuState
@@ -442,6 +465,7 @@ class MainViewModel @Inject constructor(
             bottleNum = if (filterKey == MyReviewFilterItems.BOTTLE_NUM) !_myReviewFilterDropDownMenuState.value.bottleNum else false,
             day = if (filterKey == MyReviewFilterItems.DAY) !_myReviewFilterDropDownMenuState.value.day else false,
             reviewType = if (filterKey == MyReviewFilterItems.REVIEW_TYPE) !_myReviewFilterDropDownMenuState.value.reviewType else false,
+            vote = if (filterKey == MyReviewFilterItems.VOTE) !_myReviewFilterDropDownMenuState.value.vote else false,
         )
     }
 
@@ -450,6 +474,7 @@ class MainViewModel @Inject constructor(
 
             MyReviewFilterItems.DAY->_currentMyReviewDayFilter.value=filterKey
             MyReviewFilterItems.REVIEW_TYPE->_currentMyReviewTypeFilter.value=filterKey
+            MyReviewFilterItems.VOTE->_currentMyReviewVoteFilter.value=filterKey
         }
     }
 

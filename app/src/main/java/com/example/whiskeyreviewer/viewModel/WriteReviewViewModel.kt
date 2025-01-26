@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.toolBar.TextAlignment
@@ -278,7 +279,7 @@ class WriteReviewViewModel @Inject constructor(
     }
 
 
-    fun exportReview(richTextEditorState: RichTextState,) {
+    fun exportReview(richTextEditorState: RichTextState,tag:String?=null) {
 
         Log.d("richTextEditorState",richTextEditorState.toHtml())
         Log.d("richTextEditorState",richTextEditorState.annotatedString.text)
@@ -304,12 +305,18 @@ class WriteReviewViewModel @Inject constructor(
             _errorToastMessage.value="내용을 입력해 주세요."
             _errorToastIcon.value=R.drawable.fail_icon
         }else{
-            //            writeReviewRepository.reviewSave(
-//                imageFiles=imageFiles,
-//                reviewData = writeReviewDate.value
-//            ){ saveResult->
-//
-//            }
+
+            if(tag=="modify"){
+                //수정 태그가 들어왔다면 수정으로 전송
+            }else{
+                writeReviewRepository.reviewSave(
+                    imageFiles=imageFiles,
+                    reviewData = writeReviewDate.value
+                ){ saveResult->
+
+                }
+            }
+
             Log.d("작성이미지", imageFiles.toString())
             Log.d("작성내용", writeReviewDate.value.toString())
         }
@@ -386,9 +393,11 @@ class WriteReviewViewModel @Inject constructor(
             tags= whiskyData.tags,
             score=whiskyData.score,
             bottle_num = bottleNum,
-            imageList = whiskyData.imageList,
+//            imageList = whiskyData.imageList,
             whiskyName=whiskyName
         )
+        val stringList: List<Uri> = whiskyData.imageList.map { it.toUri() }
+        _selectedImageUri.value = stringList
     }
 
     //todo 새로운 병을 추가했을떄 한번 데이터를 리셋하고 시작해야함 지금 어떤걸 리셋해야할지 고민중 서버측에서 알려줘야함

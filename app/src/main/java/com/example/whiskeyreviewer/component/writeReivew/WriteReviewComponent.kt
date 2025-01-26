@@ -589,7 +589,7 @@ fun ImageLazyRowComponent(
 ) {
     val scrollState = rememberLazyListState()
 
-    Log.d("실행", "실행")
+    Log.d("실행", imageList.toString())
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),

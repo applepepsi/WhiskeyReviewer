@@ -21,6 +21,8 @@ sealed class MyReviewFilterItems(
     data object New : MyReviewFilterItems("최신순", NEW, DAY)
     data object Old : MyReviewFilterItems("오래된순", OLD, DAY)
 
+    data object Best : MyReviewFilterItems("추천 많은순", BEST, VOTE)
+    data object Worst : MyReviewFilterItems("추천 적은순", WORST, VOTE)
 
     data object Review : MyReviewFilterItems("리뷰", REVIEW, REVIEW_TYPE)
     data object Graph : MyReviewFilterItems("그래프", GRAPH, REVIEW_TYPE)
@@ -29,12 +31,16 @@ sealed class MyReviewFilterItems(
         const val BOTTLE_NUM = "병 번호"
         const val DAY = "작성일"
         const val REVIEW_TYPE="리뷰 종류"
+        const val VOTE = "추천순"
 
         const val NEW = "NEW"
         const val OLD = "OLD"
 
         const val REVIEW = "REVIEW"
         const val GRAPH = "GRAPH"
+
+        const val BEST = "BEST"
+        const val WORST = "WORST"
     }
 }
 
@@ -42,6 +48,7 @@ data class MyReviewFilterDropDownMenuState(
     var bottleNum:Boolean=false,
     var day: Boolean = false,
     var reviewType: Boolean = false,
+    var vote: Boolean=false
 )
 
 

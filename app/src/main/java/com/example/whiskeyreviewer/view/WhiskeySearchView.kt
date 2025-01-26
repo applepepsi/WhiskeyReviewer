@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -46,6 +47,7 @@ import com.example.whiskeyreviewer.component.customComponent.EmptyMyWhiskyReview
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
@@ -215,6 +217,7 @@ fun WhiskeySearchView(
                     },
                     myReview = {
                         if(mainViewModel.reviewList.value.isEmpty()){
+                            Log.d("리스트", mainViewModel.reviewList.value.toString())
                             EmptyMyWhiskyReviewComponent(
                                 text="해당 위스키가 존재하지 않습니다."
                             )
@@ -225,7 +228,8 @@ fun WhiskeySearchView(
                                     mainViewModel.updateOderUserSelectReview(singleWhiskyData)
                                     navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
                                 },
-                                toggleConfirmDialogState = {}
+                                toggleConfirmDialogState = {},
+                                showOption = false
                             )
                         }
                     },
@@ -248,6 +252,13 @@ fun OtherUserReviewDetailView(
     mainViewModel: MainViewModel
 ) {
     val scrollState= rememberScrollState()
+
+    ImageViewerDialog(
+        currentImage = mainViewModel.selectImageUrl.value,
+        toggleOption = { mainViewModel.toggleImageDialogState() },
+        currentState = mainViewModel.imageDialogState.value
+    )
+
 
     Scaffold(
         floatingActionButton = {
@@ -292,8 +303,6 @@ fun OtherUserReviewDetailView(
                 horizontalArrangement = Arrangement.End
             ){
 
-
-
                 WhiskeyDetailDropDownMenuComponent(
 
                     value = mainViewModel.currentMyReviewDayFilter.value,
@@ -304,34 +313,49 @@ fun OtherUserReviewDetailView(
                     menuItems = listOf(MyReviewFilterItems.New, MyReviewFilterItems.Old,)
                 )
 
+                WhiskeyDetailDropDownMenuComponent(
+
+                    value = mainViewModel.currentMyReviewVoteFilter.value,
+                    onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
+                    dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.vote,
+                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
+                        MyReviewFilterItems.VOTE) },
+                    menuItems = listOf(MyReviewFilterItems.Best, MyReviewFilterItems.Worst,)
+                )
             }
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+
                 when (mainViewModel.currentMyReviewTypeFilter.value) {
-                    MyReviewFilterItems.Graph -> {
-                        MyReviewGraphComponent2(
-                            mainViewModel.myReviewDataList.value
-                        )
-                    }
 
                     MyReviewFilterItems.Review -> {
-                        MyReviewPost(
-                            singleReviewClick = {
-                                mainViewModel.setSelectReviewData(it)
-                                navController.navigate(MainRoute.REVIEW_DETAIL)
-                            },
-                            modifyAllow = false,
-                            reviewDataList = mainViewModel.myReviewDataList.value
-                        )
+                        Column(
+                            modifier = Modifier
+                                .height(1000.dp)
+                        ) {
+                            MyReviewPost(
+                                singleReviewClick = {
+                                    mainViewModel.setSelectReviewData(it)
+                                    navController.navigate(MainRoute.REVIEW_DETAIL)
+                                },
+                                modifyAllow = false,
+                                reviewDataList = mainViewModel.myReviewDataList.value,
+                                onImageSelect = {
+                                    mainViewModel.setSelectImage(it)
+                                    mainViewModel.toggleImageDialogState()
+                                },
+
+                                )
+                        }
                     }
 
                     MyReviewFilterItems.New -> TODO()
                     MyReviewFilterItems.Old -> TODO()
+                    MyReviewFilterItems.Best -> TODO()
+                    MyReviewFilterItems.Worst -> TODO()
+                    MyReviewFilterItems.Graph -> TODO()
                 }
 
-            }
+
         }
 
     }

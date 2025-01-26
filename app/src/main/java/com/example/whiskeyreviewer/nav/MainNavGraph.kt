@@ -54,8 +54,13 @@ private fun NavGraphBuilder.homeRoute(
         composable(MainRoute.WHISKY_DETAIL) {
             WhiskeyDetailView(writeReviewViewModel,navController,mainViewModel)
         }
-        composable(MainRoute.INSERT_REVIEW) {
-            InsertReviewView(writeReviewViewModel,navController,mainViewModel)
+        composable("${MainRoute.INSERT_REVIEW}/{tag}") {backStackEntry ->
+            InsertReviewView(
+                writeReviewViewModel,
+                navController,
+                mainViewModel,
+                tag=backStackEntry.arguments?.getString("tag") ?: "",
+            )
         }
         composable(MainRoute.WHISKEY_SEARCH) {
             WhiskeySearchView(writeReviewViewModel,navController,mainViewModel)

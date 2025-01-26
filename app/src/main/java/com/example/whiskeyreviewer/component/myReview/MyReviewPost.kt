@@ -35,15 +35,22 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -70,45 +77,16 @@ fun MyReviewPost(
     onImageSelect: (String) -> Unit={},
     deleteReview:(WhiskeyReviewData)->Unit={},
     modifyReview:(WhiskeyReviewData)->Unit={},
+
 ) {
 
-    val testDataList= listOf(
-        WhiskeyReviewData(
-            content ="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
 
-            is_anonymous = false,
-            open_date = LocalDate.of(2024, 11, 15),
-            score=1.5,
-            imageList = emptyList()
-        ),
-        WhiskeyReviewData(
-            content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-
-            is_anonymous = true,
-            open_date = LocalDate.of(2024, 11, 10),
-            score=1.5,
-            imageList = emptyList()
-        ),
-        WhiskeyReviewData(
-            content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-
-            is_anonymous = false,
-            open_date = LocalDate.of(2024, 11, 20),
-            score=3.5,
-            imageList = emptyList()
-        ),
-        WhiskeyReviewData(
-            content="스트레잇으로 마실 때는 진한 풍미가 느껴지고, 얼음을 넣어 언더락으로 즐기면 부드러움이 느껴집니다.",
-
-            is_anonymous = true,
-            open_date = LocalDate.of(2024, 11, 1),
-            score=2.5,
-            imageList = emptyList()
-        ),
-    )
 
     LazyColumn(
-        modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+        modifier = Modifier
+            .padding(vertical = 12.dp, horizontal = 8.dp),
+
+
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(items=reviewDataList){singleReview->
@@ -139,7 +117,8 @@ fun MyReviewSinglePost(
     modifyAllow: Boolean = true,
     onImageSelect: (String) -> Unit = {},
     deleteReview: (WhiskeyReviewData) -> Unit={},
-    modifyReview: (WhiskeyReviewData) -> Unit={}
+    modifyReview: (WhiskeyReviewData) -> Unit={},
+
 ) {
 
     val richTextState = rememberRichTextState()
@@ -159,6 +138,8 @@ fun MyReviewSinglePost(
             .clip(RoundedCornerShape(8.dp))
             .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp))
             .padding(horizontal = 15.dp, vertical = 12.dp)
+
+
     ) {
         if(modifyAllow){
             Row(

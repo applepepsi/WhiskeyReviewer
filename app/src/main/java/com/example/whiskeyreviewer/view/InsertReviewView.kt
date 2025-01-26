@@ -60,12 +60,16 @@ fun InsertReviewView(
     writeReviewViewModel: WriteReviewViewModel,
     navController: NavHostController,
     mainViewModel: MainViewModel,
-
+    tag:String
 ) {
     val customToast = CustomToast(LocalContext.current)
 
     val richTextEditorState = rememberRichTextState()
     val scrollState = rememberScrollState()
+
+    val navBackStackEntry = navController.currentBackStackEntry
+
+    Log.d("태그",tag)
 
     LaunchedEffect(Unit) {
         richTextEditorState.setHtml(writeReviewViewModel.writeReviewDate.value.content)
@@ -134,7 +138,7 @@ fun InsertReviewView(
                 CustomIconComponent(
                     icon = ImageVector.vectorResource(R.drawable.write_complete_button),
                     onClick = {
-                        writeReviewViewModel.exportReview(richTextEditorState)
+                        writeReviewViewModel.exportReview(richTextEditorState,tag)
                     },
                     modifier=Modifier
                 )
@@ -148,7 +152,7 @@ fun InsertReviewView(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            writeReviewViewModel.writeReviewDate.value.imageList?.let {
+            writeReviewViewModel.selectedImageUri.value.let {
                 ImageLazyRowComponent(
                     imageList = it,
                     deleteImage = {
@@ -215,8 +219,6 @@ fun InsertReviewView(
 
                 scrollState=scrollState
             )
-
-
         }
 //        InsertTagComponent(
 //            text = writeReviewViewModel.currentTag.value,
@@ -243,7 +245,7 @@ fun InsertReviewPreview() {
     val mainViewModel:MainViewModel= hiltViewModel()
     val mainNavController = rememberNavController()
     WhiskeyReviewerTheme {
-        InsertReviewView(writeReviewViewModel, mainNavController, mainViewModel)
+        InsertReviewView(writeReviewViewModel, mainNavController, mainViewModel,tag="")
     }
 }
 

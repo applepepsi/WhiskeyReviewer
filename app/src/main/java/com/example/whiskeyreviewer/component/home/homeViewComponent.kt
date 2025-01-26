@@ -225,7 +225,8 @@ fun MyReviewComponent(
     setSelectReview:(SingleWhiskeyData)->Unit,
     toggleConfirmDialogState:(SingleWhiskeyData)->Unit,
     dropDownMenuState: List<Boolean> = listOf() ,
-    toggleDropDownMenuState:(Int)->Unit={}
+    toggleDropDownMenuState:(Int)->Unit={},
+    showOption: Boolean=true
 ) {
 //    val testData= listOf(
 //        SingleWhiskeyData(
@@ -248,25 +249,16 @@ fun MyReviewComponent(
 //    )
 
     LazyColumn(
-
         horizontalAlignment = Alignment.CenterHorizontally,
-//            contentPadding = PaddingValues(vertical = 10.dp),
     ) {
-
-
-        itemsIndexed(items = myReviewItems){ index,singleWhiskeyData->
-
+        itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->
             SingleWhiskeyComponent(
                 singleWhiskeyData = singleWhiskeyData,
-                reviewClick={
-                    setSelectReview(singleWhiskeyData)
-                },
-                showOption = true,
-                deleteWhisky = {
-                    toggleConfirmDialogState(it)
-                },
-                dropDownMenuState = dropDownMenuState[index],
-                toggleDropDownMenuState = {toggleDropDownMenuState(index)}
+                reviewClick = { setSelectReview(singleWhiskeyData) },
+                showOption = showOption,
+                deleteWhisky = { toggleConfirmDialogState(singleWhiskeyData) },
+                dropDownMenuState = if (showOption) dropDownMenuState[index] else false,
+                toggleDropDownMenuState = { if (showOption) toggleDropDownMenuState(index) }
             )
 
             Spacer(modifier = Modifier.height(10.dp))

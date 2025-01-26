@@ -99,7 +99,7 @@ fun HomeView(
                 mainViewModel.writeReviewWhiskyName.value,
                 bottleNum=1
             )
-            navController.navigate(MainRoute.INSERT_REVIEW)
+            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
 
         }
     }

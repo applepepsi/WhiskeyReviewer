@@ -55,7 +55,8 @@ data class FilterDropDownMenuState(
     var day: Boolean = false,
     var score: Boolean = false,
     var openDate: Boolean = false,
-    var name: Boolean=false
+    var name: Boolean=false,
+
 )
 
 

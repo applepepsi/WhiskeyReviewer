@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -26,7 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,7 +70,7 @@ fun WhiskeyDetailView(
     navController: NavHostController,
     mainViewModel: MainViewModel
 ) {
-    val scrollState= rememberScrollState()
+    val scrollState = rememberScrollState()
     val context = LocalContext.current
     val imageCapture = remember { ImageCapture.Builder().build() }
 
@@ -82,6 +86,10 @@ fun WhiskeyDetailView(
             }
         }
     )
+    val localDensity = LocalDensity.current
+    var heightIs by remember {
+        mutableStateOf(0.dp)
+    }
 
 //    LaunchedEffect(mainViewModel.selectedWhiskyImageUri.value) {
 //        Log.d("값", mainViewModel.selectedWhiskyImageUri.value.toString())
@@ -96,12 +104,15 @@ fun WhiskeyDetailView(
 //            mainViewModel = mainViewModel,
 //        )
 //    }
-    if(mainViewModel.errorToastState.value) {
+    if (mainViewModel.errorToastState.value) {
         val customToast = CustomToast(LocalContext.current)
-        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
+        customToast.MakeText(
+            text = mainViewModel.errorToastMessage.value,
+            icon = mainViewModel.errorToastIcon.value
+        )
         mainViewModel.resetToastErrorState()
     }
-
+    val height = remember { mutableStateOf(0.dp) }
 
     ConfirmDialog(
         title = "위스키 이미지 변경",
@@ -123,6 +134,7 @@ fun WhiskeyDetailView(
                     photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
                 }
+
                 mainViewModel.imageTypeSelectState.value.cameraSelected -> {
 
                     mainViewModel.setCameraTag(AddImageTag.ChangeWhiskyImage)
@@ -135,7 +147,7 @@ fun WhiskeyDetailView(
             }
         },
         onSelect = { mainViewModel.updateSelectImageType(it) },
-        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
+        toggleOption = { mainViewModel.toggleImageTypeSelectDialogState() },
         currentState = mainViewModel.imageTypeSelectDialogState.value
     )
 
@@ -168,9 +180,9 @@ fun WhiskeyDetailView(
                 floatingActionItemClick = {
                     //이름 수정해야함
 
-                    when(it.screenRoute){
-                        FloatingActionButtonItems.OldBottle.screenRoute-> {
-                            Log.d("루트",it.screenRoute)
+                    when (it.screenRoute) {
+                        FloatingActionButtonItems.OldBottle.screenRoute -> {
+                            Log.d("루트", it.screenRoute)
 
                             //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
 //                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
@@ -178,189 +190,188 @@ fun WhiskeyDetailView(
                             writeReviewViewModel.synchronizationWhiskyData(
                                 WhiskeyReviewData(),
                                 mainViewModel.selectWhiskyData.value.whisky_name,
-                                bottleNum=mainViewModel.currentMyReviewBottleNumFilter.value
+                                bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value
                             )
 
 //                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value)
-                            navController.navigate(MainRoute.INSERT_REVIEW)
+                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
                         }
-                        FloatingActionButtonItems.NewBottle.screenRoute-> {
-                            Log.d("루트",it.screenRoute)
+
+                        FloatingActionButtonItems.NewBottle.screenRoute -> {
+                            Log.d("루트", it.screenRoute)
                             //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
 //                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value+1)
                             writeReviewViewModel.synchronizationWhiskyData(
                                 WhiskeyReviewData(),
                                 mainViewModel.selectWhiskyData.value.whisky_name,
-                                bottleNum=mainViewModel.myReviewData.value.bottleCount+1
+                                bottleNum = mainViewModel.myReviewData.value.bottleCount + 1
                             )
 
 //                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value+1)
-                            navController.navigate(MainRoute.INSERT_REVIEW)
+                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
                         }
-                        else-> Log.d("루트",it.screenRoute)
+
+                        else -> Log.d("루트", it.screenRoute)
                     }
                 },
-                items=
-                    listOf(
-                        FloatingActionButtonItems.OldBottle,
-                        FloatingActionButtonItems.NewBottle
-                    )
-
+                items = listOf(
+                    FloatingActionButtonItems.OldBottle,
+                    FloatingActionButtonItems.NewBottle
+                )
             )
         },
-
+        modifier = Modifier
     ) {
-    Column(
-        modifier= Modifier
-            .fillMaxSize()
-            .padding(it)
-            .background(Color.White)
-            .verticalScroll(scrollState)
-    ) {
-
-        CustomAppBarComponent(
-            titleTextValue = "나의 리뷰",
-            leftButton = {
-                CustomIconComponent(
-                    icon = ImageVector.vectorResource(R.drawable.back_button_icon),
-                    onClick = {
-                        navController.popBackStack()
-//                        navController.navigate(MainRoute.HOME) {
-//                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-//                        }
-                    },
-                    modifier = Modifier
-                )
-            },
-            rightButton = {
-                Spacer(modifier = Modifier.size(35.dp))
-            },
-        )
-        SingleWhiskeyComponent(
-            singleWhiskeyData = SingleWhiskeyData(),
-            reviewClick = {},
-            deleteWhisky = {},
-            showOption = false,
-            imageClick={
-                mainViewModel.toggleSelectedWhiskyDialogState()
-            },
-            imageClickAllow = true
-        )
-
-
-        Row(
-            modifier= Modifier
-                .fillMaxWidth()
-                .padding(end = 10.dp, top = 8.dp),
-            horizontalArrangement = Arrangement.End
-        ){
-
-            WhiskeyDetailBottleNumDropDownMenuComponent(
-
-                value = mainViewModel.currentMyReviewBottleNumFilter.value,
-                onValueChange = { mainViewModel.updateMyBottleNumFilter(it) },
-                dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.bottleNum,
-                toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
-                    MyReviewFilterItems.BOTTLE_NUM) },
-                menuItems = (1..mainViewModel.myReviewData.value.bottleCount).toList()
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            WhiskeyDetailDropDownMenuComponent(
-
-                value = mainViewModel.currentMyReviewDayFilter.value,
-                onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
-                dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.day,
-                toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.DAY) },
-                menuItems = listOf(MyReviewFilterItems.New,MyReviewFilterItems.Old,)
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            WhiskeyDetailDropDownMenuComponent(
-
-                value = mainViewModel.currentMyReviewTypeFilter.value,
-                onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
-                dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.reviewType,
-                toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(MyReviewFilterItems.REVIEW_TYPE) },
-                menuItems = listOf(MyReviewFilterItems.Review,MyReviewFilterItems.Graph)
-            )
-        }
-
         Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            when (mainViewModel.currentMyReviewTypeFilter.value) {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .background(Color.White)
+                .verticalScroll(scrollState)
 
+        ) {
+            CustomAppBarComponent(
+                titleTextValue = "나의 리뷰",
+                leftButton = {
+                    CustomIconComponent(
+                        icon = ImageVector.vectorResource(R.drawable.back_button_icon),
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier
+                    )
+                },
+                rightButton = {
+                    Spacer(modifier = Modifier.size(35.dp))
+                }
+            )
+
+            SingleWhiskeyComponent(
+                singleWhiskeyData = SingleWhiskeyData(),
+                reviewClick = {},
+                deleteWhisky = {},
+                showOption = false,
+                imageClick = { mainViewModel.toggleSelectedWhiskyDialogState() },
+                imageClickAllow = true
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp, top = 8.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                WhiskeyDetailBottleNumDropDownMenuComponent(
+                    value = mainViewModel.currentMyReviewBottleNumFilter.value,
+                    onValueChange = { mainViewModel.updateMyBottleNumFilter(it) },
+                    dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.bottleNum,
+                    toggleDropDownMenuOption = {
+                        mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
+                            MyReviewFilterItems.BOTTLE_NUM
+                        )
+                    },
+                    menuItems = (1..mainViewModel.myReviewData.value.bottleCount).toList()
+                )
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                WhiskeyDetailDropDownMenuComponent(
+                    value = mainViewModel.currentMyReviewDayFilter.value,
+                    onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
+                    dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.day,
+                    toggleDropDownMenuOption = {
+                        mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
+                            MyReviewFilterItems.DAY
+                        )
+                    },
+                    menuItems = listOf(MyReviewFilterItems.New, MyReviewFilterItems.Old)
+                )
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                WhiskeyDetailDropDownMenuComponent(
+                    value = mainViewModel.currentMyReviewTypeFilter.value,
+                    onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
+                    dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.reviewType,
+                    toggleDropDownMenuOption = {
+                        mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
+                            MyReviewFilterItems.REVIEW_TYPE
+                        )
+                    },
+                    menuItems = listOf(MyReviewFilterItems.Review, MyReviewFilterItems.Graph)
+                )
+            }
+
+            when (mainViewModel.currentMyReviewTypeFilter.value) {
                 MyReviewFilterItems.Graph -> {
-                    if(mainViewModel.myReviewDataList.value.isEmpty()){
-                        EmptyReviewDataComponent(
-                            text="리뷰가 존재하지 않습니다.",
-                            icon=ImageVector.vectorResource(R.drawable.graph)
-                        )
-                    }else{
-                        MyReviewGraphComponent2(
-                            mainViewModel.myReviewDataList.value
-                        )
+                    Column(
+                        modifier = Modifier
+                    ) {
+                        if (mainViewModel.myReviewDataList.value.isEmpty()) {
+                            EmptyReviewDataComponent(
+                                text = "리뷰가 존재하지 않습니다.",
+                                icon = ImageVector.vectorResource(R.drawable.graph)
+                            )
+                        } else {
+                            Column(
+                                modifier = Modifier.height(300.dp)
+                            ) {
+                                MyReviewGraphComponent2(mainViewModel.myReviewDataList.value)
+                            }
+                        }
                     }
                 }
 
                 MyReviewFilterItems.Review -> {
-                    if(mainViewModel.myReviewDataList.value.isEmpty()){
-                        EmptyReviewDataComponent(
-                            text="리뷰가 존재하지 않습니다.",
-                            icon=ImageVector.vectorResource(R.drawable.empty_bottle)
-                        )
-                    }else {
-                        MyReviewPost(
-                            reviewDataList = mainViewModel.myReviewDataList.value,
-                            singleReviewClick = {
-                                mainViewModel.setSelectReviewData(it)
-                                navController.navigate(REVIEW_DETAIL)
-                            },
-                            onImageSelect = {
-                                mainViewModel.setSelectImage(it)
-                                mainViewModel.toggleImageDialogState()
-                            },
-                            deleteReview = {
+                    if (mainViewModel.myReviewDataList.value.isEmpty()) {
+                        Column(
+                            modifier = Modifier
+                        ) {
+                            EmptyReviewDataComponent(
+                                text = "리뷰가 존재하지 않습니다.",
+                                icon = ImageVector.vectorResource(R.drawable.empty_bottle)
+                            )
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .height(1000.dp)
+                        ) {
+                            MyReviewPost(
+                                reviewDataList = mainViewModel.myReviewDataList.value,
+                                singleReviewClick = {
+                                    mainViewModel.setSelectReviewData(it)
+                                    navController.navigate(REVIEW_DETAIL)
+                                },
+                                onImageSelect = {
+                                    mainViewModel.setSelectImage(it)
+                                    mainViewModel.toggleImageDialogState()
+                                },
+                                deleteReview = {
+                                    mainViewModel.toggleConfirmDialog()
+                                },
+                                modifyReview = { whiskyReviewData ->
+                                    writeReviewViewModel.synchronizationWhiskyData(
+                                        whiskyReviewData,
+                                        mainViewModel.selectWhiskyData.value.whisky_name,
+                                        bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value
+                                    )
+                                    navController.navigate("${MainRoute.INSERT_REVIEW}/modify")
+                                },
 
-                                mainViewModel.toggleConfirmDialog()
-                            },
-                            //todo 지금 구조가 너무 난잡함 하나의 데이터로 통합하던지 해야함
-                            modifyReview={whiskyReviewData->
-
-                                writeReviewViewModel.synchronizationWhiskyData(
-                                    whiskyReviewData,
-                                    mainViewModel.selectWhiskyData.value.whisky_name,
-                                    bottleNum=mainViewModel.currentMyReviewBottleNumFilter.value
                                 )
-//                                val info=WhiskyName(
-//                                    whisky_name = SingleWhiskeyData().whisky_name,
-//                                    is_first = false,
-//                                    whisky_uuid = ""
-//                                )
-//
-//                                mainViewModel.setWriteReviewWhiskyInfo(
-//                                    info,
-//                                    bottleNum = mainViewModel.currentMyReviewBottleNum.value)
-
-                                navController.navigate(MainRoute.INSERT_REVIEW)
-                            }
-                        )
+                        }
                     }
                 }
 
                 MyReviewFilterItems.New -> TODO()
                 MyReviewFilterItems.Old -> TODO()
+                MyReviewFilterItems.Best -> TODO()
+                MyReviewFilterItems.Worst -> TODO()
             }
-
             }
         }
-
     }
 
-}
+
 
 //val testReviewDataList = listOf(
 //    WriteReviewData(
