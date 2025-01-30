@@ -62,6 +62,7 @@ import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.viewModel.MainViewModel
+import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -69,12 +70,15 @@ import java.io.OutputStream
 @Composable
 fun CameraComponent(
     mainViewModel: MainViewModel,
+    writeReviewViewModel: WriteReviewViewModel,
     navController: NavHostController,
+    tag:String
 ) {
 
     val context= LocalContext.current
     val scope = rememberCoroutineScope()
-
+    val customToast = CustomToast(LocalContext.current)
+    Log.d("태그",tag)
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
@@ -89,6 +93,12 @@ fun CameraComponent(
 //    BackHandler {
 //        onDismiss()
 //    }
+
+    if(mainViewModel.errorToastState.value) {
+        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
+        mainViewModel.resetToastErrorState()
+    }
+
 
     Column(
         modifier = Modifier
@@ -118,8 +128,31 @@ fun CameraComponent(
                         context=context,
                         controller=controller,
                         onPhotoTaken = {uri->
+//
+//                            mainViewModel.addImage(uri)
+                            if(uri!=null){
+                                mainViewModel.setErrorToastMessage(
+                                    icon=R.drawable.success_icon,
+                                    text="이미지 저장에 성공했습니다."
+                                )
 
-                            mainViewModel.addImage(uri)
+                                when(tag){
+                                    "insertReview"->{
+                                        writeReviewViewModel.setSelectedImage(listOf(uri))
+                                    }
+                                    "addWhisky"->{
+                                        mainViewModel.setSelectedImage(uri)
+                                    }
+                                    "changeWhiskyImage"->{
+
+                                    }
+                                }
+                            }else{
+                                mainViewModel.setErrorToastMessage(
+                                    icon=R.drawable.fail_icon,
+                                    text="이미지 저장에 실패했습니다."
+                                )
+                            }
                             navController.popBackStack()
 
                         }

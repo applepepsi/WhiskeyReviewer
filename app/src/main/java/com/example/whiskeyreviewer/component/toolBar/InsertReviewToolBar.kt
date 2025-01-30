@@ -76,41 +76,7 @@ fun InsertReviewToolBarComponent(
 //        }
 //    }
 
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickMultipleVisualMedia(
-                maxItems = 3
-            ),
-            onResult = { uris ->
-                writeReviewViewModel.setSelectedImage(uris)
-            }
-        )
 
-
-
-    ImageTypeSelectDialog(
-        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
-        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
-        confirm = {
-            when {
-                mainViewModel.imageTypeSelectState.value.albumSelected -> {
-                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-
-                }
-                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
-
-                    mainViewModel.setCameraTag(AddImageTag.InsertReview)
-                    navController.navigate(MainRoute.CAMERA)
-                }
-
-                else -> {}
-            }.also {
-                mainViewModel.toggleImageTypeSelectDialogState()
-            }
-        },
-        onSelect = { mainViewModel.updateSelectImageType(it) },
-        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
-        currentState = mainViewModel.imageTypeSelectDialogState.value
-    )
 
 
     Column(
@@ -202,8 +168,8 @@ fun InsertReviewToolBarComponent(
                         //이미지는 한번 실행되면 선택된 아이템을 초기화 할 필요가 있음
                         writeReviewViewModel.resetItem()
                         writeReviewViewModel.resetTextStyleItem()
-                        mainViewModel.toggleImageTypeSelectDialogState()
 
+                        writeReviewViewModel.toggleImageSelectorState()
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(

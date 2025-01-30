@@ -169,7 +169,7 @@ fun CustomTagComponent(
                 text = "# $text",
                 style = TextStyle.Default.copy(
                     color = LightBlackColor,
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     fontWeight = FontWeight.Normal
                 ),
 

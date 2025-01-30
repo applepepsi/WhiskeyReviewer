@@ -71,8 +71,13 @@ private fun NavGraphBuilder.homeRoute(
         composable(MainRoute.OTHER_USER_REVIEW_DETAIL) {
             OtherUserReviewDetailView(writeReviewViewModel,navController,mainViewModel)
         }
-        composable(route= MainRoute.CAMERA,) {
-            CameraComponent(mainViewModel,navController)
+        composable(route= "${MainRoute.CAMERA}/{tag}") {backStackEntry ->
+            CameraComponent(
+                mainViewModel,
+                writeReviewViewModel,
+                navController,
+                tag=backStackEntry.arguments?.getString("tag") ?: "",
+            )
         }
     }
 }

@@ -102,7 +102,7 @@ fun InsertTagComponent(
                 singleLine = true,
 
                 textStyle = TextStyle(
-                    fontSize = 20.sp
+                    fontSize = 15.sp
                 ),
                 decorationBox = { innerTextField ->
                     Row(

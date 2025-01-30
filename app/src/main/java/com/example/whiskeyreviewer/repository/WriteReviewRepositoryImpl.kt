@@ -3,16 +3,15 @@ package com.example.whiskeyreviewer.repository
 import android.util.Log
 import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.data.ServerResponse
+import com.example.whiskeyreviewer.data.SubmitWhiskyData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
@@ -24,7 +23,9 @@ class WriteReviewRepositoryImpl @Inject constructor(
     private val api: API
 ) : WriteReviewRepository {
 
-    override fun reviewSave(imageFiles:List<File>?,reviewData: WriteReviewData, callback: (ServerResponse<Any>?) -> Unit) {
+    override fun reviewSave(
+        imageFiles:List<File>?,
+        reviewData: SubmitWhiskyData, callback: (ServerResponse<Any>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
 
             //이미지를 멀티파트바디로 변환
@@ -32,6 +33,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
                 val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
                 MultipartBody.Part.createFormData("images", file.name, requestFile)
             } ?: emptyList()
+
 
             // 리뷰 데이터 json으로 변환
             val json = Gson().toJson(reviewData)

@@ -136,9 +136,9 @@ fun WhiskeyDetailView(
                 }
 
                 mainViewModel.imageTypeSelectState.value.cameraSelected -> {
-
-                    mainViewModel.setCameraTag(AddImageTag.ChangeWhiskyImage)
-                    navController.navigate(MainRoute.CAMERA)
+//
+//                    mainViewModel.setCameraTag(AddImageTag.ChangeWhiskyImage)
+                    navController.navigate("${MainRoute.CAMERA}/changeWhiskyImage")
                 }
 
                 else -> {}

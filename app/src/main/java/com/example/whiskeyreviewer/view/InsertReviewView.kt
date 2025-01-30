@@ -2,6 +2,9 @@ package com.example.whiskeyreviewer.view
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -38,6 +41,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.PrivateCheckboxComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
 import com.example.whiskeyreviewer.component.myReview.RatingScoreDialog
 import com.example.whiskeyreviewer.component.myReview.RatingStarComponent
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -45,9 +49,8 @@ import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponen
 import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.MainRoute
-import com.example.whiskeyreviewer.ui.theme.LightBlackColor
-import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -69,9 +72,23 @@ fun InsertReviewView(
 
     val navBackStackEntry = navController.currentBackStackEntry
 
-    Log.d("태그",tag)
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(
+            maxItems = 3
+        ),
+        onResult = { uris ->
+            writeReviewViewModel.setSelectedImage(uris)
+        }
+    )
+
+//
+//    LaunchedEffect(mainViewModel.selectedImageUri.value) {
+//        writeReviewViewModel.setSelectedImage(listOf(mainViewModel.selectedImageUri.value))
+//    }
 
     LaunchedEffect(Unit) {
+        //초기화
+        writeReviewViewModel.toggleImageSelectorState(state=false)
         richTextEditorState.setHtml(writeReviewViewModel.writeReviewDate.value.content)
         Log.d("텍스트", richTextEditorState.toText())
     }
@@ -118,6 +135,30 @@ fun InsertReviewView(
         }
     }
 
+    ImageTypeSelectDialog(
+        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
+        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
+        confirm = {
+            when {
+                mainViewModel.imageTypeSelectState.value.albumSelected -> {
+                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
+                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
+//
+//                    mainViewModel.setCameraTag(AddImageTag.InsertReview)
+                    navController.navigate("${MainRoute.CAMERA}/insertReview")
+                }
+
+                else -> {}
+            }.also {
+                mainViewModel.toggleImageTypeSelectDialogState()
+            }
+        },
+        onSelect = { mainViewModel.updateSelectImageType(it) },
+        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
+        currentState = mainViewModel.imageTypeSelectDialogState.value
+    )
+
     Column(modifier = Modifier
         .fillMaxSize()) {
 
@@ -152,14 +193,17 @@ fun InsertReviewView(
                 .weight(1f)
                 .verticalScroll(scrollState)
         ) {
-            writeReviewViewModel.selectedImageUri.value.let {
-                ImageLazyRowComponent(
-                    imageList = it,
-                    deleteImage = {
-                        writeReviewViewModel.deleteImage(it)
-                    },
-                )
-            }
+            ImageLazyRowComponent(
+                imageList = writeReviewViewModel.selectedImageUri.value,
+                deleteImage = {
+                    writeReviewViewModel.deleteImage(it)
+                },
+                onImageAddButtonClick={
+                    mainViewModel.toggleImageTypeSelectDialogState()
+                },
+                currentState=writeReviewViewModel.imageSelectorState.value,
+
+            )
 
             Row(
                 modifier = Modifier

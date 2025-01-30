@@ -683,8 +683,11 @@ class MainViewModel @Inject constructor(
 
             }
         } else {
-            _errorToastMessage.value="위스키를 선택해 주세요"
-            _errorToastState.value=true
+            setErrorToastMessage(
+                icon=R.drawable.fail_icon,
+                text="위스키를 선택해 주세요"
+            )
+
         }
     }
 
@@ -692,8 +695,11 @@ class MainViewModel @Inject constructor(
 //        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_type = currentCustomWhiskyType.value.name!!)
 
         if(_customWhiskyData.value.whisky_name=="" || _customWhiskyData.value.sale_year=="" || _customWhiskyData.value.strength==""){
-            _errorToastMessage.value="모든 항목을 기입해 주세요."
-            _errorToastState.value=true
+
+            setErrorToastMessage(
+                icon=R.drawable.fail_icon,
+                text="모든 항목을 기입해 주세요."
+            )
         }else{
             val customWhiskyImage=ImageConverter.convertUrisToFiles(applicationContext, selectedImageUri.value)
 
@@ -736,10 +742,7 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun resetToastErrorState() {
-        _errorToastState.value=false
-        _errorToastMessage.value=""
-    }
+
 
     fun updateStrength(strength: String) {
         _customWhiskyData.value=_customWhiskyData.value.copy(strength = strength)
@@ -855,39 +858,39 @@ class MainViewModel @Inject constructor(
         _imageTypeSelectDialogState.value=!_imageTypeSelectDialogState.value
     }
 
-    fun addImage(uri: Uri?) {
+//    fun addImage(uri: Uri?) {
+//
+//        Log.d("이미지", uri.toString())
+//
+//        if(uri==null){
+//            _errorToastMessage.value="이미지 저장에 실패했습니다."
+//            _errorToastIcon.value=R.drawable.fail_icon
+//            _errorToastState.value=true
+//        }else{
+//            _errorToastMessage.value="이미지 저장에 성공했습니다."
+//            _errorToastIcon.value=R.drawable.success_icon
+//            _errorToastState.value=true
+//
+//            when(cameraTag.value){
+//                AddImageTag.ChangeWhiskyImage->{
+//
+//                }
+//                AddImageTag.AddWhisky->{
+//                    setSelectedImage(uri)
+//                }
+//                AddImageTag.InsertReview->{
+//                    setSelectedImage(uri)
+//                }
+//            }
+//        }
+//
+//    }
 
-        Log.d("이미지", uri.toString())
+//    fun setCameraTag(tag: AddImageTag){
 
-        if(uri==null){
-            _errorToastMessage.value="이미지 저장에 실패했습니다."
-            _errorToastIcon.value=R.drawable.fail_icon
-            _errorToastState.value=true
-        }else{
-            _errorToastMessage.value="이미지 저장에 성공했습니다."
-            _errorToastIcon.value=R.drawable.success_icon
-            _errorToastState.value=true
-
-            when(cameraTag.value){
-                AddImageTag.ChangeWhiskyImage->{
-
-                }
-                AddImageTag.AddWhisky->{
-                    setSelectedImage(uri)
-                }
-                AddImageTag.InsertReview->{
-                    setSelectedImage(uri)
-                }
-            }
-        }
-
-    }
-
-    fun setCameraTag(tag: AddImageTag){
-//        _cameraState.value=!_cameraState.value
-
-        _cameraTag.value=tag
-    }
+//
+//        _cameraTag.value=tag
+//    }
 
     fun toggleImageDialogState(){
         _imageDialogState.value=!_imageDialogState.value
@@ -902,4 +905,13 @@ class MainViewModel @Inject constructor(
         _progressIndicatorText.value=text
     }
 
+    fun setErrorToastMessage(icon: Int, text: String) {
+        _errorToastState.value=true
+        _errorToastMessage.value=text
+        _errorToastIcon.value=icon
+    }
+    fun resetToastErrorState() {
+        _errorToastState.value=false
+        _errorToastMessage.value=""
+    }
 }

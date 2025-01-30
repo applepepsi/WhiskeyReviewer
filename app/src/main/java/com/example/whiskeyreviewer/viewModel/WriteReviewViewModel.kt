@@ -17,11 +17,10 @@ import com.example.whiskeyreviewer.component.toolBar.TextColors
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.SubmitWhiskyData
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.WhiskeyReviewData
-import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
-import com.example.whiskeyreviewer.repository.MainRepository
 import com.example.whiskeyreviewer.repository.WriteReviewRepository
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.mohamedrejeb.richeditor.model.RichTextState
@@ -101,7 +100,8 @@ class WriteReviewViewModel @Inject constructor(
     private val _errorToastIcon=mutableStateOf<Int>(R.drawable.fail_icon)
     val errorToastIcon: State<Int> = _errorToastIcon
 
-
+    private val _imageSelectorState= mutableStateOf(false)
+    val imageSelectorState: State<Boolean> = _imageSelectorState
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
         if (item is ToolBarItems.Picture) {
@@ -309,9 +309,18 @@ class WriteReviewViewModel @Inject constructor(
             if(tag=="modify"){
                 //수정 태그가 들어왔다면 수정으로 전송
             }else{
+
+                val submitWhiskyData=SubmitWhiskyData(
+                    writeReviewDate.value.content,
+                    writeReviewDate.value.is_anonymous,
+                    writeReviewDate.value.open_date.toString(),
+                    writeReviewDate.value.tags,
+                    writeReviewDate.value.score.toInt()
+                )
+
                 writeReviewRepository.reviewSave(
-                    imageFiles=imageFiles,
-                    reviewData = writeReviewDate.value
+                    imageFiles =imageFiles,
+                    reviewData = submitWhiskyData
                 ){ saveResult->
 
                 }
@@ -407,6 +416,15 @@ class WriteReviewViewModel @Inject constructor(
             imageList = emptyList(),
             content = "",
         )
+    }
+
+    fun toggleImageSelectorState(state:Boolean?=null){
+        if(state!=null){
+            _imageSelectorState.value=state
+        }else{
+            _imageSelectorState.value=!_imageSelectorState.value
+        }
+
     }
 
 }

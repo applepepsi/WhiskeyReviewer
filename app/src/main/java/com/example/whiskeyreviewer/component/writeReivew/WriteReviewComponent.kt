@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,7 +29,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatAlignRight
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BorderColor
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FormatAlignCenter
 import androidx.compose.material.icons.filled.FormatAlignLeft
@@ -73,6 +76,8 @@ import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.textColorList
 import com.example.whiskeyreviewer.component.wheelPicker.HorizontalWheelPicker
+import com.example.whiskeyreviewer.data.ImageSelectState
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
@@ -584,46 +589,107 @@ fun ControlWrapper(
 
 @Composable
 fun ImageLazyRowComponent(
-    imageList:List<Any>,
-    deleteImage:(Int)->Unit,
-) {
+    imageList: List<Any>,
+    deleteImage: (Int) -> Unit,
+    onImageAddButtonClick:()->Unit,
+    currentState: Boolean,
+
+    ) {
     val scrollState = rememberLazyListState()
 
     Log.d("실행", imageList.toString())
-
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        state = scrollState,
-        verticalAlignment = Alignment.CenterVertically,
-        contentPadding = PaddingValues(5.dp),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-    ) {
-        itemsIndexed(imageList) { index, image ->
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.TopEnd
+    if(currentState){
+        Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.End
+        ) {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                state = scrollState,
+                verticalAlignment = Alignment.CenterVertically,
+                contentPadding = PaddingValues(5.dp),
+                horizontalArrangement = Arrangement.spacedBy(7.dp),
             ) {
-                GlideImage(
-                    imageModel = image,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(8.dp))
-                )
+                itemsIndexed(imageList) { index, image ->
+                    Box(
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
+                        GlideImage(
+                            imageModel = image,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp))
+                        )
 
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = null,
-                    tint = Color.LightGray,
-                    modifier = Modifier
-                        .size(25.dp)
-                        .padding(top = 5.dp, end = 5.dp)
-                        .clickable {
-                            deleteImage(index)
-                        }
-                )
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(top = 5.dp, end = 5.dp)
+                                .clickable {
+                                    deleteImage(index)
+                                }
+                        )
+                    }
+                }
+
+                item{
+                    Box(
+                        modifier = Modifier
+                            .size(152.dp)
+
+                            .clip(RoundedCornerShape(8.dp))
+                            .border(
+                                BorderStroke(
+                                    0.8.dp,
+                                    Color.LightGray
+                                ),
+                                RoundedCornerShape(8.dp)
+                            )
+                            .background(Color.White)
+                            .clickable {
+                                onImageAddButtonClick()
+                            }
+                        ,
+
+                        ){
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier
+
+                                .size(100.dp)
+                                .align(Alignment.Center)
+                        )
+
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier
+                                .padding(end = 8.dp, top = 8.dp)
+                                .size(40.dp)
+                                .align(Alignment.TopEnd)
+                        )
+                    }
+                }
             }
+
+            Text(
+                text = "${imageList.size}/3",
+                style = TextStyle.Default.copy(
+                    color = LightBlackColor,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Normal
+                ),
+                modifier = Modifier.padding(end=10.dp,top=4.dp)
+            )
         }
     }
 }
@@ -741,7 +807,9 @@ fun WheelPreview() {
     WhiskeyReviewerTheme {
         ImageLazyRowComponent(
             imageList = testUris,
-            deleteImage = {}
+            deleteImage = {},
+            currentState = true,
+            onImageAddButtonClick = {}
         )
     }
 }
