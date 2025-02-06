@@ -1,14 +1,17 @@
 package com.example.whiskeyreviewer.data
 
 import android.net.Uri
+import java.time.LocalDateTime
 
 data class SingleWhiskeyData(
-    val whisky_name:String="Test",
-    val category: String="",
+    val name:String="Test",
+    val category: String?="",
     val strength:Double=0.0,
     val score:Double=0.0,
-    val dday:Int=0,
-    val saleDate: Int = 0,
-
-    val picture: Uri=Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000022")
+    val reg_date:String="",
+    val release_year: Int? = null,
+    val photo_url: String?=null,
+    val whisky_uuid:String="",
+//    val reg_date:LocalDateTime= LocalDateTime.MIN,
+    val mod_date:LocalDateTime?=null
 )

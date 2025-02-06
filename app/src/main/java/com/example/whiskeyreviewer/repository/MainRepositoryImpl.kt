@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
+import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.utils.ApiHandler
@@ -63,7 +64,7 @@ class MainRepositoryImpl @Inject constructor(
         date_order: String,
         name_order: String,
         score_order: String,
-        callback: (ServerResponse<Any>?) -> Unit
+        callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = ApiHandler.makeApiCall(tag="나의 위스키 목록 가져오기") {
@@ -81,6 +82,27 @@ class MainRepositoryImpl @Inject constructor(
                 name_order=name_order,
                 score_order=score_order,
             ) }
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
+
+    override fun getMyReviewList(
+        whiskyUuid: String,
+        bottleNumber: Int,
+        order: String,
+        callback: (ServerResponse<Any>?) -> Unit
+    ){
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = ApiHandler.makeApiCall(tag="나의 리뷰 가져오기") {
+
+                api.getReview(
+                    uuid=whiskyUuid,
+                    bottleNumber=bottleNumber,
+                    order=order
+                ) }
             withContext(Dispatchers.Main) {
                 callback(result)
             }

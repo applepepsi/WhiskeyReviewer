@@ -2,6 +2,8 @@ package com.example.whiskeyreviewer.component.myReview
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,9 +29,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -118,10 +123,13 @@ fun MyReviewSinglePost(
     onImageSelect: (String) -> Unit = {},
     deleteReview: (WhiskeyReviewData) -> Unit={},
     modifyReview: (WhiskeyReviewData) -> Unit={},
-
+    onLikeClick:()->Unit={},
 ) {
 
     val richTextState = rememberRichTextState()
+    var likeState by remember{ mutableStateOf(false)}
+
+//    val color by animateDpAsState(targetValue = if (likeState) 20.dp else 20.dp, label = "")
 
     LaunchedEffect(Unit) {
         richTextState.setHtml(singleReview.content)
@@ -148,9 +156,6 @@ fun MyReviewSinglePost(
                     .padding(end = 10.dp, top = 6.dp),
                 horizontalArrangement = Arrangement.End
             ){
-
-
-
                 Text(
                     text = "수정",
                     style = TextStyle.Default.copy(
@@ -177,33 +182,70 @@ fun MyReviewSinglePost(
                         .clickable { deleteReview(singleReview) }
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(7.dp))
-
-        if (singleReview.imageList != null) {
-            ReviewImageLazyRowComponent(
-                imageList = singleReview.imageList,
-                deleteImage = {
-
-                },
-                deleteImageAllow = false,
-                onImageSelect = {
-                    onImageSelect(it)
+        }else{
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text = "10",
+                    style = TextStyle.Default.copy(
+                        color = Color.Gray,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(end=3.dp)
+                )
+                IconButton(
+                    onClick = {
+                        likeState=!likeState
+                    },
+                    modifier = Modifier.size(25.dp)
+                ) {
+                    if (likeState) {
+                        Icon(
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            tint= Color.Gray,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
-            )
-        }
+            }
 
-        Spacer(modifier = Modifier.height(7.dp))
+        }
+//
+//        Spacer(modifier = Modifier.height(7.dp))
+
+        ReviewImageLazyRowComponent(
+            imageList = singleReview.imageList,
+            deleteImage = {
+
+            },
+            deleteImageAllow = false,
+            onImageSelect = {
+                onImageSelect(it)
+            }
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
         //리치텍스트로 수정예정
 
 
         RichText(
             state = richTextState,
-            style = MaterialTheme.typography.displaySmall,
-            textAlign = TextAlign.Center,
+//            style = MaterialTheme.typography.displaySmall,
+//            textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(start=10.dp,end=10.dp,top=3.dp, bottom = 5.dp)
+                .padding(start=10.dp,end=10.dp,top=3.dp)
         )
 //        Text(
 //            text = reviewText,
@@ -215,7 +257,7 @@ fun MyReviewSinglePost(
 //            modifier = Modifier
 //        )
         Row(
-            modifier = Modifier.padding(start = 1.dp,top=15.dp),
+            modifier = Modifier.padding(start = 1.dp,top=8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             WhiskeyScoreComponent(
@@ -498,9 +540,9 @@ fun MyReviewPostPreview() {
 
     WhiskeyReviewerTheme {
         MyReviewSinglePost(
-            singleReview = WhiskeyReviewData(),
+            singleReview = WhiskeyReviewData(content = "wdwd"),
             singleReviewClick = {},
-
+            modifyAllow = false
         )
     }
 }

@@ -79,4 +79,15 @@ object TimeFormatter {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun stringTimeFormatter(stringTime:String):String {
+
+        val trimmedStringTime = stringTime.substring(0, 10)
+
+        val pastDate = LocalDate.parse(trimmedStringTime)
+
+        val currentDate = LocalDate.now()
+
+        return ChronoUnit.DAYS.between(pastDate, currentDate).toString()
+    }
 }

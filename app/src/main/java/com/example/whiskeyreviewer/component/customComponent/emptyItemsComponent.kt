@@ -39,7 +39,7 @@ fun EmptyMyWhiskyReviewComponent(
     text:String
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(bottom=110.dp),
+        modifier = Modifier.fillMaxSize().padding(bottom=90.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -48,7 +48,7 @@ fun EmptyMyWhiskyReviewComponent(
                 .size(170.dp),
             imageVector = ImageVector.vectorResource(R.drawable.empty_bottle),
             contentDescription = "",
-            tint = LightBlackColor,
+            tint = MainColor,
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -92,25 +92,25 @@ fun EmptyReviewDataComponent(
     icon:ImageVector
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(bottom=20.dp),
+        modifier = Modifier.fillMaxWidth().height(240.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             modifier = Modifier
-                .size(80.dp),
+                .size(120.dp),
             imageVector = icon,
             contentDescription = "",
-            tint = LightBlackColor,
+            tint = MainColor,
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = text,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
-                fontSize = 17.sp,
+                fontSize = 19.sp,
                 fontWeight = FontWeight.Normal
             )
         )

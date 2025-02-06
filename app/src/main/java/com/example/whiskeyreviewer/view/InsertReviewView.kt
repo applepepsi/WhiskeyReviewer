@@ -49,7 +49,6 @@ import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponen
 import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
-import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -81,15 +80,34 @@ fun InsertReviewView(
         }
     )
 
+    LaunchedEffect(writeReviewViewModel.reviewSaveResultState.value) {
+        if(writeReviewViewModel.reviewSaveResultState.value){
+            navController.popBackStack()
+            writeReviewViewModel.toggleReviewSaveResult()
+        }
+    }
+
+
+
 //
 //    LaunchedEffect(mainViewModel.selectedImageUri.value) {
 //        writeReviewViewModel.setSelectedImage(listOf(mainViewModel.selectedImageUri.value))
 //    }
 
+    LaunchedEffect(writeReviewViewModel.loadingState.value) {
+        if(writeReviewViewModel.loadingState.value){
+            mainViewModel.toggleProgressIndicatorState(state = true,text="")
+        }else{
+            mainViewModel.toggleProgressIndicatorState(state = false,text="")
+        }
+    }
+
+
     LaunchedEffect(Unit) {
         //초기화
         writeReviewViewModel.toggleImageSelectorState(state=false)
-        richTextEditorState.setHtml(writeReviewViewModel.writeReviewDate.value.content)
+        richTextEditorState.setHtml(writeReviewViewModel.writeReviewData.value.content)
+
         Log.d("텍스트", richTextEditorState.toText())
     }
 
@@ -121,12 +139,12 @@ fun InsertReviewView(
         toggleOption = { writeReviewViewModel.toggleRatingScoreDialogState() },
         scoreChange = { writeReviewViewModel.updateScore(it) },
         currentState = writeReviewViewModel.scoreDialogState.value,
-        currentScore=writeReviewViewModel.writeReviewDate.value.score
+        currentScore=writeReviewViewModel.writeReviewData.value.score
     )
 
 
     LaunchedEffect(Unit) {
-        mainViewModel.toggleSelectWhiskyState(state=false)
+        mainViewModel.toggleSelectNewWhiskyState(state=false)
         if(mainViewModel.selectWhiskyDialogState.value){
             mainViewModel.toggleWhiskySelectDialogState()
         }
@@ -212,7 +230,7 @@ fun InsertReviewView(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = writeReviewViewModel.writeReviewDate.value.bottle_num.toString()+"병",
+                    text = writeReviewViewModel.writeReviewData.value.bottle_num.toString()+"병",
                     color = Color.Gray,
                     modifier = Modifier,
                     style = TextStyle(
@@ -226,7 +244,7 @@ fun InsertReviewView(
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = writeReviewViewModel.writeReviewDate.value.whiskyName,
+                    text = writeReviewViewModel.writeReviewData.value.whiskyName,
                     color = Color.Gray,
                     modifier = Modifier,
                     style = TextStyle(
@@ -248,13 +266,13 @@ fun InsertReviewView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RatingStarComponent(
-                    score=writeReviewViewModel.writeReviewDate.value.score,
+                    score=writeReviewViewModel.writeReviewData.value.score,
                     option=writeReviewViewModel.scoreDialogState.value,
                     toggleOption = { writeReviewViewModel.toggleRatingScoreDialogState() }
                 )
 
                 PrivateCheckboxComponent(
-                    checked = writeReviewViewModel.writeReviewDate.value.is_anonymous,
+                    checked = writeReviewViewModel.writeReviewData.value.is_anonymous,
                     onClickCheckBox = { writeReviewViewModel.togglePrivateState() })
             }
 

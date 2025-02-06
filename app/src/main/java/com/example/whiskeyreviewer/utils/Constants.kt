@@ -44,7 +44,7 @@ const val ADD_WHISKY_NAME_SEARCH="/whiskys"
 const val REVIEW_SAVE="/review"
 const val REVIEW_MODIFY="/review/{identifier}"
 const val DELETE_REVIEW="/review/{identifier}"
-const val GET_REVIEW="/review/{identifier}"
+const val GET_REVIEW="/my-reviews/whisky/{whiskyUuid}/bottle/{bottleNumber}"
 const val ADD_CUSTOM_WHISKY="/whisky"
 
 val whiskeyData = listOf(

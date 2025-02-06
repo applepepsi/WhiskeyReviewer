@@ -16,11 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
@@ -51,14 +50,11 @@ import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
-import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
-import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskeyReviewData
-import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -71,12 +67,6 @@ fun WhiskeyDetailView(
     mainViewModel: MainViewModel
 ) {
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
-    val imageCapture = remember { ImageCapture.Builder().build() }
-
-
-    var imageFile by remember { mutableStateOf<File?>(null) }
-
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -86,9 +76,9 @@ fun WhiskeyDetailView(
             }
         }
     )
-    val localDensity = LocalDensity.current
-    var heightIs by remember {
-        mutableStateOf(0.dp)
+
+    LaunchedEffect(Unit) {
+        mainViewModel.getMyReviewList()
     }
 
 //    LaunchedEffect(mainViewModel.selectedWhiskyImageUri.value) {
@@ -188,8 +178,10 @@ fun WhiskeyDetailView(
 //                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
 
                             writeReviewViewModel.synchronizationWhiskyData(
-                                WhiskeyReviewData(),
-                                mainViewModel.selectWhiskyData.value.whisky_name,
+                                WhiskeyReviewData(
+                                    whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
+                                ),
+                                mainViewModel.selectWhiskyData.value.name,
                                 bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value
                             )
 
@@ -202,8 +194,10 @@ fun WhiskeyDetailView(
                             //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
 //                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value+1)
                             writeReviewViewModel.synchronizationWhiskyData(
-                                WhiskeyReviewData(),
-                                mainViewModel.selectWhiskyData.value.whisky_name,
+                                WhiskeyReviewData(
+                                    whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
+                                ),
+                                mainViewModel.selectWhiskyData.value.name,
                                 bottleNum = mainViewModel.myReviewData.value.bottleCount + 1
                             )
 
@@ -245,7 +239,7 @@ fun WhiskeyDetailView(
             )
 
             SingleWhiskeyComponent(
-                singleWhiskeyData = SingleWhiskeyData(),
+                singleWhiskeyData = mainViewModel.selectWhiskyData.value,
                 reviewClick = {},
                 deleteWhisky = {},
                 showOption = false,
@@ -268,6 +262,7 @@ fun WhiskeyDetailView(
                             MyReviewFilterItems.BOTTLE_NUM
                         )
                     },
+                    //todo 생각해보니 병 수를 가져오는 api를 추가해달라고 해야함
                     menuItems = (1..mainViewModel.myReviewData.value.bottleCount).toList()
                 )
 
@@ -300,10 +295,11 @@ fun WhiskeyDetailView(
                 )
             }
 
+
             when (mainViewModel.currentMyReviewTypeFilter.value) {
                 MyReviewFilterItems.Graph -> {
                     Column(
-                        modifier = Modifier
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         if (mainViewModel.myReviewDataList.value.isEmpty()) {
                             EmptyReviewDataComponent(
@@ -322,14 +318,10 @@ fun WhiskeyDetailView(
 
                 MyReviewFilterItems.Review -> {
                     if (mainViewModel.myReviewDataList.value.isEmpty()) {
-                        Column(
-                            modifier = Modifier
-                        ) {
-                            EmptyReviewDataComponent(
-                                text = "리뷰가 존재하지 않습니다.",
-                                icon = ImageVector.vectorResource(R.drawable.empty_bottle)
-                            )
-                        }
+                        EmptyReviewDataComponent(
+                            text = "리뷰가 존재하지 않습니다.",
+                            icon = ImageVector.vectorResource(R.drawable.empty_bottle)
+                        )
                     } else {
                         Column(
                             modifier = Modifier
@@ -351,7 +343,7 @@ fun WhiskeyDetailView(
                                 modifyReview = { whiskyReviewData ->
                                     writeReviewViewModel.synchronizationWhiskyData(
                                         whiskyReviewData,
-                                        mainViewModel.selectWhiskyData.value.whisky_name,
+                                        mainViewModel.selectWhiskyData.value.name,
                                         bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value
                                     )
                                     navController.navigate("${MainRoute.INSERT_REVIEW}/modify")
@@ -367,9 +359,9 @@ fun WhiskeyDetailView(
                 MyReviewFilterItems.Best -> TODO()
                 MyReviewFilterItems.Worst -> TODO()
             }
-            }
         }
     }
+}
 
 
 

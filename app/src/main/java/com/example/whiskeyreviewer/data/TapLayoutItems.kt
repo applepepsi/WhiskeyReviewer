@@ -10,19 +10,6 @@ sealed class TapLayoutItems(
     val title: String,
     val name: String?
 ) {
-//
-//    data object ScotchWhiskey : TapLayoutItems("스카치")
-//    data object IrishWhiskey : TapLayoutItems("아이리시")
-//    data object AmericanWhiskey : TapLayoutItems("아메리칸")
-//    data object CanadianWhiskey : TapLayoutItems("커네이디언")
-//
-//    data object MaltWhiskey : TapLayoutItems("몰트")
-//    data object GrainWhiskey : TapLayoutItems("그레인")
-//    data object BlendedWhiskey : TapLayoutItems("블렌디드")
-//
-//    data object PortWhiskey : TapLayoutItems("포트")
-//    data object PatentWhiskey : TapLayoutItems("페이턴트")
-
     data object AllWhiskey : TapLayoutItems("전체",null)
     data object AmericanWhiskey : TapLayoutItems("아메리칸", "American Whiskey")
     data object Blend : TapLayoutItems("블렌드", "Blend")

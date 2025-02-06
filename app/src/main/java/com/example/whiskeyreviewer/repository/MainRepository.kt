@@ -3,6 +3,7 @@ package com.example.whiskeyreviewer.repository
 
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
+import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.data.WhiskyName
@@ -21,6 +22,13 @@ interface MainRepository{
         date_order: String,
         name_order:String,
         score_order:String,
+        callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
+    )
+
+    fun getMyReviewList(
+        whiskyUuid:String,
+        bottleNumber:Int,
+        order:String,
         callback: (ServerResponse<Any>?) -> Unit
     )
 

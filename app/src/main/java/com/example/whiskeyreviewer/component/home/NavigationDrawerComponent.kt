@@ -171,7 +171,8 @@ fun NavigationDrawerComponent(
                             ),
                             type = RECENT_SEARCH_WHISKEY_TEXT
                         )
-
+                        //검색
+//                        mainViewModel.otherUserWhiskySearch()
                         navController.navigate(MainRoute.WHISKEY_SEARCH)
                     },
                     deleteInputText = {mainViewModel.updateDrawerSearchBarText("") }
@@ -199,7 +200,8 @@ fun NavigationDrawerComponent(
                             },
                             search = {
                                 mainViewModel.updateDrawerSearchBarText(searchWord)
-                                navController.navigate(MainRoute.WHISKEY_SEARCH)
+                                mainViewModel.otherUserWhiskySearch()
+//                                navController.navigate(MainRoute.WHISKEY_SEARCH)
                             }
                         )
                     }else{

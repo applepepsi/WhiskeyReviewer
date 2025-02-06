@@ -9,7 +9,7 @@ interface WriteReviewRepository {
 
     fun reviewSave(imageFiles:List<File>?, reviewData: SubmitWhiskyData, callback: (ServerResponse<Any>?) -> Unit)
 
-    fun reviewModify(reviewData:WriteReviewData,callback: (ServerResponse<Any>?) -> Unit)
+    fun reviewModify(imageFiles:List<File>?, reviewData: SubmitWhiskyData,callback: (ServerResponse<Any>?) -> Unit)
 
     fun getReview(reviewData:WriteReviewData,callback: (ServerResponse<Any>?) -> Unit)
 

@@ -11,6 +11,7 @@ import com.example.nextclass.utils.REGISTER
 import com.example.nextclass.utils.REVIEW_MODIFY
 import com.example.nextclass.utils.REVIEW_SAVE
 import com.example.whiskeyreviewer.data.ServerResponse
+import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
@@ -41,7 +42,7 @@ interface API {
         @Query("date_order") date_order: String,
         @Query("name_order") name_order: String,
         @Query("score_order") score_order: String
-    ): Response<ServerResponse<Any>>
+    ): Response<ServerResponse<List<SingleWhiskeyData>>>
 
     @GET(ADD_WHISKY_NAME_SEARCH)
     suspend fun addWhiskyNameSearch(
@@ -61,15 +62,18 @@ interface API {
     @Multipart
     @PUT(REVIEW_MODIFY)
     suspend fun reviewModify(
-        @Path("identifier") identifier:String,
-        @Part images : MultipartBody.Part,
-        @Part("data") writeReviewData: WriteReviewData
+        @Part images: List<MultipartBody.Part>,
+        @Part("data") writeReviewData: RequestBody
+
     ):Response<ServerResponse<Any>>
 
 
     @GET(GET_REVIEW)
-    suspend fun getReview(@Path("identifier") identifier:String):Response<ServerResponse<Any>>
-
+    suspend fun getReview(
+        @Path("whiskyUuid") uuid: String,
+        @Path("bottleNumber") bottleNumber: Int,
+        @Query("order") order: String
+    ): Response<ServerResponse<Any>>
 
     @DELETE(DELETE_REVIEW)
     suspend fun deleteReview(@Path("identifier") identifier:String):Response<ServerResponse<Any>>

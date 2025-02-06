@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheetDefaults.properties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.ProgressIndicatorDefaults
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,7 +76,6 @@ import com.example.whiskeyreviewer.component.customComponent.ImageComponent
 import com.example.whiskeyreviewer.component.customComponent.SearchBarDivider
 import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
-import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MainRoute
 
@@ -579,7 +580,9 @@ fun SelectWhiskeyDialog(
                                 mainViewModel.smallProgressIndicatorState.value.toString()
                             )
                             item{
-                                SmallSizeProgressIndicator(modifier = Modifier.size(60.dp).padding(top=20.dp))
+                                SmallSizeProgressIndicator(modifier = Modifier
+                                    .size(60.dp)
+                                    .padding(top = 20.dp))
                             }
                         }
                         else if(mainViewModel.dialogSelectWhiskyData.value.isEmpty() && mainViewModel.searchButtonState.value){
@@ -894,7 +897,7 @@ fun SelectCustomWhiskeyDialog(
                             ){
                             BasicTextField(
                                 singleLine = true,
-                                value = mainViewModel.customWhiskyData.value.sale_year,
+                                value = mainViewModel.customWhiskyData.value.bottled_year.toString(),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 onValueChange = {
 
@@ -908,7 +911,7 @@ fun SelectCustomWhiskeyDialog(
 
                                     } else {
                                         when (it.toIntOrNull()) {
-                                            null -> mainViewModel.customWhiskyData.value.sale_year
+                                            null -> mainViewModel.customWhiskyData.value.bottled_year
                                             else -> mainViewModel.updateSaleYear(it)
                                         }
                                     }
@@ -935,7 +938,7 @@ fun SelectCustomWhiskeyDialog(
                                         Box(
                                             contentAlignment = Alignment.CenterStart
                                         ){
-                                            if (mainViewModel.customWhiskyData.value.sale_year.isEmpty()) {
+                                            if (mainViewModel.customWhiskyData.value.bottled_year.toString().isEmpty()) {
                                                 Text(
                                                     text = "병입년도",
                                                     color = Color.LightGray,
@@ -953,7 +956,7 @@ fun SelectCustomWhiskeyDialog(
                                     }
                                 }
                             )
-                            if (mainViewModel.customWhiskyData.value.sale_year.isNotEmpty()) {
+                            if (mainViewModel.customWhiskyData.value.bottled_year.toString().isNotEmpty()) {
                                 Text(
                                     text = "년",
                                     color = LightBlackColor,
@@ -1044,6 +1047,16 @@ fun SelectCustomWhiskeyDialog(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.Bottom
                 ) {
+                    if(mainViewModel.tinyProgressIndicatorState.value){
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(start=5.dp).size(25.dp),
+                            color = MainColor,
+                            strokeWidth = 3.dp,
+                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(15.dp))
 
                     Text(
                         text = "확인",
@@ -1063,9 +1076,9 @@ fun SelectCustomWhiskeyDialog(
                             }
 
                     )
-                    
+
                     Spacer(modifier = Modifier.width(15.dp))
-                    
+
                     Text(
                         text = "취소",
                         style = TextStyle.Default.copy(
@@ -1081,6 +1094,7 @@ fun SelectCustomWhiskeyDialog(
                                 toggleOption()
                             }
                     )
+
                 }
 
             }

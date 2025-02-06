@@ -18,8 +18,8 @@ sealed class MyReviewFilterItems(
 
 
 
-    data object New : MyReviewFilterItems("최신순", NEW, DAY)
-    data object Old : MyReviewFilterItems("오래된순", OLD, DAY)
+    data object New : MyReviewFilterItems("최신순", ASC, DAY)
+    data object Old : MyReviewFilterItems("오래된순", DESC, DAY)
 
     data object Best : MyReviewFilterItems("추천 많은순", BEST, VOTE)
     data object Worst : MyReviewFilterItems("추천 적은순", WORST, VOTE)
@@ -33,8 +33,9 @@ sealed class MyReviewFilterItems(
         const val REVIEW_TYPE="리뷰 종류"
         const val VOTE = "추천순"
 
-        const val NEW = "NEW"
-        const val OLD = "OLD"
+        //todo 최신순 오래된순인데 서버에서 착각한듯 말해야함
+        const val ASC = "asc"
+        const val DESC = "desc"
 
         const val REVIEW = "REVIEW"
         const val GRAPH = "GRAPH"

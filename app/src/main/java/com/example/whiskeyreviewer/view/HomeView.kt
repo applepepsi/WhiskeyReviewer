@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.view
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,6 +43,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.EmptyMyWhiskyReviewComponent
+import com.example.whiskeyreviewer.component.customComponent.PostProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
@@ -74,6 +76,7 @@ fun HomeView(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        //내 위스키 불러오기
         mainViewModel.getMyWhiskeyData()
     }
 
@@ -92,11 +95,14 @@ fun HomeView(
         )
     }
 
-    LaunchedEffect(mainViewModel.selectWhiskyState.value) {
-        if(mainViewModel.selectWhiskyState.value){
+    LaunchedEffect(mainViewModel.selectNewWhiskyState.value) {
+        Log.d("상태", mainViewModel.selectNewWhiskyState.value.toString())
+        if(mainViewModel.selectNewWhiskyState.value){
             writeReviewViewModel.synchronizationWhiskyData(
-                WhiskeyReviewData(),
-                mainViewModel.writeReviewWhiskyName.value,
+                WhiskeyReviewData(
+                    whiskyUuid = mainViewModel.selectNewWhiskyData.value.whisky_uuid
+                ),
+                mainViewModel.selectNewWhiskyData.value.whisky_name,
                 bottleNum=1
             )
             navController.navigate("${MainRoute.INSERT_REVIEW}/new")
@@ -104,6 +110,12 @@ fun HomeView(
         }
     }
 
+    LaunchedEffect(mainViewModel.selectWhiskyState.value) {
+        if(mainViewModel.selectWhiskyState.value){
+            navController.navigate(MainRoute.WHISKY_DETAIL)
+            mainViewModel.toggleSelectWhiskyState(state=false)
+        }
+    }
         ConfirmDialog(
             title = "위스키 제거",
             text = "위스키를 제거하시겠습니까?",
@@ -251,6 +263,7 @@ fun HomeView(
                                 ),
                                 type = RECENT_SEARCH_REVIEW_TEXT
                             )
+                            mainViewModel.myWhiskySearch()
                         },
                         deleteInputText = {mainViewModel.updateHomeSearchBarText("")}
                     )
@@ -273,9 +286,10 @@ fun HomeView(
                                             type = RECENT_SEARCH_REVIEW_TEXT
                                         )
 
+
                                     },
                                     search = {
-
+                                        mainViewModel.myWhiskySearch()
                                     }
                                 )
                             }
@@ -288,26 +302,30 @@ fun HomeView(
                         MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
-                        if(mainViewModel.myReviewList.value.isEmpty()){
-                            EmptyMyWhiskyReviewComponent(
-                                text="작성된 리뷰가 없습니다."
-                            )
+                        if(mainViewModel.postProgressIndicatorState.value){
+                            PostProgressIndicator()
                         }else{
-                            MyReviewComponent(
-                                myReviewItems = mainViewModel.myReviewList.value,
-                                setSelectReview = {singleWhiskyData->
-                                    mainViewModel.updateSelectWhisky(singleWhiskyData)
-                                    navController.navigate(MainRoute.WHISKY_DETAIL)
-                                },
-                                toggleConfirmDialogState = {
-                                    mainViewModel.updateSelectWhisky(it)
-                                    mainViewModel.toggleConfirmDialog()
-                                },
-                                dropDownMenuState = mainViewModel.whiskyOptionDropDownMenuState,
-                                toggleDropDownMenuState = { index->
-                                    mainViewModel.toggleWhiskyOptionDropDownMenuState(index)
-                                }
-                            )
+                            if(mainViewModel.myWhiskyList.value.isEmpty()){
+                                EmptyMyWhiskyReviewComponent(
+                                    text="작성된 리뷰가 없습니다."
+                                )
+                            }else{
+                                MyReviewComponent(
+                                    myReviewItems = mainViewModel.myWhiskyList.value,
+                                    setSelectReview = {singleWhiskyData->
+                                        mainViewModel.updateSelectWhisky(singleWhiskyData)
+//                                    navController.navigate(MainRoute.WHISKY_DETAIL)
+                                    },
+                                    toggleConfirmDialogState = {
+                                        mainViewModel.updateSelectWhisky(it)
+                                        mainViewModel.toggleConfirmDialog()
+                                    },
+                                    dropDownMenuState = mainViewModel.whiskyOptionDropDownMenuState,
+                                    toggleDropDownMenuState = { index->
+                                        mainViewModel.toggleWhiskyOptionDropDownMenuState(index)
+                                    }
+                                )
+                            }
                         }
                     },
                     updateCurrentPage = {

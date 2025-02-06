@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
+import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.toolBar.TextAlignment
 import com.example.whiskeyreviewer.component.toolBar.TextColors
@@ -76,8 +77,8 @@ class WriteReviewViewModel @Inject constructor(
 
 
 
-    private val _writeReviewDate = mutableStateOf(WriteReviewData())
-    val writeReviewDate: State<WriteReviewData> = _writeReviewDate
+    private val _writeReviewData = mutableStateOf(WriteReviewData())
+    val writeReviewData: State<WriteReviewData> = _writeReviewData
 
     private val _currentTag=mutableStateOf<String>("")
     val currentTag: State<String> = _currentTag
@@ -102,6 +103,15 @@ class WriteReviewViewModel @Inject constructor(
 
     private val _imageSelectorState= mutableStateOf(false)
     val imageSelectorState: State<Boolean> = _imageSelectorState
+
+    private val _loadingState= mutableStateOf(false)
+    val loadingState: State<Boolean> = _loadingState
+
+    private val _reviewSaveResultState= mutableStateOf(false)
+    val reviewSaveResultState: State<Boolean> = _reviewSaveResultState
+
+
+
     fun selectItem(item: ToolBarItems) {
         Log.d("아이템", item.toString())
         if (item is ToolBarItems.Picture) {
@@ -284,7 +294,7 @@ class WriteReviewViewModel @Inject constructor(
         Log.d("richTextEditorState",richTextEditorState.toHtml())
         Log.d("richTextEditorState",richTextEditorState.annotatedString.text)
 
-        _writeReviewDate.value=_writeReviewDate.value.copy(
+        _writeReviewData.value=_writeReviewData.value.copy(
             content = richTextEditorState.toHtml()
         )
 
@@ -295,7 +305,7 @@ class WriteReviewViewModel @Inject constructor(
         }
 
 
-        if(_writeReviewDate.value.open_date > LocalDate.now()){
+        if(_writeReviewData.value.open_date > LocalDate.now()){
             _errorToastState.value=true
             _errorToastMessage.value="현재 시간보다 이전 시간을 선택해 주세요"
             _errorToastIcon.value=R.drawable.fail_icon
@@ -306,28 +316,68 @@ class WriteReviewViewModel @Inject constructor(
             _errorToastIcon.value=R.drawable.fail_icon
         }else{
 
+            val submitWhiskyData=SubmitWhiskyData(
+                _writeReviewData.value.content,
+                _writeReviewData.value.is_anonymous,
+                _writeReviewData.value.open_date.toString(),
+                _writeReviewData.value.tags,
+                _writeReviewData.value.score.toInt(),
+                _writeReviewData.value.bottle_num,
+                _writeReviewData.value.whiskey_uuid
+            )
+
+            Log.d("submitWhiskyData", submitWhiskyData.toString())
+            _loadingState.value=true
             if(tag=="modify"){
                 //수정 태그가 들어왔다면 수정으로 전송
+                writeReviewRepository.reviewModify(
+                    imageFiles =imageFiles,
+                    reviewData = submitWhiskyData
+                ){modifyResult->
+                    _loadingState.value=false
+                    if(modifyResult!=null){
+                        if(modifyResult.code== SUCCESS_CODE){
+                            toggleReviewSaveResult()
+                        }else{
+                            setErrorToastMessage(
+                                icon=R.drawable.fail_icon,
+                                text=""
+                            )
+                        }
+                    }else{
+                        setErrorToastMessage(
+                            icon=R.drawable.fail_icon,
+                            text="서버와의 연결 상태가 좋지 않습니다."
+                        )
+                    }
+                }
             }else{
-
-                val submitWhiskyData=SubmitWhiskyData(
-                    writeReviewDate.value.content,
-                    writeReviewDate.value.is_anonymous,
-                    writeReviewDate.value.open_date.toString(),
-                    writeReviewDate.value.tags,
-                    writeReviewDate.value.score.toInt()
-                )
-
                 writeReviewRepository.reviewSave(
                     imageFiles =imageFiles,
                     reviewData = submitWhiskyData
                 ){ saveResult->
 
+                    _loadingState.value=false
+                    if(saveResult!=null){
+                        if(saveResult.code== SUCCESS_CODE){
+                            toggleReviewSaveResult()
+                        }else{
+                            setErrorToastMessage(
+                                icon=R.drawable.fail_icon,
+                                text=""
+                            )
+                        }
+                    }else{
+                        setErrorToastMessage(
+                            icon=R.drawable.fail_icon,
+                            text="서버와의 연결 상태가 좋지 않습니다."
+                        )
+                    }
                 }
             }
 
             Log.d("작성이미지", imageFiles.toString())
-            Log.d("작성내용", writeReviewDate.value.toString())
+            Log.d("작성내용", _writeReviewData.value.toString())
         }
 //
 //
@@ -343,15 +393,15 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateSelectDate(selectDate:LocalDate){
-        _writeReviewDate.value=_writeReviewDate.value.copy(
+        _writeReviewData.value=_writeReviewData.value.copy(
             open_date = selectDate
         )
     }
 
 
     fun togglePrivateState() {
-        _writeReviewDate.value=writeReviewDate.value.copy(
-            is_anonymous = !_writeReviewDate.value.is_anonymous
+        _writeReviewData.value=_writeReviewData.value.copy(
+            is_anonymous = !_writeReviewData.value.is_anonymous
         )
     }
 
@@ -359,8 +409,8 @@ class WriteReviewViewModel @Inject constructor(
 
         if (currentTag.contains(" ") && currentTag.isNotEmpty()) {
 
-            _writeReviewDate.value = _writeReviewDate.value.copy(
-                tags = _writeReviewDate.value.tags + currentTag
+            _writeReviewData.value = _writeReviewData.value.copy(
+                tags = _writeReviewData.value.tags + currentTag
             )
             _currentTag.value=""
         } else {
@@ -369,10 +419,10 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun deleteTag(index: Int) {
-        val tagList=_writeReviewDate.value.tags.toMutableList()
+        val tagList=_writeReviewData.value.tags.toMutableList()
         if (index in tagList.indices) {
             tagList.removeAt(index)
-            _writeReviewDate.value = _writeReviewDate.value.copy(
+            _writeReviewData.value = _writeReviewData.value.copy(
                 tags = tagList
             )
         }
@@ -383,7 +433,7 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun updateScore(score:Double){
-        _writeReviewDate.value=_writeReviewDate.value.copy(score=score)
+        _writeReviewData.value=_writeReviewData.value.copy(score=score)
     }
 
     fun setErrorToastMessage(icon: Int, text: String) {
@@ -394,8 +444,8 @@ class WriteReviewViewModel @Inject constructor(
 
     fun synchronizationWhiskyData(whiskyData: WhiskeyReviewData, whiskyName: String, bottleNum: Int) {
         //todo 수정 기능 구현해야함
-        _writeReviewDate.value=_writeReviewDate.value.copy(
-            whiskey_uuid = "",
+        _writeReviewData.value=_writeReviewData.value.copy(
+            whiskey_uuid =whiskyData.whiskyUuid,
             content = whiskyData.content,
             is_anonymous = whiskyData.is_anonymous,
             open_date = whiskyData.open_date,
@@ -411,7 +461,7 @@ class WriteReviewViewModel @Inject constructor(
 
     //todo 새로운 병을 추가했을떄 한번 데이터를 리셋하고 시작해야함 지금 어떤걸 리셋해야할지 고민중 서버측에서 알려줘야함
     fun resetWriteReviewData(selectWhiskyData:SingleWhiskeyData){
-        _writeReviewDate.value=_writeReviewDate.value.copy(
+        _writeReviewData.value=_writeReviewData.value.copy(
             whiskey_uuid = "",
             imageList = emptyList(),
             content = "",
@@ -427,4 +477,7 @@ class WriteReviewViewModel @Inject constructor(
 
     }
 
+    fun toggleReviewSaveResult(){
+        _reviewSaveResultState.value=!_reviewSaveResultState.value
+    }
 }

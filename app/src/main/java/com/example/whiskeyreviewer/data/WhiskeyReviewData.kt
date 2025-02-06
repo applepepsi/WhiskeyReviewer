@@ -3,7 +3,7 @@ package com.example.whiskeyreviewer.data
 import java.time.LocalDate
 
 data class WhiskeyReviewData(
-
+    val whiskyUuid:String="",
     val content:String="",
     val is_anonymous:Boolean=false,
     val open_date: LocalDate= LocalDate.now(),

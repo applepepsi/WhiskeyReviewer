@@ -5,5 +5,7 @@ data class SubmitWhiskyData(
     val is_anonymous: Boolean,
     val open_date: String,
     val tags: List<String>,
-    val score: Int
+    val score: Int,
+    val bottle_number: Int,
+    val whisky_uuid:String
 )

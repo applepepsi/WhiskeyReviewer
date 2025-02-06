@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,10 +39,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.WhiskyOptionDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
-import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.SelectWhiskyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyName
@@ -51,8 +50,10 @@ import com.example.whiskeyreviewer.data.WhiskyOptionItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.utils.TimeFormatter
+import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.skydoves.landscapist.glide.GlideImage
-import kotlin.math.sin
+import java.time.LocalDateTime
 
 
 @Composable
@@ -129,7 +130,7 @@ fun SingleWhiskeyComponent(
 
 
             GlideImage(
-                imageModel = singleWhiskeyData.picture,
+                imageModel = singleWhiskeyData.photo_url ?: R.drawable.empty_image_icon,
                 modifier = Modifier
                     .size(200.dp)
                     .then(
@@ -162,7 +163,7 @@ fun SingleWhiskeyComponent(
         ) {
 
             Text(
-                text = singleWhiskeyData.whisky_name,
+                text = singleWhiskeyData.name,
                 style = TextStyle.Default.copy(
                     color = Color.Black,
                     fontSize = 20.sp,
@@ -202,15 +203,22 @@ fun SingleWhiskeyComponent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ){
                     item{
-                        TagComponent(text = "개봉 D + " + singleWhiskeyData.dday.toString())
+
+                        TagComponent(text = "개봉 + " + TimeFormatter.stringTimeFormatter(singleWhiskeyData.reg_date))
                     }
                     item{
-                        TagComponent(text=singleWhiskeyData.saleDate.toString()+"년")
-                    }
+                        singleWhiskeyData.release_year?.let{
+                            TagComponent(text=singleWhiskeyData.release_year.toString()+"년")
+                        }
 
-//                    items(items=singleWhiskeyData.tags){singleTag->
-//                        TagComponent(text = singleTag)
-//                    }
+                    }
+                    item{
+                        //영어로 송수신해서 번역해야함
+                        singleWhiskeyData.category?.let {category->
+                            WhiskyLanguageTransfer.getKoreanTitle(category)
+                                ?.let { name-> TagComponent(text=name) }
+                        }
+                    }
                 }
             }
 
@@ -369,11 +377,11 @@ fun HomeComponentPreview() {
         SingleWhiskeyComponent(
             singleWhiskeyData =
         SingleWhiskeyData(
-            whisky_name="잭 다니엘 10년",
+            name="잭 다니엘 10년",
             strength = 20.0,
             score=4.5,
-            dday=6,
-            picture = Uri.EMPTY),
+            reg_date= LocalDateTime.now().toString(),
+            photo_url ="test"),
 
         reviewClick = { /*TODO*/ }, deleteWhisky = {},showOption = true)
     }

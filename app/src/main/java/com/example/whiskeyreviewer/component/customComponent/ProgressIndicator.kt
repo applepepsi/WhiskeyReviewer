@@ -76,7 +76,8 @@ fun FullSizeProgressIndicator(){
 
 @Composable
 fun SmallSizeProgressIndicator(
-    modifier: Modifier
+    modifier: Modifier,
+    strokeWidth:Dp=5.dp
 ){
 
 
@@ -85,10 +86,9 @@ fun SmallSizeProgressIndicator(
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-
             modifier = modifier,
             color = MainColor,
-            strokeWidth = 5.dp,
+            strokeWidth = strokeWidth,
             trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
         )
     }
@@ -157,6 +157,27 @@ fun ProgressIndicatorDialog(
     }
 }
 
+@Composable
+fun PostProgressIndicator(){
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(enabled = false) {},
+        contentAlignment = Alignment.Center
+    ) {
+        BallPulseSyncProgressIndicator(
+            modifier = Modifier,
+            color = MainColor,
+            animationDuration = 600,
+            ballCount = 5,
+            animationDelay = 500,
+            spacing = 10.dp,
+            ballDiameter = 15.dp,
+            ballJumpHeight = 20.dp
+        )
+    }
+}
+
 
 @Preview
 @Composable
@@ -168,8 +189,6 @@ fun ProgressBarPreview(){
 //            text="로딩중"
 //        )
 
-        SmallSizeProgressIndicator(
-            modifier = Modifier
-        )
+        PostProgressIndicator()
     }
 }

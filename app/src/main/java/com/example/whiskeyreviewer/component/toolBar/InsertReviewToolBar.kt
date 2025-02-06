@@ -173,7 +173,7 @@ fun InsertReviewToolBarComponent(
                 }
                 is ToolBarItems.SelectDate -> {
                     TimePickerComponent(
-                        selectDate = writeReviewViewModel.writeReviewDate.value.open_date,
+                        selectDate = writeReviewViewModel.writeReviewData.value.open_date,
 
                         onDateClick = { writeReviewViewModel.toggleDateSelectBottomSheetState() },
                         )
@@ -185,7 +185,7 @@ fun InsertReviewToolBarComponent(
                         onValueChange = {
                             writeReviewViewModel.updateCurrentTag(it)
                         },
-                        tagList = writeReviewViewModel.writeReviewDate.value.tags,
+                        tagList = writeReviewViewModel.writeReviewData.value.tags,
                         deleteClick = {
                             writeReviewViewModel.deleteTag(it)
                         }
