@@ -24,9 +24,9 @@ fun MyWhiskyCustomFilterRow(
         modifier = Modifier
             .padding(vertical = 12.dp, horizontal = 8.dp)
             .fillMaxWidth(),
-//        horizontalArrangement = Arrangement.spacedBy(8.dp),
 
-        horizontalArrangement = Arrangement.SpaceAround
+
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item{
             CustomDropDownMenuComponent(
@@ -83,16 +83,23 @@ fun WhiskyCustomFilterRow(
 
     LazyRow(
         modifier = Modifier
-            .padding(vertical = 12.dp, horizontal = 8.dp)
+            .padding(vertical = 3.dp, horizontal = 8.dp)
             .fillMaxWidth(),
 
 
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item{
-            Spacer(modifier = Modifier.width(4.dp))
-        }
 
+        item{
+            CustomDropDownMenuComponent(
+                category = WhiskeyFilterItems.VOTE,
+                value = mainViewModel.whiskyFilterData.value.vote_order,
+                onValueChange = { mainViewModel.updateWhiskyFilter(it) },
+                dropDownMenuOption = mainViewModel.whiskyFilterDropDownMenuState.value.vote,
+                toggleDropDownMenuOption = { mainViewModel.toggleWhiskyFilterDropDownMenuState(WhiskeyFilterItems.VOTE) },
+                menuItems = listOf(WhiskeyFilterItems.VoteAscendingOrder,WhiskeyFilterItems.VoteDescendingOrder)
+            )
+        }
 
         item{
             CustomDropDownMenuComponent(
@@ -106,10 +113,6 @@ fun WhiskyCustomFilterRow(
         }
 
         item{
-            Spacer(modifier = Modifier.width(13.dp))
-        }
-
-        item{
             CustomDropDownMenuComponent(
                 category = WhiskeyFilterItems.NAME,
                 value = mainViewModel.whiskyFilterData.value.name_order,
@@ -117,6 +120,18 @@ fun WhiskyCustomFilterRow(
                 dropDownMenuOption = mainViewModel.whiskyFilterDropDownMenuState.value.name,
                 toggleDropDownMenuOption = { mainViewModel.toggleWhiskyFilterDropDownMenuState(WhiskeyFilterItems.NAME) },
                 menuItems = listOf(WhiskeyFilterItems.NameAscendingOrder,WhiskeyFilterItems.NameDescendingOrder)
+            )
+        }
+
+
+        item{
+            CustomDropDownMenuComponent(
+                category = WhiskeyFilterItems.DAY,
+                value = mainViewModel.whiskyFilterData.value.date_order,
+                onValueChange = { mainViewModel.updateWhiskyFilter(it) },
+                dropDownMenuOption = mainViewModel.whiskyFilterDropDownMenuState.value.day,
+                toggleDropDownMenuOption = { mainViewModel.toggleWhiskyFilterDropDownMenuState(WhiskeyFilterItems.DAY) },
+                menuItems = listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder)
             )
         }
     }

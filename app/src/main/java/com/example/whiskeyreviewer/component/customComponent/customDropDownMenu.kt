@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,8 +25,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
@@ -38,6 +43,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -60,7 +66,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.compose.rememberNavController
+import com.example.nextclass.utils.countryData
+import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
+import com.example.whiskeyreviewer.data.CountryItems
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
@@ -303,11 +312,11 @@ fun <T> MyReviewCustomDropdownMenu(
 }
 
 @Composable
-fun CustomTrailingIcon(expanded: Boolean,size: Dp,tint:Color) {
+fun CustomTrailingIcon(expanded: Boolean,size: Dp,tint:Color,modifier: Modifier=Modifier) {
     Icon(
         Icons.Filled.ArrowDropDown,
         null,
-        modifier= Modifier
+        modifier= modifier
             .rotate(if (expanded) 180f else 0f)
             .size(size)
             .padding(0.dp)
@@ -353,7 +362,7 @@ fun WhiskeyFilterDropDownMenuComponent(
                     ),
                     RoundedCornerShape(8.dp)
                 )
-                .width(115.dp)
+                .widthIn(max=140.dp)
                 .height(42.dp)
                 .background(backgroundColor)
 
@@ -516,6 +525,139 @@ fun WhiskyOptionDropDownMenuComponent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectCountryDropDownMenuComponent(
+    modifier: Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    dropDownMenuOption: Boolean,
+    toggleDropDownMenuOption: () -> Unit,
+    menuItems: List<CountryItems>,
+) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (dropDownMenuOption) MainColor else Color.White, label = ""
+    )
+
+    val selectBorder=  if (dropDownMenuOption) 1.5.dp else 0.5.dp
+
+
+    val textAndIconColor by animateColorAsState(
+        targetValue = if (dropDownMenuOption) LightBlackColor else Color.LightGray, label = ""
+    )
+
+    Column(
+        modifier=modifier
+    ) {
+
+        ExposedDropdownMenuBox(
+            expanded = dropDownMenuOption,
+            onExpandedChange = { toggleDropDownMenuOption() },
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .border(
+                    BorderStroke(
+                        selectBorder,
+                        Color.LightGray
+                    ),
+                    RoundedCornerShape(8.dp)
+                )
+                .widthIn(max=140.dp)
+                .height(42.dp)
+                .background(backgroundColor)
+
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp)
+                    ,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+
+                BasicTextField(
+                    value = value,
+                    onValueChange = {
+                        onValueChange(it)
+                    },
+                    textStyle = TextStyle(
+                        color = Color.Black,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier
+                        .width(95.dp)
+                        .height(45.dp)
+                        .padding(start = 1.dp, end = 2.dp),
+
+                    decorationBox = { innerTextField ->
+                        Row(
+                            modifier = Modifier
+
+                                ,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Spacer(modifier = Modifier.width(5.dp))
+
+                            Box(
+                                contentAlignment = Alignment.CenterStart
+                            ){
+                                innerTextField()
+                            }
+
+                        }
+                    },
+                    singleLine = true
+                )
+//                Spacer(modifier = Modifier.width(5.dp))
+
+
+                CustomTrailingIcon(expanded = dropDownMenuOption, size = 23.dp, tint = textAndIconColor,modifier.weight(1f).menuAnchor())
+            }
+            ExposedDropdownMenu(
+                scrollState = rememberScrollState(),
+                modifier = Modifier
+                    .width(150.dp)
+                    .background(Color.White)
+                    .heightIn(max = 180.dp),
+                expanded = dropDownMenuOption,
+                onDismissRequest = { toggleDropDownMenuOption() }
+            ) {
+                menuItems.forEach { item ->
+
+                    DropdownMenuItem(
+
+                        text = {
+                            Text(
+                                text = item.country,
+                                style = TextStyle.Default.copy(
+                                    color = Color.Gray,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        },
+                        onClick = {
+                            onValueChange(item.country)
+                            toggleDropDownMenuOption()
+                        },
+                        trailingIcon = {
+                            Image(
+                                imageVector = ImageVector.vectorResource(item.icon),
+                                contentDescription = null,
+
+                                modifier = Modifier.size(20.dp)
+
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -524,11 +666,14 @@ fun DropDownMenuPreview() {
     val testList= listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder)
     val dropDownMenuItems=listOf(WhiskyOptionItems.DeleteWhisky)
 
-    WhiskyOptionDropDownMenuComponent(
-        modifier = Modifier,
-        toggleDropDownMenuOption = { /*TODO*/ },
-        dropDownMenuState = false,
-        menuItems =dropDownMenuItems,
-        onClick = {}
+    SelectCountryDropDownMenuComponent(
+        value = "test",
+        onValueChange = {
+
+        },
+        dropDownMenuOption = false,
+        toggleDropDownMenuOption = {  },
+        menuItems = countryData,
+        modifier = Modifier
     )
 }

@@ -1,7 +1,6 @@
 package com.example.whiskeyreviewer.component.home
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,10 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,10 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +47,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
@@ -57,7 +54,6 @@ import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordCom
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
-import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
@@ -100,6 +96,12 @@ fun NavigationDrawerComponent(
     )
 
 
+    DetailSearchDialog(
+        updateText = { mainViewModel.updateDetailSearchWordText(it) },
+        text=mainViewModel.otherUserWhiskySearchText.value.detailSearchText,
+        toggleOption = {mainViewModel.toggleDetailSearchDialogState()},
+        currentState = mainViewModel.detailSearchDialogState.value
+        )
 
     ModalDrawerSheet (
         modifier = Modifier
@@ -143,22 +145,57 @@ fun NavigationDrawerComponent(
                 .fillMaxWidth(),
             ) {
 
-            Text(
-                text="위스키 검색",
-                style = TextStyle.Default.copy(
-                    color = Color.Gray,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal
-                ),
-                modifier = Modifier.padding(start=20.dp,bottom=5.dp)
-            )
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text="위스키 검색",
+                    style = TextStyle.Default.copy(
+                        color = Color.Gray,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier.padding(start=20.dp,)
+                )
+
+                Text(
+                    text="세부 검색",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier
+                        .padding(end = 20.dp)
+                        .drawBehind {
+                            val strokeWidthPx = 2.dp.toPx()
+                            val verticalOffset = size.height - 1.sp.toPx()
+                            drawLine(
+                                color = Color.LightGray,
+                                strokeWidth = strokeWidthPx,
+                                start = Offset(0f, verticalOffset),
+                                end = Offset(size.width, verticalOffset)
+                            )
+                        }
+                        .clickable {
+                            mainViewModel.toggleDetailSearchDialogState()
+                        }
+                )
+
+            }
+
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ){
                 CustomSearchBoxComponent(
-                    text=mainViewModel.drawerSearchBarText.value,
+                    text=mainViewModel.otherUserWhiskySearchText.value.searchText,
                     onValueChange = {
                         mainViewModel.updateDrawerSearchBarText(it)
                     },
@@ -166,7 +203,7 @@ fun NavigationDrawerComponent(
                         mainViewModel.setRecentSearchTextList(
                             RecentSearchWordManager.saveSearchText(
                                 context = context,
-                                searchText=mainViewModel.drawerSearchBarText.value,
+                                searchText=mainViewModel.otherUserWhiskySearchText.value.searchText,
                                 type = RECENT_SEARCH_WHISKEY_TEXT
                             ),
                             type = RECENT_SEARCH_WHISKEY_TEXT

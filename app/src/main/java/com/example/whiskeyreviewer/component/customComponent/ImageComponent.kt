@@ -54,7 +54,7 @@ fun ImageComponent(
         GlideImage(
             imageModel = selectImage,
             modifier = Modifier
-                .size(150.dp)
+                .size(200.dp)
         )
     }
 }

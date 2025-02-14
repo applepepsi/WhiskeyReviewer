@@ -126,6 +126,8 @@ fun CustomSearchBoxComponent(
     }
 }
 
+
+
 @Composable
 fun SearchBarDivider(
     modifier: Modifier = Modifier
@@ -137,6 +139,9 @@ fun SearchBarDivider(
         color = MainColor
     )
 }
+
+
+
 
 @Preview
 @Composable

@@ -30,12 +30,16 @@ sealed class WhiskeyFilterItems(
     data object NameAscendingOrder : WhiskeyFilterItems("이름 오름차순", NAME_ASCENDING_ORDER, NAME, R.drawable.arrow_up)
     data object NameDescendingOrder : WhiskeyFilterItems("이름 내림차순", NAME_DESCENDING_ORDER, NAME, R.drawable.arrow_down)
 
+    data object VoteAscendingOrder : WhiskeyFilterItems("별점 오름차순", VOTE_ASCENDING_ORDER, VOTE, R.drawable.arrow_up)
+    data object VoteDescendingOrder : WhiskeyFilterItems("별점 내림차순", VOTE_DESCENDING_ORDER, VOTE, R.drawable.arrow_down)
+
 
     companion object {
         const val DAY = "작성일"
         const val SCORE="점수"
         const val OPEN_DATE="개봉일"
         const val NAME="이름"
+        const val VOTE="추천"
 
         const val DAY_ASCENDING_ORDER = "asc"
         const val DAY_DESCENDING_ORDER = "desc"
@@ -48,6 +52,9 @@ sealed class WhiskeyFilterItems(
 
         const val NAME_ASCENDING_ORDER = "asc"
         const val NAME_DESCENDING_ORDER = "desc"
+
+        const val VOTE_ASCENDING_ORDER = "asc"
+        const val VOTE_DESCENDING_ORDER = "desc"
     }
 }
 
@@ -56,7 +63,13 @@ data class FilterDropDownMenuState(
     var score: Boolean = false,
     var openDate: Boolean = false,
     var name: Boolean=false,
+)
 
+data class OderUserReviewDropDownMenuState(
+    var score: Boolean = false,
+    var vote:Boolean = false,
+    var day: Boolean = false,
+    var name: Boolean=false,
 )
 
 

@@ -148,7 +148,7 @@ fun InsertReviewView(
         if(mainViewModel.selectWhiskyDialogState.value){
             mainViewModel.toggleWhiskySelectDialogState()
         }
-        if(mainViewModel.selectCustomWhiskyDialogState.value){
+        if(mainViewModel.insertWhiskyDetailDialogState.value){
             mainViewModel.toggleCustomWhiskySelectDialogState()
         }
     }

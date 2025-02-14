@@ -29,7 +29,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -53,11 +56,11 @@ import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.component.home.WhiskyCustomFilterRow
-import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -151,20 +154,51 @@ fun WhiskeySearchView(
 
                 if(mainViewModel.whiskeySearchBarState.value){
 
-                    Text(
-                        modifier = Modifier.padding(start=17.dp),
-                        text="위스키 검색",
-                        style = TextStyle.Default.copy(
-                            color = Color.Gray,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(
+                            text="위스키 검색",
+                            style = TextStyle.Default.copy(
+                                color = Color.Gray,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            modifier = Modifier.padding(start=20.dp,)
                         )
-                    )
 
-                    Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text="세부 검색",
+                            style = TextStyle.Default.copy(
+                                color = LightBlackColor,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            modifier = Modifier
+                                .padding(end = 20.dp)
+                                .drawBehind {
+                                    val strokeWidthPx = 2.dp.toPx()
+                                    val verticalOffset = size.height - 1.sp.toPx()
+                                    drawLine(
+                                        color = Color.LightGray,
+                                        strokeWidth = strokeWidthPx,
+                                        start = Offset(0f, verticalOffset),
+                                        end = Offset(size.width, verticalOffset)
+                                    )
+                                }
+                                .clickable {
+                                    mainViewModel.toggleDetailSearchDialogState()
+                                }
+                        )
+
+                    }
 
                     CustomSearchBoxComponent(
-                        text=mainViewModel.drawerSearchBarText.value,
+                        text=mainViewModel.otherUserWhiskySearchText.value.searchText,
                         onValueChange = {
                             mainViewModel.updateDrawerSearchBarText(it)
                         },
@@ -172,7 +206,7 @@ fun WhiskeySearchView(
                             mainViewModel.setRecentSearchTextList(
                                 RecentSearchWordManager.saveSearchText(
                                     context = context,
-                                    searchText=mainViewModel.drawerSearchBarText.value,
+                                    searchText=mainViewModel.otherUserWhiskySearchText.value.searchText,
                                     type = RECENT_SEARCH_WHISKEY_TEXT
                                 ),
                                 type = RECENT_SEARCH_WHISKEY_TEXT
@@ -211,33 +245,28 @@ fun WhiskeySearchView(
                     }
                 }
 
-                TapLayoutComponent(
-                    customFilter = {
-                        WhiskyCustomFilterRow(mainViewModel = mainViewModel)
-                    },
-                    myReview = {
-                        if(mainViewModel.reviewList.value.isEmpty()){
-                            Log.d("리스트", mainViewModel.reviewList.value.toString())
-                            EmptyMyWhiskyReviewComponent(
-                                text="해당 위스키가 존재하지 않습니다."
-                            )
-                        }else {
-                            MyReviewComponent(
-                                myReviewItems = mainViewModel.reviewList.value,
-                                setSelectReview = { singleWhiskyData ->
-                                    mainViewModel.updateOderUserSelectReview(singleWhiskyData)
-                                    navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
-                                },
-                                toggleConfirmDialogState = {},
-                                showOption = false
-                            )
-                        }
-                    },
-                    updateCurrentPage = {
-                        mainViewModel.updateWhiskyType(it)
-                    },
+                Column(
+                    Modifier.fillMaxWidth()
+                ) {
+                    WhiskyCustomFilterRow(mainViewModel = mainViewModel)
 
-                    )
+                    if(mainViewModel.reviewList.value.isEmpty()){
+                        Log.d("리스트", mainViewModel.reviewList.value.toString())
+                        EmptyMyWhiskyReviewComponent(
+                            text="해당 위스키가 존재하지 않습니다."
+                        )
+                    }else {
+                        MyReviewComponent(
+                            myReviewItems = mainViewModel.reviewList.value,
+                            setSelectReview = { singleWhiskyData ->
+                                mainViewModel.updateOderUserSelectReview(singleWhiskyData)
+                                navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
+                            },
+                            toggleConfirmDialogState = {},
+                            showOption = false
+                        )
+                    }
+                }
 
             }
         }

@@ -42,7 +42,10 @@ import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.FormatUnderlined
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -707,7 +710,8 @@ fun SelectDateBottomSheet(
 
 
     ModalBottomSheet(
-
+        containerColor = Color.White,
+        contentColor = Color.White,
         onDismissRequest = { onDismiss() },
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
@@ -743,38 +747,46 @@ fun CustomDatePicker(
             primary = MainColor,
         )
     ) {
-        Column {
-            DatePicker(
-                state = dateState,
-                title = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                            text = "개봉일 선택",
-                            fontSize = 20.sp
-                        )
-                        Button(
-                            onClick = { select() },
-                            modifier = Modifier.padding(end = 10.dp)
-                        )
-                        {
-                            Text(text = "확인")
-                        }
-                    }
-                },
-                headline = {
+        DatePicker(
+            state = dateState,
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(
-                        modifier = Modifier.padding(start = 15.dp, bottom = 10.dp),
-                        text = "개봉일을 선택해 주세요.",
-                        fontSize = 15.sp
+                        modifier = Modifier.padding(start = 15.dp, top = 10.dp),
+                        text = "개봉일 선택",
+                        fontSize = 20.sp
                     )
-                },
-                showModeToggle = false
+                    Button(
+                        onClick = { select() },
+                        modifier = Modifier.padding(end = 10.dp),
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = MainColor,
+//                            contentColor = Color.White,
+//                            disabledContainerColor = MainColor,
+//                            disabledContentColor = Color.White,
+//                        )
+
+                    )
+                    {
+                        Text(text = "확인")
+                    }
+                }
+            },
+            headline = {
+                Text(
+                    modifier = Modifier.padding(start = 15.dp, bottom = 10.dp),
+                    text = "개봉일을 선택해 주세요.",
+                    fontSize = 15.sp
+                )
+            },
+            showModeToggle = false,
+            colors = DatePickerDefaults.colors(
+                containerColor = Color.White,
             )
-        }
+        )
     }
 }
 

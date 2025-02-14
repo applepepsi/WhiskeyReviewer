@@ -1,5 +1,6 @@
 package com.example.nextclass.utils
 
+import com.example.whiskeyreviewer.data.CountryItems
 import com.example.whiskeyreviewer.data.TapLayoutItems
 
 
@@ -64,6 +65,18 @@ val whiskeyData = listOf(
     TapLayoutItems.Spirit,
     TapLayoutItems.Tennessee,
     TapLayoutItems.Wheat
+)
+
+val countryData = listOf(
+    CountryItems.America,
+    CountryItems.Scotland,
+    CountryItems.Ireland,
+    CountryItems.Canada,
+    CountryItems.Japan,
+    CountryItems.Taiwan,
+    CountryItems.India,
+    CountryItems.Germany,
+    CountryItems.Australia,
 )
 
 

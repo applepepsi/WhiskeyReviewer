@@ -23,9 +23,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
@@ -52,14 +53,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,16 +71,24 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.nextclass.utils.countryData
 import com.example.nextclass.utils.whiskeyData
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.customComponent.BottlingDateInputComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.EmptyWhiskySearchComponent
 import com.example.whiskeyreviewer.component.customComponent.ImageComponent
+import com.example.whiskeyreviewer.component.customComponent.LongTextInputComponent
 import com.example.whiskeyreviewer.component.customComponent.SearchBarDivider
+import com.example.whiskeyreviewer.component.customComponent.SelectCountryDropDownMenuComponent
+import com.example.whiskeyreviewer.component.customComponent.ShortTextInputComponent
 import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
+import com.example.whiskeyreviewer.component.customComponent.StrengthInputComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
+import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MainRoute
+import com.example.whiskeyreviewer.data.TapLayoutItems
 
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -394,6 +405,7 @@ fun InsertBackupCodeDialog(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectWhiskeyDialog(
     mainViewModel: MainViewModel,
@@ -404,12 +416,12 @@ fun SelectWhiskeyDialog(
     text: String = "",
     updateText: (String) -> Unit,
     searchWhisky: () -> Unit,
+    toggleInsertDetailDialog:()->Unit={}
     ) {
 
     val customToast = CustomToast(LocalContext.current)
 
     LaunchedEffect(currentState) {
-
         mainViewModel.resetAddWhiskyDialog()
     }
 
@@ -444,7 +456,7 @@ fun SelectWhiskeyDialog(
         ) {
                 Column(
                     modifier = Modifier
-                        .height(410.dp)
+                        .height(440.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color.White)
                         .padding(top = 20.dp),
@@ -473,6 +485,7 @@ fun SelectWhiskeyDialog(
                             .padding(start = 17.dp)
                     )
 
+
                     WhiskeyFilterDropDownMenuComponent(
                         value = mainViewModel.currentWhiskyFilterType.value,
                         onValueChange = { mainViewModel.updateCurrentWhiskyFilterType(it) },
@@ -481,8 +494,6 @@ fun SelectWhiskeyDialog(
                         menuItems = whiskeyData,
                         modifier = Modifier.padding(start=15.dp,top=10.dp)
                     )
-
-
 
                     Box(
                         modifier = Modifier
@@ -496,6 +507,7 @@ fun SelectWhiskeyDialog(
 
 
                         BasicTextField(
+                            singleLine = true,
                             value = text,
                             onValueChange = {
                                 updateText(it)
@@ -520,6 +532,7 @@ fun SelectWhiskeyDialog(
                                     Spacer(modifier = Modifier.width(10.dp))
 
                                     Box(
+                                        modifier = Modifier.width(220.dp),
                                         contentAlignment = Alignment.CenterStart
                                     ){
                                         if (text.isEmpty()) {
@@ -599,6 +612,48 @@ fun SelectWhiskeyDialog(
                         }
                     }
 
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "찾으시는 위스키가 없으신가요?",
+                            style = TextStyle.Default.copy(
+                                color = LightBlackColor,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            modifier = Modifier
+
+                        )
+
+                        Text(
+                            text = "직접 입력",
+                            style = TextStyle.Default.copy(
+                                color = LightBlackColor,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            modifier = Modifier
+                                .padding(start = 5.dp)
+                                .drawBehind {
+                                    val strokeWidthPx = 2.dp.toPx()
+                                    val verticalOffset = size.height - 1.sp.toPx()
+                                    drawLine(
+                                        color = Color.LightGray,
+                                        strokeWidth = strokeWidthPx,
+                                        start = Offset(0f, verticalOffset),
+                                        end = Offset(size.width, verticalOffset)
+                                    )
+                                }
+                                .clickable {
+                                    toggleInsertDetailDialog()
+                                }
+                        )
+                    }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -621,7 +676,10 @@ fun SelectWhiskeyDialog(
                                     RoundedCornerShape(8.dp)
                                 )
                                 .clickable {
-                                    submitWhiskey()
+//                                    submitWhiskey()
+                                    //구조 변경으로 세부 입력 다이얼로그로 이동해야함
+                                    //todo 세부 입력 다이얼로 이동하기 전에 정보 넘겨야함
+                                    toggleInsertDetailDialog()
                                 }
                         )
 
@@ -653,8 +711,462 @@ fun SelectWhiskeyDialog(
 }
 
 
+//@Composable
+//fun SelectCustomWhiskeyDialog(
+//    mainViewModel: MainViewModel,
+//    toggleOption: () -> Unit,
+//
+//    currentState: Boolean = true,
+//    submitWhiskey: () -> Unit,
+//    text: String = "",
+//    updateText: (String) -> Unit,
+//
+//    resetResult: () -> Unit,
+//    navController: NavHostController
+//) {
+//
+////    LaunchedEffect(currentState) {
+////        mainViewModel.resetAddCustomWhiskyDialog()
+////    }
+//
+//    val customToast = CustomToast(LocalContext.current)
+//
+////    val whiskeyData = listOf(
+////        TapLayoutItems.AllWhiskey,
+////        TapLayoutItems.AmericanWhiskey,
+////        TapLayoutItems.Blend,
+////        TapLayoutItems.BlendedGrain,
+////        TapLayoutItems.BlendedMalt,
+////        TapLayoutItems.Bourbon,
+////        TapLayoutItems.CanadianWhiskey,
+////        TapLayoutItems.Corn,
+////        TapLayoutItems.Rice,
+////        TapLayoutItems.Rye,
+////        TapLayoutItems.SingleGrain,
+////        TapLayoutItems.SingleMalt,
+////        TapLayoutItems.SinglePotStill,
+////        TapLayoutItems.Spirit,
+////        TapLayoutItems.Tennessee,
+////        TapLayoutItems.Wheat
+////    )
+//
+//    if(mainViewModel.errorToastState.value) {
+//
+//        customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
+//        mainViewModel.resetToastErrorState()
+//    }
+//
+//
+//    val photoPickerLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.PickVisualMedia(),
+//        onResult = { uri ->
+//            if (uri != null) {
+//                mainViewModel.setSelectedImage(uri)
+//            }
+//        }
+//    )
+//
+//    ImageTypeSelectDialog(
+//        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
+//        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
+//        confirm = {
+//            when {
+//                mainViewModel.imageTypeSelectState.value.albumSelected -> {
+//                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+//
+//                }
+//                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
+//
+////                    mainViewModel.setCameraTag(AddImageTag.AddWhisky)
+//                    navController.navigate("${MainRoute.CAMERA}/addWhisky")
+//                }
+//
+//                else -> {}
+//            }.also {
+//                mainViewModel.toggleImageTypeSelectDialogState()
+//            }
+//        },
+//        onSelect = { mainViewModel.updateSelectImageType(it) },
+//        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
+//        currentState = mainViewModel.imageTypeSelectDialogState.value
+//    )
+//
+//    if (currentState) {
+//        Dialog(
+//            onDismissRequest = { toggleOption() }
+//        ) {
+//                Column(
+//                    modifier = Modifier
+//                        .height(400.dp)
+//                        .clip(RoundedCornerShape(10.dp))
+//                        .background(Color.White)
+//                        .padding(top = 20.dp),
+//                ) {
+//
+//                    Text(
+//                        text = "직접 위스키 입력",
+//                        style = TextStyle.Default.copy(
+//                            color = LightBlackColor,
+//                            fontSize = 18.sp,
+//                            fontWeight = FontWeight.Bold
+//                        ),
+//                        modifier = Modifier
+//                            .padding(start = 17.dp)
+//
+//                    )
+//                    Text(
+//                        text = "리뷰를 작성하려는 위스키를 입력해 주세요.",
+//                        style = TextStyle.Default.copy(
+//                            color = LightBlackColor,
+//                            fontSize = 13.sp,
+//                            fontWeight = FontWeight.Normal
+//                        ),
+//                        modifier = Modifier
+//                            .padding(start = 17.dp)
+//                    )
+//
+//                    ImageComponent(
+//                        imageClick = {
+//                            mainViewModel.toggleImageTypeSelectDialogState()
+//                        },
+//                        image = mainViewModel.selectedImageUri.value,
+//                        modifier = Modifier.padding(start=17.dp,top=20.dp)
+//                    )
+//
+//
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(start = 15.dp, top = 10.dp),
+//                        verticalAlignment = Alignment.CenterVertically,
+//
+//                    ){
+//                        WhiskeyFilterDropDownMenuComponent(
+//                            value = mainViewModel.currentCustomWhiskyType.value,
+//                            onValueChange = { mainViewModel.updateCurrentCustomWhiskyType(it) },
+//                            dropDownMenuOption = mainViewModel.currentCustomWhiskyDropDownState.value,
+//                            toggleDropDownMenuOption = { mainViewModel.toggleCustomWhiskyDropDownMenuState()},
+//                            menuItems = whiskeyData,
+//                            modifier = Modifier
+//                        )
+//
+//                        Spacer(modifier = Modifier.width(7.dp))
+//
+//                        Box(
+//                            modifier = Modifier
+//
+//                                .border(
+//                                    BorderStroke(0.5.dp, Color.LightGray),
+//                                    RoundedCornerShape(8.dp)
+//                                )
+//                                .width(80.dp)
+//                                .height(42.dp)
+//                            ,
+//
+//                        ){
+//                            BasicTextField(
+//                                singleLine = true,
+//                                value = mainViewModel.customWhiskyData.value.strength,
+//                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                                onValueChange = {
+//
+////                                    val numericInput = input.toDoubleOrNull()
+////                                    if (numericInput != null) {
+////                                        strength = numericInput.toString()
+////                                    }
+//
+//                                    if (it.isEmpty()){
+//                                        mainViewModel.updateStrength(it)
+//
+//                                    } else {
+//                                        when (it.toDoubleOrNull()) {
+//                                            null -> mainViewModel.customWhiskyData.value.strength
+//                                            else -> mainViewModel.updateStrength(it)
+//                                        }
+//                                    }
+//                                },
+//
+//                                textStyle = TextStyle(
+//                                    color = Color.Black,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Normal
+//                                ),
+//                                modifier = Modifier
+//                                    .align(Alignment.CenterStart)
+//                                    .padding(end = 24.dp),
+//
+//
+//                                decorationBox = { innerTextField ->
+//                                    Row(
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        verticalAlignment = Alignment.CenterVertically
+//                                    ) {
+//
+//                                        Spacer(modifier = Modifier.width(8.dp))
+//
+//                                        Box(
+//                                            contentAlignment = Alignment.CenterStart
+//                                        ){
+//                                            if (mainViewModel.customWhiskyData.value.strength.isEmpty()) {
+//                                                Text(
+//                                                    text = "도수",
+//                                                    color = Color.LightGray,
+//                                                    fontSize = 12.sp,
+//                                                    fontWeight = FontWeight.Normal,
+//                                                    modifier = Modifier
+////                                                    .padding(start = 8.dp)
+//                                                )
+//                                            }
+//                                            innerTextField()
+//
+//                                        }
+//
+//
+//                                    }
+//                                }
+//                            )
+//                            if (mainViewModel.customWhiskyData.value.strength.isNotEmpty()) {
+//                                Text(
+//                                    text = "%",
+//                                    color = LightBlackColor,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Bold,
+//                                    modifier = Modifier
+//                                        .align(Alignment.CenterEnd)
+//                                        .padding(end = 8.dp)
+//
+//                                )
+//                            }
+//                        }
+//
+//                        Spacer(modifier = Modifier.width(7.dp))
+//
+//                        Box(
+//                            modifier = Modifier
+//
+//                                .border(
+//                                    BorderStroke(0.5.dp, Color.LightGray),
+//                                    RoundedCornerShape(8.dp)
+//                                )
+//                                .width(80.dp)
+//                                .height(42.dp)
+//                            ,
+//
+//                            ){
+//                            BasicTextField(
+//                                singleLine = true,
+//                                value = mainViewModel.customWhiskyData.value.bottled_year.toString(),
+//                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                                onValueChange = {
+//
+////                                    val numericInput = input.toDoubleOrNull()
+////                                    if (numericInput != null) {
+////                                        strength = numericInput.toString()
+////                                    }
+//
+//                                    if (it.isEmpty()){
+//                                        mainViewModel.updateSaleYear(it)
+//
+//                                    } else {
+//                                        when (it.toIntOrNull()) {
+//                                            null -> mainViewModel.customWhiskyData.value.bottled_year
+//                                            else -> mainViewModel.updateSaleYear(it)
+//                                        }
+//                                    }
+//                                },
+//
+//                                textStyle = TextStyle(
+//                                    color = Color.Black,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Normal
+//                                ),
+//                                modifier = Modifier
+//                                    .align(Alignment.CenterStart)
+//                                    .padding(end = 24.dp),
+//
+//
+//                                decorationBox = { innerTextField ->
+//                                    Row(
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        verticalAlignment = Alignment.CenterVertically
+//                                    ) {
+//
+//                                        Spacer(modifier = Modifier.width(8.dp))
+//
+//                                        Box(
+//                                            contentAlignment = Alignment.CenterStart
+//                                        ){
+//                                            if (mainViewModel.customWhiskyData.value.bottled_year.toString().isEmpty()) {
+//                                                Text(
+//                                                    text = "병입년도",
+//                                                    color = Color.LightGray,
+//                                                    fontSize = 12.sp,
+//                                                    fontWeight = FontWeight.Normal,
+//                                                    modifier = Modifier
+////                                                    .padding(start = 8.dp)
+//                                                )
+//                                            }
+//                                            innerTextField()
+//
+//                                        }
+//
+//
+//                                    }
+//                                }
+//                            )
+//                            if (mainViewModel.customWhiskyData.value.bottled_year.toString().isNotEmpty()) {
+//                                Text(
+//                                    text = "년",
+//                                    color = LightBlackColor,
+//                                    fontSize = 12.sp,
+//                                    fontWeight = FontWeight.Bold,
+//                                    modifier = Modifier
+//                                        .align(Alignment.CenterEnd)
+//                                        .padding(end = 8.dp)
+//
+//                                )
+//                            }
+//                        }
+//
+//                    }
+//
+//
+//
+//
+//
+//                    Box(
+//                        modifier = Modifier
+//                            .padding(start = 15.dp, end = 15.dp, top = 6.dp)
+//                            .fillMaxWidth()
+//                            .clip(RoundedCornerShape(8.dp))
+//                            .background(Color.White)
+//                            .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp)),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//
+//
+//                        BasicTextField(
+//                            value = text,
+//                            onValueChange = {
+//                                updateText(it)
+//                            },
+//                            textStyle = TextStyle(
+//                                color = Color.Black,
+//                                fontSize = 12.sp,
+//                                fontWeight = FontWeight.Normal
+//                            ),
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .height(45.dp)
+//                                .padding(start = 1.dp, end = 12.dp),
+//
+//                            decorationBox = { innerTextField ->
+//                                Row(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth(),
+//                                    verticalAlignment = Alignment.CenterVertically
+//                                ) {
+//
+//                                    Spacer(modifier = Modifier.width(10.dp))
+//
+//                                    Box(
+//                                        contentAlignment = Alignment.CenterStart
+//                                    ){
+//                                        if (text.isEmpty()) {
+//                                            Text(
+//                                                text = "등록하려는 위스키의 이름을 입력해 주세요.",
+//                                                color = LightBlackColor,
+//                                                fontSize = 12.sp,
+//                                                fontWeight = FontWeight.Normal,
+//                                                modifier = Modifier
+////                                                    .padding(start = 8.dp)
+//                                            )
+//                                        }
+//
+//                                        innerTextField()
+//                                    }
+//
+//
+//
+//                                    Spacer(modifier = Modifier.weight(1f))
+//
+//                                }
+//                            }
+//                        )
+//
+//                    }
+//
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .weight(1f)
+//                        .padding(end = 20.dp, bottom = 13.dp, top = 12.dp),
+//
+//                    horizontalArrangement = Arrangement.End,
+//                    verticalAlignment = Alignment.Bottom
+//                ) {
+//                    if(mainViewModel.tinyProgressIndicatorState.value){
+//                        CircularProgressIndicator(
+//                            modifier = Modifier
+//                                .padding(start = 5.dp)
+//                                .size(25.dp),
+//                            color = MainColor,
+//                            strokeWidth = 3.dp,
+//                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+//                        )
+//                    }
+//
+//                    Spacer(modifier = Modifier.width(15.dp))
+//
+//                    Text(
+//                        text = "확인",
+//                        style = TextStyle.Default.copy(
+//                            color = LightBlackColor,
+//                            fontSize = 18.sp,
+//                            fontWeight = FontWeight.Normal
+//                        ),
+//                        modifier = Modifier
+//
+//                            .clip(
+//                                RoundedCornerShape(8.dp)
+//                            )
+//
+//                            .clickable {
+//                                submitWhiskey()
+//                            }
+//
+//                    )
+//
+//                    Spacer(modifier = Modifier.width(15.dp))
+//
+//                    Text(
+//                        text = "취소",
+//                        style = TextStyle.Default.copy(
+//                            color = LightBlackColor,
+//                            fontSize = 18.sp,
+//                            fontWeight = FontWeight.Normal
+//                        ),
+//                        modifier = Modifier
+//                            .clip(
+//                                RoundedCornerShape(8.dp)
+//                            )
+//                            .clickable {
+//                                toggleOption()
+//                            }
+//                    )
+//
+//                }
+//
+//            }
+//
+//        }
+//
+//    }
+//
+//}
+
 @Composable
-fun SelectCustomWhiskeyDialog(
+fun InsertWhiskyDetailDialog(
     mainViewModel: MainViewModel,
     toggleOption: () -> Unit,
 
@@ -662,9 +1174,12 @@ fun SelectCustomWhiskeyDialog(
     submitWhiskey: () -> Unit,
     text: String = "",
     updateText: (String) -> Unit,
-
+    updateTagText:(String)->Unit,
     resetResult: () -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    whiskyEngName: String,
+    updateWhiskyEngName:(String)->Unit,
+    tagText:String,
 ) {
 
 //    LaunchedEffect(currentState) {
@@ -708,6 +1223,14 @@ fun SelectCustomWhiskeyDialog(
         }
     )
 
+    if (mainViewModel.openDateBottomSheetState.value) {
+        Log.d("바텀시트", mainViewModel.openDateBottomSheetState.value.toString())
+        SelectDateBottomSheet(
+            onDismiss = { mainViewModel.toggleOpenDateBottomSheetState() },
+            updateSelectData = { mainViewModel.updateOpenDate(it) }
+        )
+    }
+
     ImageTypeSelectDialog(
         albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
         cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
@@ -737,319 +1260,317 @@ fun SelectCustomWhiskeyDialog(
         Dialog(
             onDismissRequest = { toggleOption() }
         ) {
-                Column(
+            Column(
+                modifier = Modifier
+                    .height(600.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .padding(top = 20.dp)
+
+            ) {
+
+                Text(
+                    text = "세부 사항 입력",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
                     modifier = Modifier
-                        .height(400.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color.White)
-                        .padding(top = 20.dp),
+                        .padding(start = 17.dp)
+
+                )
+                Text(
+                    text = "리뷰를 작성하려는 위스키를 입력해 주세요.",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp,bottom=5.dp)
+                )
+
+                Column(
+                    modifier= Modifier
+                        .height(470.dp)
+                        .verticalScroll(state = rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
-                    Text(
-                        text = "직접 위스키 입력",
-                        style = TextStyle.Default.copy(
-                            color = LightBlackColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier
-                            .padding(start = 17.dp)
+                    Row(Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center){
+                        ImageComponent(
+                            imageClick = {
+                                mainViewModel.toggleImageTypeSelectDialogState()
+                            },
+                            image = mainViewModel.selectedImageUri.value,
+                            modifier = Modifier.padding(top=10.dp)
+                        )
+                    }
 
-                    )
-                    Text(
-                        text = "리뷰를 작성하려는 위스키를 입력해 주세요.",
-                        style = TextStyle.Default.copy(
-                            color = LightBlackColor,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        modifier = Modifier
-                            .padding(start = 17.dp)
-                    )
-
-                    ImageComponent(
-                        imageClick = {
-                            mainViewModel.toggleImageTypeSelectDialogState()
-                        },
-                        image = mainViewModel.selectedImageUri.value,
-                        modifier = Modifier.padding(start=17.dp,top=20.dp)
-                    )
 
 
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 15.dp, top = 10.dp),
+                            .padding(top = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
-
+                        horizontalArrangement = Arrangement.SpaceAround
                     ){
-                        WhiskeyFilterDropDownMenuComponent(
-                            value = mainViewModel.currentCustomWhiskyType.value,
-                            onValueChange = { mainViewModel.updateCurrentCustomWhiskyType(it) },
-                            dropDownMenuOption = mainViewModel.currentCustomWhiskyDropDownState.value,
-                            toggleDropDownMenuOption = { mainViewModel.toggleCustomWhiskyDropDownMenuState()},
-                            menuItems = whiskeyData,
-                            modifier = Modifier
-                        )
-                        
-                        Spacer(modifier = Modifier.width(7.dp))
-                        
-                        Box(
-                            modifier = Modifier
-
-                                .border(
-                                    BorderStroke(0.5.dp, Color.LightGray),
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .width(80.dp)
-                                .height(42.dp)
-                            ,
-
-                        ){
-                            BasicTextField(
-                                singleLine = true,
-                                value = mainViewModel.customWhiskyData.value.strength,
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                onValueChange = {
-
-//                                    val numericInput = input.toDoubleOrNull()
-//                                    if (numericInput != null) {
-//                                        strength = numericInput.toString()
-//                                    }
-
-                                    if (it.isEmpty()){
-                                        mainViewModel.updateStrength(it)
-
-                                    } else {
-                                        when (it.toDoubleOrNull()) {
-                                            null -> mainViewModel.customWhiskyData.value.strength
-                                            else -> mainViewModel.updateStrength(it)
-                                        }
-                                    }
-                                },
-
-                                textStyle = TextStyle(
-                                    color = Color.Black,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Normal
-                                ),
-                                modifier = Modifier
-                                    .align(Alignment.CenterStart)
-                                    .padding(end = 24.dp),
-
-
-                                decorationBox = { innerTextField ->
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-
-                                        Spacer(modifier = Modifier.width(8.dp))
-
-                                        Box(
-                                            contentAlignment = Alignment.CenterStart
-                                        ){
-                                            if (mainViewModel.customWhiskyData.value.strength.isEmpty()) {
-                                                Text(
-                                                    text = "도수",
-                                                    color = Color.LightGray,
-                                                    fontSize = 12.sp,
-                                                    fontWeight = FontWeight.Normal,
-                                                    modifier = Modifier
-//                                                    .padding(start = 8.dp)
-                                                )
-                                            }
-                                            innerTextField()
-
-                                        }
-
-
-                                    }
-                                }
-                            )
-                            if (mainViewModel.customWhiskyData.value.strength.isNotEmpty()) {
-                                Text(
-                                    text = "%",
-                                    color = LightBlackColor,
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "종류",
+                                style = TextStyle(
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .padding(end = 8.dp)
+                                    fontStyle = FontStyle.Normal,
+                                    color = LightBlackColor
+                                ),
+                                modifier = Modifier
+                                    .padding(start=5.dp,bottom=4.dp)
 
-                                )
-                            }
+                            )
+                            WhiskeyFilterDropDownMenuComponent(
+                                value = mainViewModel.currentCustomWhiskyType.value,
+                                onValueChange = { mainViewModel.updateCurrentCustomWhiskyType(it) },
+                                dropDownMenuOption = mainViewModel.currentCustomWhiskyDropDownState.value,
+                                toggleDropDownMenuOption = { mainViewModel.toggleCustomWhiskyDropDownMenuState() },
+                                menuItems = whiskeyData.filter { it != TapLayoutItems.AllWhiskey },
+                                modifier = Modifier
+                            )
                         }
 
-                        Spacer(modifier = Modifier.width(7.dp))
-
-                        Box(
-                            modifier = Modifier
-
-                                .border(
-                                    BorderStroke(0.5.dp, Color.LightGray),
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .width(80.dp)
-                                .height(42.dp)
-                            ,
-
-                            ){
-                            BasicTextField(
-                                singleLine = true,
-                                value = mainViewModel.customWhiskyData.value.bottled_year.toString(),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                onValueChange = {
-
-//                                    val numericInput = input.toDoubleOrNull()
-//                                    if (numericInput != null) {
-//                                        strength = numericInput.toString()
-//                                    }
-
-                                    if (it.isEmpty()){
-                                        mainViewModel.updateSaleYear(it)
-
-                                    } else {
-                                        when (it.toIntOrNull()) {
-                                            null -> mainViewModel.customWhiskyData.value.bottled_year
-                                            else -> mainViewModel.updateSaleYear(it)
-                                        }
-                                    }
-                                },
-
-                                textStyle = TextStyle(
-                                    color = Color.Black,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Normal
-                                ),
-                                modifier = Modifier
-                                    .align(Alignment.CenterStart)
-                                    .padding(end = 24.dp),
-
-
-                                decorationBox = { innerTextField ->
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-
-                                        Spacer(modifier = Modifier.width(8.dp))
-
-                                        Box(
-                                            contentAlignment = Alignment.CenterStart
-                                        ){
-                                            if (mainViewModel.customWhiskyData.value.bottled_year.toString().isEmpty()) {
-                                                Text(
-                                                    text = "병입년도",
-                                                    color = Color.LightGray,
-                                                    fontSize = 12.sp,
-                                                    fontWeight = FontWeight.Normal,
-                                                    modifier = Modifier
-//                                                    .padding(start = 8.dp)
-                                                )
-                                            }
-                                            innerTextField()
-
-                                        }
-
-
-                                    }
-                                }
-                            )
-                            if (mainViewModel.customWhiskyData.value.bottled_year.toString().isNotEmpty()) {
-                                Text(
-                                    text = "년",
-                                    color = LightBlackColor,
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "국가",
+                                style = TextStyle(
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .padding(end = 8.dp)
+                                    fontStyle = FontStyle.Normal,
+                                    color = LightBlackColor
+                                ),
+                                modifier = Modifier
+                                    .padding(start=5.dp,bottom=4.dp)
 
-                                )
-                            }
+                            )
+                            SelectCountryDropDownMenuComponent(
+                                value = mainViewModel.customWhiskyData.value.country,
+                                onValueChange = {
+                                    mainViewModel.updateCurrentCountry(it)
+                                },
+                                dropDownMenuOption = mainViewModel.currentCountryDropDownMenuState.value,
+                                toggleDropDownMenuOption = { mainViewModel.toggleCurrentCountryDropDownMenuState() },
+                                menuItems = countryData,
+                                modifier = Modifier
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ){
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "캐스크 타입",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = FontStyle.Normal,
+                                    color = LightBlackColor
+                                ),
+                                modifier = Modifier
+                                    .padding(start=5.dp,bottom=4.dp)
+
+                            )
+                            ShortTextInputComponent(
+
+                                text = mainViewModel.customWhiskyData.value.cask_type,
+                                hint = "캐스크 타입",
+                                updateText={
+                                    mainViewModel.updateCaskType(it)
+                                },
+                                isModify = true,
+
+                            )
+                        }
+
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "개봉일",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = FontStyle.Normal,
+                                    color = LightBlackColor
+                                ),
+                                modifier = Modifier
+                                    .padding(start = 5.dp, bottom = 4.dp)
+
+
+                            )
+                            ShortTextInputComponent(
+
+                                text = mainViewModel.customWhiskyData.value.open_date.toString(),
+                                hint = "개봉일",
+                                updateText={
+
+                                },
+                                isModify = false,
+                                clickable = {
+                                    mainViewModel.toggleOpenDateBottomSheetState()
+                                }
+                            )
+                        }
+                    }
+
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "도수",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = FontStyle.Normal,
+                                    color = LightBlackColor
+                                ),
+                                modifier = Modifier
+                                    .padding(start=5.dp,bottom=4.dp)
+
+                            )
+                            StrengthInputComponent(mainViewModel)
+                        }
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text="병입 년도",
+                                style = TextStyle(
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontStyle = FontStyle.Normal,
+                                    color = LightBlackColor
+                                ),
+                                modifier = Modifier
+                                    .padding(start=5.dp,bottom=4.dp)
+
+                            )
+                            BottlingDateInputComponent(
+                                mainViewModel=mainViewModel
+                            )
                         }
 
                     }
 
 
 
-
-
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 15.dp, end = 15.dp, top = 6.dp)
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color.White)
-                            .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-
-
-                        BasicTextField(
-                            value = text,
-                            onValueChange = {
-                                updateText(it)
-                            },
-                            textStyle = TextStyle(
-                                color = Color.Black,
+                    Column {
+                        Text(
+                            text="위스키 이름",
+                            style = TextStyle(
                                 fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Normal,
+                                color = LightBlackColor
                             ),
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(45.dp)
-                                .padding(start = 1.dp, end = 12.dp),
+                                .padding(start=12.dp)
 
-                            decorationBox = { innerTextField ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-
-                                    Spacer(modifier = Modifier.width(10.dp))
-
-                                    Box(
-                                        contentAlignment = Alignment.CenterStart
-                                    ){
-                                        if (text.isEmpty()) {
-                                            Text(
-                                                text = "등록하려는 위스키의 이름을 입력해 주세요.",
-                                                color = LightBlackColor,
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.Normal,
-                                                modifier = Modifier
-//                                                    .padding(start = 8.dp)
-                                            )
-                                        }
-
-                                        innerTextField()
-                                    }
-
-
-
-                                    Spacer(modifier = Modifier.weight(1f))
-
-                                }
-                            }
                         )
-
+                        LongTextInputComponent(
+                            text=text,
+                            updateText={
+                                updateText(it)
+                            },
+                            helpText="등록하려는 위스키의 이름을 입력해 주세요.",
+                        )
                     }
+
+                    Column {
+                        Text(
+                            text = "위스키 영문 이름",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Normal,
+                                color = LightBlackColor
+                            ),
+                            modifier = Modifier
+                                .padding(start = 12.dp)
+
+                        )
+                        LongTextInputComponent(
+                            text = whiskyEngName,
+                            updateText = {
+                                updateWhiskyEngName(it)
+                            },
+                            helpText = "등록하려는 위스키의 영문 이름을 입력해 주세요."
+                        )
+                    }
+
+                    Column {
+                        Text(
+                            text="위스키 태그",
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontStyle = FontStyle.Normal,
+                                color = LightBlackColor
+                            ),
+                            modifier = Modifier
+                                .padding(start=12.dp)
+
+                        )
+                        LongTextInputComponent(
+                            text=tagText,
+                            updateText={
+                                updateTagText(it)
+                            },
+                            helpText="위스키의 구분을 위한 명칭을 입력해 주세요."
+                        )
+                    }
+                }
+
+
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(end = 20.dp, bottom = 13.dp, top = 12.dp),
+                        .padding(end = 20.dp, bottom = 13.dp, top = 7.dp),
 
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.Bottom
                 ) {
                     if(mainViewModel.tinyProgressIndicatorState.value){
                         CircularProgressIndicator(
-                            modifier = Modifier.padding(start=5.dp).size(25.dp),
+                            modifier = Modifier
+                                .padding(start = 5.dp)
+                                .size(25.dp),
                             color = MainColor,
                             strokeWidth = 3.dp,
                             trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
@@ -1441,24 +1962,166 @@ fun ImageViewerDialog(
 }
 
 
+@Composable
+fun DetailSearchDialog(
+    updateText: (String) -> Unit,
+    text:String,
+    toggleOption: () -> Unit,
+    currentState: Boolean = true,
+){
+
+    if (currentState) {
+        Dialog(
+            onDismissRequest = { toggleOption() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .height(185.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .padding(top = 20.dp),
+
+                ) {
+
+                Text(
+                    text = "세부 검색",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp)
+
+                )
+                Text(
+                    text = "검색하려는 위스키의 세부 검색어를 입력해 주세요.",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp)
+                )
+
+
+                Box(
+                    modifier = Modifier
+                        .padding(start = 15.dp, end = 15.dp, top = 15.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.White)
+                        .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+
+
+                    BasicTextField(
+                        singleLine = true,
+                        value = text,
+                        onValueChange = {
+                            updateText(it)
+                        },
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .padding(start = 1.dp, end = 12.dp),
+
+                        decorationBox = { innerTextField ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                Spacer(modifier = Modifier.width(10.dp))
+
+                                Box(
+                                    modifier = Modifier,
+                                    contentAlignment = Alignment.CenterStart
+                                ){
+                                    if (text.isEmpty()) {
+                                        Text(
+                                            text = "세부 검색어를 입력해 주세요.",
+                                            color = LightBlackColor,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            modifier = Modifier
+//                                                    .padding(start = 8.dp)
+                                        )
+                                    }
+
+                                    innerTextField()
+                                }
+
+                            }
+                        }
+                    )
+
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(end = 20.dp, bottom = 13.dp, top = 18.dp),
+
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = "확인",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+                            .clickable {
+
+                                toggleOption()
+                            }
+                    )
+
+                }
+            }
+        }
+
+
+
+    }
+
+}
+
+
+
 @Preview(showBackground = true)
 @Composable
-fun CustomDialogPreview() {
+fun AddWhiskyDialogPreview() {
 //    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 //    val scope = rememberCoroutineScope()
 //    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
     val mainViewModel: MainViewModel = hiltViewModel()
     val navHostController= rememberNavController()
     WhiskeyReviewerTheme {
-        SelectCustomWhiskeyDialog(
-            mainViewModel=mainViewModel,
+        SelectWhiskeyDialog(
+            mainViewModel = mainViewModel,
             toggleOption = { /*TODO*/ },
-            submitWhiskey = {},
+            submitWhiskey = { /*TODO*/ },
             updateText = {},
-            resetResult = {
-
-            },
-            navController = navHostController
-        )
+            searchWhisky = {}
+        ) {
+            
+        }
     }
 }

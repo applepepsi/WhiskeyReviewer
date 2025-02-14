@@ -24,11 +24,14 @@ import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
+import com.example.whiskeyreviewer.data.OtherUserReviewSearchText
 import com.example.whiskeyreviewer.data.ReviewData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.MyWhiskyFilterData
+import com.example.whiskeyreviewer.data.OderUserReviewDropDownMenuState
 import com.example.whiskeyreviewer.data.WhiskyFilterData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
@@ -37,6 +40,7 @@ import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.LocalDate
 import javax.inject.Inject
 
 
@@ -166,8 +170,8 @@ class MainViewModel @Inject constructor(
     private val _currentMyReviewVoteFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.Best)
     val currentMyReviewVoteFilter: State<MyReviewFilterItems> = _currentMyReviewVoteFilter
 
-    private val _whiskyFilterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
-    val whiskyFilterDropDownMenuState: State<FilterDropDownMenuState> = _whiskyFilterDropDownMenuState
+    private val _whiskyFilterDropDownMenuState = mutableStateOf(OderUserReviewDropDownMenuState())
+    val whiskyFilterDropDownMenuState: State<OderUserReviewDropDownMenuState> = _whiskyFilterDropDownMenuState
 
     private val _myReviewDataList=mutableStateOf<List<WhiskeyReviewData>>(
         listOf(
@@ -181,8 +185,12 @@ class MainViewModel @Inject constructor(
     private val _homeSearchBarSText= mutableStateOf("")
     val homeSearchBarSText: State<String> = _homeSearchBarSText
 
-    private val _drawerSearchBarText= mutableStateOf("")
-    val drawerSearchBarText: State<String> = _drawerSearchBarText
+    private val _otherUserWhiskySearchText= mutableStateOf<OtherUserReviewSearchText>(
+        OtherUserReviewSearchText()
+    )
+    val otherUserWhiskySearchText: State<OtherUserReviewSearchText> = _otherUserWhiskySearchText
+
+
 
     private val _recentSearchReviewTextList=mutableStateOf(listOf<String>())
     val recentSearchReviewTextList: State<List<String>> = _recentSearchReviewTextList
@@ -225,8 +233,8 @@ class MainViewModel @Inject constructor(
     private val _currentCustomWhiskyDropDownState=mutableStateOf<Boolean>(false)
     val currentCustomWhiskyDropDownState: State<Boolean> = _currentCustomWhiskyDropDownState
 
-    private val _selectCustomWhiskyDialogState=mutableStateOf<Boolean>(false)
-    val selectCustomWhiskyDialogState: State<Boolean> = _selectCustomWhiskyDialogState
+    private val _insertWhiskyDetailDialogState=mutableStateOf<Boolean>(false)
+    val insertWhiskyDetailDialogState: State<Boolean> = _insertWhiskyDetailDialogState
 
 
     private val _currentCustomWhiskyType=mutableStateOf<TapLayoutItems>(TapLayoutItems.AmericanWhiskey)
@@ -270,8 +278,8 @@ class MainViewModel @Inject constructor(
     private val _selectWhiskyState=mutableStateOf<Boolean>(false)
     val selectWhiskyState: State<Boolean> = _selectWhiskyState
 
-    private val _myWhiskyFilterData=mutableStateOf<WhiskyFilterData>(WhiskyFilterData())
-    val myWhiskyFilterData: State<WhiskyFilterData> = _myWhiskyFilterData
+    private val _myWhiskyFilterData=mutableStateOf<MyWhiskyFilterData>(MyWhiskyFilterData())
+    val myWhiskyFilterData: State<MyWhiskyFilterData> = _myWhiskyFilterData
 
     private val _whiskyFilterData=mutableStateOf<WhiskyFilterData>(WhiskyFilterData())
     val whiskyFilterData: State<WhiskyFilterData> = _whiskyFilterData
@@ -325,6 +333,28 @@ class MainViewModel @Inject constructor(
 
     private val _selectNewWhiskyData=mutableStateOf<WhiskyName>(WhiskyName())
     val selectNewWhiskyData: State<WhiskyName> = _selectNewWhiskyData
+
+//    private val _currentCountry=mutableStateOf<String>("")
+//    val currentCountry: State<String> = _currentCountry
+
+    private val _currentCountryDropDownMenuState=mutableStateOf<Boolean>(false)
+    val currentCountryDropDownMenuState: State<Boolean> = _currentCountryDropDownMenuState
+
+    private val _openDateBottomSheetState=mutableStateOf<Boolean>(false)
+    val openDateBottomSheetState: State<Boolean> = _openDateBottomSheetState
+
+    private val _detailSearchDialogState=mutableStateOf<Boolean>(false)
+    val detailSearchDialogState: State<Boolean> = _detailSearchDialogState
+
+
+//    private val _openDate=mutableStateOf<LocalDate>(LocalDate.now())
+//    val openDate: State<LocalDate> = _openDate
+//
+//    private val _caskType=mutableStateOf<String>("")
+//    val caskType: State<String> = _caskType
+//
+//    private val _whiskyEngName=mutableStateOf<String>("")
+//    val whiskyEngName: State<String> = _whiskyEngName
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -367,7 +397,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateDrawerSearchBarText(newSearchText:String){
-        _drawerSearchBarText.value=newSearchText
+        _otherUserWhiskySearchText.value=_otherUserWhiskySearchText.value.copy(searchText = newSearchText)
         //실시간 검색 구현 예정
         _whiskyFilterData.value=_whiskyFilterData.value.copy(
             name=newSearchText
@@ -542,7 +572,7 @@ class MainViewModel @Inject constructor(
     fun toggleCustomWhiskySelectDialogState(){
         resetAddCustomWhiskyDialog()
 
-        _selectCustomWhiskyDialogState.value=!_selectCustomWhiskyDialogState.value
+        _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
     }
 
     fun updateWhiskySearchText(text:String){
@@ -571,8 +601,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun updateCustomWhiskyText(text:String){
-        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_name = text)
+    fun updateCustomWhiskyName(text:String){
+        _customWhiskyData.value=_customWhiskyData.value.copy(
+            whisky_name = text,
+            tag_Text = text
+        )
+
     }
 
 
@@ -698,7 +732,44 @@ class MainViewModel @Inject constructor(
     }
 
     //위스키 등록화면으로 이동하는것이 아니라 등록만 하는 기능으로 수정해야함
-    fun submitCustomWhiskey(){
+//    fun submitCustomWhiskey(){
+////        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_type = currentCustomWhiskyType.value.name!!)
+//
+//        if(_customWhiskyData.value.whisky_name=="" || _customWhiskyData.value.bottled_year==0 || _customWhiskyData.value.strength==""){
+//
+//            setErrorToastMessage(
+//                icon=R.drawable.fail_icon,
+//                text="모든 항목을 기입해 주세요."
+//            )
+//        }else{
+//            _tinyProgressIndicatorState.value=true
+//            val customWhiskyImage=ImageConverter.convertUrisToFiles(applicationContext, selectedImageUri.value)
+//            Log.d("커스텀 위스키 데이터", _customWhiskyData.value.toString())
+//            mainRepository.addCustomWhisky(image = customWhiskyImage, data=_customWhiskyData.value){serverResponse ->
+//                if(serverResponse!=null){
+//
+//                    if(serverResponse.code== SUCCESS_CODE){
+//
+//                        setErrorToastMessage(
+//                            icon=R.drawable.success_icon,
+//                            text="위스키가 등록되었습니다."
+//                        )
+//                        toggleCustomWhiskySelectDialogState()
+////                        _selectWhiskyState.value=true
+//                    }else{
+//
+//                    }
+//                }else{
+//
+//                }
+//                _tinyProgressIndicatorState.value=false
+//            }
+//
+//        }
+//
+//    }
+
+    fun submitWhiskyDetail(){
 //        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_type = currentCustomWhiskyType.value.name!!)
 
         if(_customWhiskyData.value.whisky_name=="" || _customWhiskyData.value.bottled_year==0 || _customWhiskyData.value.strength==""){
@@ -731,22 +802,9 @@ class MainViewModel @Inject constructor(
                 _tinyProgressIndicatorState.value=false
             }
 
-            //서버측에 좀 구체적으로 물어봐야함
-//            val info=WhiskyName(
-//                whisky_name = _customWhiskyData.value.whisky_name,
-//                is_first = false,
-//                whisky_uuid = ""
-//            )
-//
-//
-//            setWriteReviewWhiskyInfo(info, bottleNum = 1)
-//
-//            setCurrentBottleNum(num=0)
-//            _selectWhiskyState.value=true
         }
 
     }
-
 
 
     fun updateStrength(strength: String) {
@@ -778,7 +836,7 @@ class MainViewModel @Inject constructor(
         _whiskyFilterDropDownMenuState.value = _whiskyFilterDropDownMenuState.value.copy(
             day = if (filterKey == WhiskeyFilterItems.DAY) !_whiskyFilterDropDownMenuState.value.day else false,
             score = if (filterKey == WhiskeyFilterItems.SCORE) !_whiskyFilterDropDownMenuState.value.score else false,
-            openDate = if (filterKey == WhiskeyFilterItems.OPEN_DATE) !_whiskyFilterDropDownMenuState.value.openDate else false,
+            vote = if (filterKey == WhiskeyFilterItems.VOTE) !_whiskyFilterDropDownMenuState.value.vote else false,
             name = if (filterKey == WhiskeyFilterItems.NAME) !_whiskyFilterDropDownMenuState.value.name else false,
         )
     }
@@ -787,9 +845,21 @@ class MainViewModel @Inject constructor(
         Log.d("필터키",filterKey.toString())
         when(filterKey.type){
 
+            WhiskeyFilterItems.VOTE->{
+                _whiskyFilterData.value=_whiskyFilterData.value.copy(
+                    vote_order = filterKey
+                )
+            }
+
             WhiskeyFilterItems.SCORE->{
                 _whiskyFilterData.value=_whiskyFilterData.value.copy(
                     score_order = filterKey
+                )
+            }
+
+            WhiskeyFilterItems.DAY->{
+                _whiskyFilterData.value=_whiskyFilterData.value.copy(
+                    date_order = filterKey
                 )
             }
 
@@ -807,10 +877,10 @@ class MainViewModel @Inject constructor(
 
         mainRepository.getMyWhiskyList(
             name=searchWord,
-            category= _whiskyFilterData.value.category.title,
-            date_order= "",
-            name_order=_whiskyFilterData.value.name_order.orderType,
-            score_order=_whiskyFilterData.value.score_order.orderType,
+            category= _myWhiskyFilterData.value.category.title,
+            date_order= _myWhiskyFilterData.value.date_order.title,
+            name_order=_myWhiskyFilterData.value.name_order.orderType,
+            score_order=_myWhiskyFilterData.value.score_order.orderType,
         ){
 
         }
@@ -820,7 +890,7 @@ class MainViewModel @Inject constructor(
 //        _currentWhiskeyFilter.value=currentWhiskey
 
         _whiskyFilterData.value=_whiskyFilterData.value.copy(
-            category = currentWhiskey
+//            category = currentWhiskey
         )
     }
 
@@ -929,11 +999,11 @@ class MainViewModel @Inject constructor(
 
     fun otherUserWhiskySearch(){
 
-        _drawerSearchBarText.value
-        toggleProgressIndicatorState(
-            state = true,
-            text=_drawerSearchBarText.value
-        )
+//        _otherUserWhiskySearchText.value
+//        toggleProgressIndicatorState(
+//            state = true,
+//            text=_otherUserWhiskySearchText.value
+//        )
     }
 
     fun myWhiskySearch(){
@@ -959,4 +1029,44 @@ class MainViewModel @Inject constructor(
 
         }
     }
+
+    fun updateCurrentCountry(country:String){
+        _customWhiskyData.value=customWhiskyData.value.copy(
+            country=country
+        )
+    }
+    fun toggleCurrentCountryDropDownMenuState(){
+        _currentCountryDropDownMenuState.value=!_currentCountryDropDownMenuState.value
+    }
+
+    fun toggleOpenDateBottomSheetState(){
+        _openDateBottomSheetState.value=!_openDateBottomSheetState.value
+    }
+
+    fun updateOpenDate(openDate:LocalDate){
+        _customWhiskyData.value=_customWhiskyData.value.copy(open_date=openDate)
+    }
+
+    fun updateCaskType(text:String){
+        _customWhiskyData.value=_customWhiskyData.value.copy(cask_type = text)
+    }
+
+    fun updateWhiskyEngName(text:String){
+        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_eng_name = text)
+    }
+
+    fun toggleDetailSearchDialogState(){
+        _detailSearchDialogState.value=!_detailSearchDialogState.value
+    }
+
+    fun updateDetailSearchWordText(newSearchText: String){
+        _otherUserWhiskySearchText.value=_otherUserWhiskySearchText.value.copy(
+            detailSearchText = newSearchText
+        )
+    }
+
+    fun updateWhiskyTagText(tagText:String){
+        _customWhiskyData.value=_customWhiskyData.value.copy(tag_Text = tagText)
+    }
+
 }
