@@ -50,6 +50,7 @@ import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
 import com.example.whiskeyreviewer.data.MainRoute
+import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -229,27 +230,27 @@ fun InsertReviewView(
                     .padding(top = 15.dp, start = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                Text(
-                    text = writeReviewViewModel.writeReviewData.value.bottle_num.toString()+"병",
-                    color = Color.Gray,
-                    modifier = Modifier,
-                    style = TextStyle(
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Normal,
-                        color = Color.Black
-                    ),
-                )
-
-                Spacer(modifier = Modifier.width(4.dp))
+//                Text(
+//                    text = writeReviewViewModel.writeReviewData.value.bottle_num.toString()+"병",
+//                    color = Color.Gray,
+//                    modifier = Modifier,
+//                    style = TextStyle(
+//                        fontSize = 17.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        fontStyle = FontStyle.Normal,
+//                        color = Color.Black
+//                    ),
+//                )
+//
+//                Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
                     text = writeReviewViewModel.writeReviewData.value.whiskyName,
-                    color = Color.Gray,
+                    color = LightBlackColor,
                     modifier = Modifier,
                     style = TextStyle(
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
+                        fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Normal,
                         color = Color.Black
                     ),

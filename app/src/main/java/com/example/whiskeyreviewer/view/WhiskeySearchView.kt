@@ -256,14 +256,27 @@ fun WhiskeySearchView(
                             text="해당 위스키가 존재하지 않습니다."
                         )
                     }else {
-                        MyReviewComponent(
-                            myReviewItems = mainViewModel.reviewList.value,
-                            setSelectReview = { singleWhiskyData ->
-                                mainViewModel.updateOderUserSelectReview(singleWhiskyData)
-                                navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
+//                        MyReviewComponent(
+//                            myReviewItems = mainViewModel.reviewList.value,
+//                            setSelectReview = { singleWhiskyData ->
+//                                mainViewModel.updateOderUserSelectReview(singleWhiskyData)
+//                                navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
+//                            },
+//                            toggleConfirmDialogState = {},
+//                            showOption = false
+//                        )
+                        MyReviewPost(
+                            reviewDataList = mainViewModel.myReviewDataList.value,
+                            singleReviewClick = {
+                                mainViewModel.setSelectReviewData(it)
+                                navController.navigate(MainRoute.REVIEW_DETAIL)
                             },
-                            toggleConfirmDialogState = {},
-                            showOption = false
+                            onImageSelect = {
+                                mainViewModel.setSelectImage(it)
+                                mainViewModel.toggleImageDialogState()
+                            },
+
+                            modifyAllow = false
                         )
                     }
                 }

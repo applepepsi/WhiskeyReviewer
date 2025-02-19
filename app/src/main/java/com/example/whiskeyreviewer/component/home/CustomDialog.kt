@@ -1534,7 +1534,7 @@ fun InsertWhiskyDetailDialog(
 
                     Column {
                         Text(
-                            text="위스키 태그",
+                            text="메모",
                             style = TextStyle(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
@@ -1550,7 +1550,7 @@ fun InsertWhiskyDetailDialog(
                             updateText={
                                 updateTagText(it)
                             },
-                            helpText="위스키의 구분을 위한 명칭을 입력해 주세요."
+                            helpText="메모 사항을 입력해 주세요."
                         )
                     }
                 }

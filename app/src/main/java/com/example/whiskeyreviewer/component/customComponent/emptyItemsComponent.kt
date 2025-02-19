@@ -98,13 +98,13 @@ fun EmptyReviewDataComponent(
     ) {
         Icon(
             modifier = Modifier
-                .size(120.dp),
+                .size(80.dp),
             imageVector = icon,
             contentDescription = "",
             tint = MainColor,
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         Text(
             text = text,

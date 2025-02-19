@@ -77,6 +77,14 @@ fun WhiskeyDetailView(
         }
     )
 
+    ConfirmDialog(
+        title = "위스키 제거",
+        text = "위스키를 제거하시겠습니까?",
+        confirm = { /*TODO*/ },
+        toggleOption = { mainViewModel.toggleConfirmDialog() },
+        currentState = mainViewModel.confirmDialogState.value
+    )
+
     LaunchedEffect(Unit) {
         mainViewModel.getMyReviewList()
     }
@@ -171,28 +179,42 @@ fun WhiskeyDetailView(
                     //이름 수정해야함
 
                     when (it.screenRoute) {
-                        FloatingActionButtonItems.OldBottle.screenRoute -> {
+                        //구조 변경으로 리뷰 추가하기만 남기기로
+//                        FloatingActionButtonItems.OldBottle.screenRoute -> {
+//                            Log.d("루트", it.screenRoute)
+//
+//                            //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
+////                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
+//
+//                            writeReviewViewModel.synchronizationWhiskyData(
+//                                WhiskeyReviewData(
+//                                    whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
+//                                ),
+//                                mainViewModel.selectWhiskyData.value.name,
+//                                bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value
+//                            )
+//
+////                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value)
+//                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
+//                        }
+//
+//                        FloatingActionButtonItems.NewBottle.screenRoute -> {
+//                            Log.d("루트", it.screenRoute)
+//                            //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
+////                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value+1)
+//                            writeReviewViewModel.synchronizationWhiskyData(
+//                                WhiskeyReviewData(
+//                                    whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
+//                                ),
+//                                mainViewModel.selectWhiskyData.value.name,
+//                                bottleNum = mainViewModel.myReviewData.value.bottleCount + 1
+//                            )
+//
+////                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value+1)
+//                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
+//                        }
+                        FloatingActionButtonItems.NewReview.screenRoute -> {
                             Log.d("루트", it.screenRoute)
-
-                            //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
-//                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value)
-
-                            writeReviewViewModel.synchronizationWhiskyData(
-                                WhiskeyReviewData(
-                                    whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
-                                ),
-                                mainViewModel.selectWhiskyData.value.name,
-                                bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value
-                            )
-
-//                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value)
-                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
-                        }
-
-                        FloatingActionButtonItems.NewBottle.screenRoute -> {
-                            Log.d("루트", it.screenRoute)
-                            //todo 손봐야함 좀 더 단순한 구조로 바꿔야함
-//                            mainViewModel.setWriteReviewWhiskyInfo(info, bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value+1)
                             writeReviewViewModel.synchronizationWhiskyData(
                                 WhiskeyReviewData(
                                     whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
@@ -200,17 +222,13 @@ fun WhiskeyDetailView(
                                 mainViewModel.selectWhiskyData.value.name,
                                 bottleNum = mainViewModel.myReviewData.value.bottleCount + 1
                             )
-
-//                            mainViewModel.setCurrentBottleNum(mainViewModel.currentMyReviewBottleNumFilter.value+1)
                             navController.navigate("${MainRoute.INSERT_REVIEW}/new")
                         }
-
                         else -> Log.d("루트", it.screenRoute)
                     }
                 },
                 items = listOf(
-                    FloatingActionButtonItems.OldBottle,
-                    FloatingActionButtonItems.NewBottle
+                    FloatingActionButtonItems.NewReview
                 )
             )
         },
@@ -241,8 +259,14 @@ fun WhiskeyDetailView(
             SingleWhiskeyComponent(
                 singleWhiskeyData = mainViewModel.selectWhiskyData.value,
                 reviewClick = {},
-                deleteWhisky = {},
-                showOption = false,
+                showOption = true,
+                deleteWhisky = {
+                    //제거는 아직
+                    mainViewModel.updateSelectWhisky(it)
+                    mainViewModel.toggleConfirmDialog()
+                },
+                dropDownMenuState = mainViewModel.singleWhiskyDropDownMenuState.value,
+                toggleDropDownMenuState = {mainViewModel.toggleSingleWhiskyDropDownMenuState()},
                 imageClick = { mainViewModel.toggleSelectedWhiskyDialogState() },
                 imageClickAllow = true
             )
@@ -253,18 +277,18 @@ fun WhiskeyDetailView(
                     .padding(end = 10.dp, top = 8.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                WhiskeyDetailBottleNumDropDownMenuComponent(
-                    value = mainViewModel.currentMyReviewBottleNumFilter.value,
-                    onValueChange = { mainViewModel.updateMyBottleNumFilter(it) },
-                    dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.bottleNum,
-                    toggleDropDownMenuOption = {
-                        mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
-                            MyReviewFilterItems.BOTTLE_NUM
-                        )
-                    },
-                    //todo 생각해보니 병 수를 가져오는 api를 추가해달라고 해야함
-                    menuItems = (1..mainViewModel.myReviewData.value.bottleCount).toList()
-                )
+//                WhiskeyDetailBottleNumDropDownMenuComponent(
+//                    value = mainViewModel.currentMyReviewBottleNumFilter.value,
+//                    onValueChange = { mainViewModel.updateMyBottleNumFilter(it) },
+//                    dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.bottleNum,
+//                    toggleDropDownMenuOption = {
+//                        mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(
+//                            MyReviewFilterItems.BOTTLE_NUM
+//                        )
+//                    },
+//                    //todo 생각해보니 병 수를 가져오는 api를 추가해달라고 해야함
+//                    menuItems = (1..mainViewModel.myReviewData.value.bottleCount).toList()
+//                )
 
                 Spacer(modifier = Modifier.width(10.dp))
 

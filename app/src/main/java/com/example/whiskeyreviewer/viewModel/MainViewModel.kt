@@ -347,6 +347,9 @@ class MainViewModel @Inject constructor(
     val detailSearchDialogState: State<Boolean> = _detailSearchDialogState
 
 
+    private val _singleWhiskyDropDownMenuState=mutableStateOf<Boolean>(false)
+    val singleWhiskyDropDownMenuState: State<Boolean> = _singleWhiskyDropDownMenuState
+
 //    private val _openDate=mutableStateOf<LocalDate>(LocalDate.now())
 //    val openDate: State<LocalDate> = _openDate
 //
@@ -604,7 +607,7 @@ class MainViewModel @Inject constructor(
     fun updateCustomWhiskyName(text:String){
         _customWhiskyData.value=_customWhiskyData.value.copy(
             whisky_name = text,
-            tag_Text = text
+//            tag_Text = text
         )
 
     }
@@ -1067,6 +1070,14 @@ class MainViewModel @Inject constructor(
 
     fun updateWhiskyTagText(tagText:String){
         _customWhiskyData.value=_customWhiskyData.value.copy(tag_Text = tagText)
+    }
+
+    fun toggleSingleWhiskyDropDownMenuState(){
+        _singleWhiskyDropDownMenuState.value=!_singleWhiskyDropDownMenuState.value
+    }
+
+    fun deleteWhiskyData(){
+
     }
 
 }
