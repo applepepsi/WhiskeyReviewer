@@ -100,7 +100,7 @@ fun TapLayoutComponent(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
     ) {
         ScrollableTabRow(
             selectedTabIndex = pagerState.currentPage,
@@ -111,7 +111,7 @@ fun TapLayoutComponent(
                     modifier = Modifier
                         .customTabIndicatorOffset(
                             tabPositions[pagerState.currentPage],
-                            40.dp
+                            60.dp
                         )
                         .graphicsLayer {
                             shape = RoundedCornerShape(

@@ -27,6 +27,8 @@ sealed class MyReviewFilterItems(
     data object Review : MyReviewFilterItems("리뷰", REVIEW, REVIEW_TYPE)
     data object Graph : MyReviewFilterItems("그래프", GRAPH, REVIEW_TYPE)
 
+    data object Detail : MyReviewFilterItems("세부 정보", DETAIL, REVIEW_TYPE)
+
     companion object {
         const val BOTTLE_NUM = "병 번호"
         const val DAY = "작성일"
@@ -39,6 +41,7 @@ sealed class MyReviewFilterItems(
 
         const val REVIEW = "REVIEW"
         const val GRAPH = "GRAPH"
+        const val DETAIL = "DETAIL"
 
         const val BEST = "BEST"
         const val WORST = "WORST"

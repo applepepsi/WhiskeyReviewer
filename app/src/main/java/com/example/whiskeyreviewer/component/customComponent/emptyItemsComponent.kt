@@ -39,19 +39,19 @@ fun EmptyMyWhiskyReviewComponent(
     text:String
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(bottom=90.dp),
+        modifier = Modifier.fillMaxSize().padding(bottom=50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             modifier = Modifier
-                .size(170.dp),
+                .size(150.dp),
             imageVector = ImageVector.vectorResource(R.drawable.empty_bottle),
             contentDescription = "",
-            tint = MainColor,
+            tint = LightBlackColor,
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(15.dp))
 
         Text(
             text = text,

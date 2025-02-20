@@ -248,7 +248,7 @@ fun WhiskeySearchView(
                 Column(
                     Modifier.fillMaxWidth()
                 ) {
-                    WhiskyCustomFilterRow(mainViewModel = mainViewModel)
+
 
                     if(mainViewModel.reviewList.value.isEmpty()){
                         Log.d("리스트", mainViewModel.reviewList.value.toString())
@@ -256,6 +256,7 @@ fun WhiskeySearchView(
                             text="해당 위스키가 존재하지 않습니다."
                         )
                     }else {
+                        WhiskyCustomFilterRow(mainViewModel = mainViewModel)
 //                        MyReviewComponent(
 //                            myReviewItems = mainViewModel.reviewList.value,
 //                            setSelectReview = { singleWhiskyData ->
@@ -395,6 +396,7 @@ fun OtherUserReviewDetailView(
                     MyReviewFilterItems.Best -> TODO()
                     MyReviewFilterItems.Worst -> TODO()
                     MyReviewFilterItems.Graph -> TODO()
+                    MyReviewFilterItems.Detail -> TODO()
                 }
 
 

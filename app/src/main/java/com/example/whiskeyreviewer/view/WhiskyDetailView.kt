@@ -50,6 +50,7 @@ import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
+import com.example.whiskeyreviewer.component.myReview.MyWhiskyDetailInfoComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
@@ -315,7 +316,11 @@ fun WhiskeyDetailView(
                             MyReviewFilterItems.REVIEW_TYPE
                         )
                     },
-                    menuItems = listOf(MyReviewFilterItems.Review, MyReviewFilterItems.Graph)
+                    menuItems = listOf(
+                        MyReviewFilterItems.Review,
+                        MyReviewFilterItems.Graph,
+                        MyReviewFilterItems.Detail
+                    )
                 )
             }
 
@@ -377,11 +382,16 @@ fun WhiskeyDetailView(
                         }
                     }
                 }
-
+                MyReviewFilterItems.Detail -> {
+                    MyWhiskyDetailInfoComponent(
+                        selectWhiskyData=mainViewModel.selectWhiskyData.value
+                    )
+                }
                 MyReviewFilterItems.New -> TODO()
                 MyReviewFilterItems.Old -> TODO()
                 MyReviewFilterItems.Best -> TODO()
                 MyReviewFilterItems.Worst -> TODO()
+
             }
         }
     }

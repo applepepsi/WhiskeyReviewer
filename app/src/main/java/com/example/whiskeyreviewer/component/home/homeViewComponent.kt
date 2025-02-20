@@ -52,6 +52,7 @@ import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage
 import java.time.LocalDateTime
 
@@ -172,6 +173,19 @@ fun SingleWhiskeyComponent(
                 modifier = Modifier.padding(start = 15.dp)
 
             )
+            //todo 메모를 보여줘야함
+            Text(
+                text = singleWhiskeyData.name,
+                style = TextStyle.Default.copy(
+                    color = LightBlackColor,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(start = 15.dp)
+
+            )
+
+
 
             Spacer(modifier = Modifier.height(3.dp))
 
@@ -229,6 +243,7 @@ fun SingleWhiskeyComponent(
 
 @Composable
 fun MyReviewComponent(
+    mainViewModel:MainViewModel,
     myReviewItems:List<SingleWhiskeyData>,
     setSelectReview:(SingleWhiskeyData)->Unit,
     toggleConfirmDialogState:(SingleWhiskeyData)->Unit,
@@ -257,8 +272,13 @@ fun MyReviewComponent(
 //    )
 
     LazyColumn(
+        modifier = Modifier.padding(top=3.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        item{
+            MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
+        }
+
         itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->
             SingleWhiskeyComponent(
                 singleWhiskeyData = singleWhiskeyData,

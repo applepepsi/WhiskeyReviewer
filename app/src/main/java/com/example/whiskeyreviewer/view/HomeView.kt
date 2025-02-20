@@ -311,9 +311,11 @@ fun HomeView(
 
                 TapLayoutComponent(
                     customFilter = {
-                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
+                                   //필터를 리뷰와 하나로 통합시켜서 스크롤 했을 때 같이 내려가도록 수정
+//                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
+
                         if(mainViewModel.postProgressIndicatorState.value){
                             PostProgressIndicator()
                         }else{
@@ -335,8 +337,10 @@ fun HomeView(
                                     dropDownMenuState = mainViewModel.whiskyOptionDropDownMenuState,
                                     toggleDropDownMenuState = { index->
                                         mainViewModel.toggleWhiskyOptionDropDownMenuState(index)
-                                    }
+                                    },
+                                    mainViewModel=mainViewModel
                                 )
+
                             }
                         }
                     },

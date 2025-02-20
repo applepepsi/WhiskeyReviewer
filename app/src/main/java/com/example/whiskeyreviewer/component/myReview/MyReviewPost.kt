@@ -33,11 +33,13 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,10 +64,13 @@ import androidx.compose.ui.window.Dialog
 import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
+import com.example.whiskeyreviewer.data.SelectWhiskyData
+import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyDrinkingType
 import com.example.whiskeyreviewer.data.WhiskeyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
+import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
@@ -111,6 +116,90 @@ fun MyReviewPost(
             )
         }
     }
+}
+
+@Composable
+fun MyWhiskyDetailInfoComponent(
+    selectWhiskyData: SingleWhiskeyData
+    ) {
+
+
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 13.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Spacer(modifier = Modifier.height(1.dp))
+
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth(),
+            thickness = 0.8.dp,
+            color = Color.LightGray
+        )
+
+        DetailInfoTextComponent(name="위스키 이름", value = selectWhiskyData.name)
+        DetailInfoTextComponent(name="영문 이름", value = selectWhiskyData.name)
+        DetailInfoTextComponent(name="메모", value = "qwqwfqf")
+        DetailInfoTextComponent(name="종류", value = selectWhiskyData.category ?: "")
+        DetailInfoTextComponent(name="국가", value = "test")
+        DetailInfoTextComponent(name="캐스크 타입", value = "qwq")
+        DetailInfoTextComponent(name="개봉일", value = "qwq")
+        DetailInfoTextComponent(name="도수", value = selectWhiskyData.strength.toString()+ " %")
+        DetailInfoTextComponent(name="병입 년도", value = selectWhiskyData.release_year?.toString()?.let { "$it 년" } ?: "")
+        DetailInfoTextComponent(name="개봉일", value = TimeFormatter.formatDate(selectWhiskyData.reg_date))
+
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth(),
+            thickness = 0.8.dp,
+            color = Color.LightGray
+        )
+
+        Spacer(modifier = Modifier.height(5.dp))
+    }
+}
+
+@Composable
+fun DetailInfoTextComponent(
+    name:String,
+    value:String
+) {
+
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 15.dp)
+        ) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    modifier = Modifier.padding(end=60.dp),
+                    text = name,
+                    style = TextStyle.Default.copy(
+                        color = Color.Gray,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                Text(
+                    modifier = Modifier,
+                    text = value,
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        }
+
 }
 
 @OptIn(ExperimentalRichTextApi::class)
@@ -317,11 +406,11 @@ fun ReviewImageLazyRowComponent(
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
                         .then(
-                            if(image!=null && image!=""){
+                            if (image != null && image != "") {
                                 Modifier.clickable {
                                     onImageSelect(image)
                                 }
-                            }else{
+                            } else {
                                 Modifier
                             }
                         )
