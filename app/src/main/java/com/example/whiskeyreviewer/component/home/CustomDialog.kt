@@ -615,7 +615,8 @@ fun SelectWhiskeyDialog(
 
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -1206,6 +1207,9 @@ fun InsertWhiskyDetailDialog(
 //        TapLayoutItems.Tennessee,
 //        TapLayoutItems.Wheat
 //    )
+
+
+
 
     if(mainViewModel.errorToastState.value) {
 

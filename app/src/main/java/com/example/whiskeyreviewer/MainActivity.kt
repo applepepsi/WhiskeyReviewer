@@ -19,11 +19,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.whiskeyreviewer.component.customComponent.FullSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDialog
+import com.example.whiskeyreviewer.component.home.InsertWhiskyDetailDialog
 import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.utils.TokenManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,6 +85,27 @@ fun Greeting(ssaId: String) {
         toggleOption = {  mainViewModel.toggleProgressIndicatorState(state=false,text="")  },
         currentState = mainViewModel.progressIndicatorState.value,
         text=mainViewModel.progressIndicatorText.value
+    )
+
+    InsertWhiskyDetailDialog(
+        toggleOption = { mainViewModel.toggleCustomWhiskySelectDialogState() },
+        currentState = mainViewModel.insertWhiskyDetailDialogState.value,
+        text=mainViewModel.customWhiskyData.value.korea_name,
+        whiskyEngName = mainViewModel.customWhiskyData.value.english_name,
+        updateWhiskyEngName={
+            mainViewModel.updateWhiskyEngName(it)
+        },
+        submitWhiskey = {
+            mainViewModel.submitWhiskyDetail()
+        },
+        updateText = { mainViewModel.updateCustomWhiskyName(it) },
+        resetResult = {},
+        mainViewModel = mainViewModel,
+        navController=mainNavController,
+        updateTagText = {
+            mainViewModel.updateWhiskyTagText(it)
+        },
+        tagText = mainViewModel.customWhiskyData.value.tags
     )
 
     LaunchedEffect(Unit) {

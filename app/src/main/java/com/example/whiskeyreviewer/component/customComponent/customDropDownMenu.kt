@@ -470,7 +470,7 @@ fun WhiskyOptionDropDownMenuComponent(
                         onClick(item)
                         toggleDropDownMenuOption()
                     },
-                    modifier=Modifier.height(25.dp)
+                    modifier=Modifier.height(40.dp)
                 )
             }
         }

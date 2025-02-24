@@ -102,7 +102,10 @@ fun HomeView(
                 WhiskeyReviewData(
                     whiskyUuid = mainViewModel.selectNewWhiskyData.value.whisky_uuid
                 ),
-                mainViewModel.selectNewWhiskyData.value.whisky_name,
+                mainViewModel.selectNewWhiskyData.value.whisky_name ?:
+                mainViewModel.selectNewWhiskyData.value.korea_name ?:
+                mainViewModel.selectNewWhiskyData.value.english_name,
+
                 bottleNum=1
             )
             navController.navigate("${MainRoute.INSERT_REVIEW}/new")
@@ -134,6 +137,7 @@ fun HomeView(
             //새로운 위스키 등록에 성공했다면 새로운 첫번째 병으로 자동 등록
             // 기존 위스키라면 기존 위스키의 디테일뷰로 이동
 //            mainViewModel.submitNewWhiskey()
+
         },
         updateText = { mainViewModel.updateWhiskySearchText(it) },
         searchWhisky={mainViewModel.whiskySearch()},
@@ -144,26 +148,7 @@ fun HomeView(
     )
 
     //커스텀 위스키 추가 하는 다이얼로그 일단 보류
-    InsertWhiskyDetailDialog(
-        toggleOption = { mainViewModel.toggleCustomWhiskySelectDialogState() },
-        currentState = mainViewModel.insertWhiskyDetailDialogState.value,
-        text=mainViewModel.customWhiskyData.value.whisky_name,
-        whiskyEngName = mainViewModel.customWhiskyData.value.whisky_eng_name,
-        updateWhiskyEngName={
-            mainViewModel.updateWhiskyEngName(it)
-        },
-        submitWhiskey = {
-            mainViewModel.submitWhiskyDetail()
-        },
-        updateText = { mainViewModel.updateCustomWhiskyName(it) },
-        resetResult = {},
-        mainViewModel = mainViewModel,
-        navController=navController,
-        updateTagText = {
-            mainViewModel.updateWhiskyTagText(it)
-        },
-        tagText = mainViewModel.customWhiskyData.value.tag_Text
-    )
+
 
 
     Scaffold(

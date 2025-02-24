@@ -66,10 +66,11 @@ fun SingleWhiskeyComponent(
     dropDownMenuState: Boolean=false,
     toggleDropDownMenuState:()->Unit={},
     imageClick:()->Unit={},
-    imageClickAllow:Boolean=false
+    imageClickAllow:Boolean=false,
+    modifyWhiskyData:()->Unit={}
 ) {
 
-    val dropDownMenuItems=listOf(WhiskyOptionItems.DeleteWhisky)
+    val dropDownMenuItems=listOf(WhiskyOptionItems.DeleteWhisky,WhiskyOptionItems.ModifyWhisky)
 
     Column(
         modifier = Modifier
@@ -123,6 +124,7 @@ fun SingleWhiskeyComponent(
                         onClick = {
                             when(it){
                                 WhiskyOptionItems.DeleteWhisky->{deleteWhisky(singleWhiskeyData)}
+                                WhiskyOptionItems.ModifyWhisky -> {modifyWhiskyData()}
                             }
                         }
                     )
@@ -286,7 +288,11 @@ fun MyReviewComponent(
                 showOption = showOption,
                 deleteWhisky = { toggleConfirmDialogState(singleWhiskeyData) },
                 dropDownMenuState = if (showOption) dropDownMenuState[index] else false,
-                toggleDropDownMenuState = { if (showOption) toggleDropDownMenuState(index) }
+                toggleDropDownMenuState = { if (showOption) toggleDropDownMenuState(index) },
+                modifyWhiskyData = {
+                    //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
+                    mainViewModel.toggleCustomWhiskySelectDialogState(modify = true)
+                }
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -322,7 +328,7 @@ fun SelectWhiskyComponent(
         horizontalArrangement = Arrangement.SpaceBetween
     ){
         Text(
-            text = whiskeyData.whisky_name,
+            text = whiskeyData.whisky_name ?: whiskeyData.korea_name ?: whiskeyData.english_name,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 17.sp,
@@ -330,7 +336,7 @@ fun SelectWhiskyComponent(
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(start = 10.dp,end=10.dp)
+            modifier = Modifier.padding(start = 10.dp,end=10.dp).weight(1f)
         )
         if(whiskeyData.check == true){
             CheckBoxSelected(animatedChecked)
@@ -348,7 +354,6 @@ fun SelectWhiskyComponent(
                     .size(24.dp)
             )
         }
-
     }
 }
 
@@ -403,6 +408,6 @@ fun HomeComponentPreview() {
             reg_date= LocalDateTime.now().toString(),
             photo_url ="test"),
 
-        reviewClick = { /*TODO*/ }, deleteWhisky = {},showOption = true)
+        reviewClick = { /*TODO*/ }, deleteWhisky = {},showOption = true, modifyWhiskyData = {})
     }
 }

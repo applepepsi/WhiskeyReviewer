@@ -269,7 +269,10 @@ fun WhiskeyDetailView(
                 dropDownMenuState = mainViewModel.singleWhiskyDropDownMenuState.value,
                 toggleDropDownMenuState = {mainViewModel.toggleSingleWhiskyDropDownMenuState()},
                 imageClick = { mainViewModel.toggleSelectedWhiskyDialogState() },
-                imageClickAllow = true
+                imageClickAllow = true,
+                modifyWhiskyData = {
+                    mainViewModel.toggleCustomWhiskySelectDialogState(modify = true)
+                }
             )
 
             Row(

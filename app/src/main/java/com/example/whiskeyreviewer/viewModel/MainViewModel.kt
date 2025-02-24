@@ -350,6 +350,8 @@ class MainViewModel @Inject constructor(
     private val _singleWhiskyDropDownMenuState=mutableStateOf<Boolean>(false)
     val singleWhiskyDropDownMenuState: State<Boolean> = _singleWhiskyDropDownMenuState
 
+
+
 //    private val _openDate=mutableStateOf<LocalDate>(LocalDate.now())
 //    val openDate: State<LocalDate> = _openDate
 //
@@ -572,11 +574,15 @@ class MainViewModel @Inject constructor(
         _selectWhiskyDialogState.value=!_selectWhiskyDialogState.value
     }
 
-    fun toggleCustomWhiskySelectDialogState(){
-        resetAddCustomWhiskyDialog()
-
+    fun toggleCustomWhiskySelectDialogState(modify:Boolean=false){
+        if(modify){
+            resetAddCustomWhiskyDialog()
+        }
         _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
+        setWhiskyInfo()
     }
+
+
 
     fun updateWhiskySearchText(text:String){
         Log.d("텍스트",text)
@@ -590,6 +596,7 @@ class MainViewModel @Inject constructor(
             _smallProgressIndicatorState.value=true
             mainRepository.addWhiskyNameSearch(name = selectWhiskyText.value,category=currentWhiskyFilterType.value.name) { whiskyNameList ->
                 if (whiskyNameList != null) {
+
 
                     val updatedList = whiskyNameList.data!!.map{ oldName ->
 
@@ -606,7 +613,7 @@ class MainViewModel @Inject constructor(
 
     fun updateCustomWhiskyName(text:String){
         _customWhiskyData.value=_customWhiskyData.value.copy(
-            whisky_name = text,
+            korea_name = text,
 //            tag_Text = text
         )
 
@@ -708,23 +715,33 @@ class MainViewModel @Inject constructor(
         Log.d("인포", info.toString())
 
         if (info != null) {
-            if(!info.is_first){
-//                setWriteReviewWhiskyInfo(info.whisky_name)
-//                setCurrentBottleNum(num=0)
-                _selectNewWhiskyData.value=info
-                _selectNewWhiskyState.value=true
-            }else{
-                //기존에 있는거라면 세부 뷰로
+//            if(!info.is_first){
+////                setWriteReviewWhiskyInfo(info.whisky_name)
+////                setCurrentBottleNum(num=0)
+//                _selectNewWhiskyData.value=info
+//                _selectNewWhiskyState.value=true
+//            }else{
+//                //기존에 있는거라면 세부 뷰로
+//
+//                setErrorToastMessage(
+//                    icon=R.drawable.fail_icon,
+//                    text="기존에 등록된 위스키 입니다."
+//                )
+//                val findOldWhisky=myWhiskyList.value.find { it.whisky_uuid == info.whisky_uuid }
+//                toggleWhiskySelectDialogState()
+//                updateSelectWhisky(findOldWhisky!!)
+//                _selectWhiskyState.value=true
+//            }
 
-                setErrorToastMessage(
-                    icon=R.drawable.fail_icon,
-                    text="기존에 등록된 위스키 입니다."
-                )
-                val findOldWhisky=myWhiskyList.value.find { it.whisky_uuid == info.whisky_uuid }
-                toggleWhiskySelectDialogState()
-                updateSelectWhisky(findOldWhisky!!)
-                _selectWhiskyState.value=true
-            }
+//            setErrorToastMessage(
+//                icon=R.drawable.fail_icon,
+//                text="기존에 등록된 위스키 입니다."
+//            )
+            val findOldWhisky=myWhiskyList.value.find { it.whisky_uuid == info.whisky_uuid }
+            toggleWhiskySelectDialogState()
+            updateSelectWhisky(findOldWhisky!!)
+            setWhiskyInfo()
+            _selectWhiskyState.value=true
         } else {
             setErrorToastMessage(
                 icon=R.drawable.fail_icon,
@@ -775,7 +792,7 @@ class MainViewModel @Inject constructor(
     fun submitWhiskyDetail(){
 //        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_type = currentCustomWhiskyType.value.name!!)
 
-        if(_customWhiskyData.value.whisky_name=="" || _customWhiskyData.value.bottled_year==0 || _customWhiskyData.value.strength==""){
+        if(_customWhiskyData.value.korea_name=="" || _customWhiskyData.value.bottled_year==0 || _customWhiskyData.value.strength==""){
 
             setErrorToastMessage(
                 icon=R.drawable.fail_icon,
@@ -787,7 +804,7 @@ class MainViewModel @Inject constructor(
             Log.d("커스텀 위스키 데이터", _customWhiskyData.value.toString())
             mainRepository.addCustomWhisky(image = customWhiskyImage, data=_customWhiskyData.value){serverResponse ->
                 if(serverResponse!=null){
-
+                    //todo 서버에 물어볼점, tags 리스트 아니지않음?, 사용자가 직접 입력했을때 uuid는 어떻게 되는건지
                     if(serverResponse.code== SUCCESS_CODE){
 
                         setErrorToastMessage(
@@ -1055,7 +1072,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateWhiskyEngName(text:String){
-        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_eng_name = text)
+        _customWhiskyData.value=_customWhiskyData.value.copy(english_name = text)
     }
 
     fun toggleDetailSearchDialogState(){
@@ -1069,7 +1086,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateWhiskyTagText(tagText:String){
-        _customWhiskyData.value=_customWhiskyData.value.copy(tag_Text = tagText)
+        _customWhiskyData.value=_customWhiskyData.value.copy(tags = tagText)
     }
 
     fun toggleSingleWhiskyDropDownMenuState(){
@@ -1078,6 +1095,33 @@ class MainViewModel @Inject constructor(
 
     fun deleteWhiskyData(){
 
+    }
+
+    fun setWhiskyInfo() {
+        val info = _dialogSelectWhiskyData.value.find{ whiskyName ->
+            whiskyName.check==true
+        }
+
+
+        Log.d("인포", info.toString())
+
+        if (info != null) {
+
+            _customWhiskyData.value=_customWhiskyData.value.copy(
+                whisky_uuid = info.whisky_uuid,
+                korea_name = info.korea_name ?: "",
+                english_name = info.english_name,
+                strength = info.strength ?:"",
+                country = info.country,
+            )
+
+        } else {
+            setErrorToastMessage(
+                icon=R.drawable.fail_icon,
+                text="위스키를 선택해 주세요"
+            )
+
+        }
     }
 
 }
