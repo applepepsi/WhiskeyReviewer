@@ -105,7 +105,7 @@ fun Greeting(ssaId: String) {
         updateTagText = {
             mainViewModel.updateWhiskyTagText(it)
         },
-        tagText = mainViewModel.customWhiskyData.value.tags
+        tagText = mainViewModel.customWhiskyData.value.memo
     )
 
     LaunchedEffect(Unit) {

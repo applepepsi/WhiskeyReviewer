@@ -220,7 +220,7 @@ fun WhiskeyDetailView(
                                 WhiskeyReviewData(
                                     whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
                                 ),
-                                mainViewModel.selectWhiskyData.value.name,
+                                mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
                                 bottleNum = mainViewModel.myReviewData.value.bottleCount + 1
                             )
                             navController.navigate("${MainRoute.INSERT_REVIEW}/new")
@@ -272,7 +272,8 @@ fun WhiskeyDetailView(
                 imageClickAllow = true,
                 modifyWhiskyData = {
                     mainViewModel.toggleCustomWhiskySelectDialogState(modify = true)
-                }
+                },
+                image=ByteArray(0)
             )
 
             Row(
@@ -375,7 +376,7 @@ fun WhiskeyDetailView(
                                 modifyReview = { whiskyReviewData ->
                                     writeReviewViewModel.synchronizationWhiskyData(
                                         whiskyReviewData,
-                                        mainViewModel.selectWhiskyData.value.name,
+                                        mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
                                         bottleNum = mainViewModel.currentMyReviewBottleNumFilter.value
                                     )
                                     navController.navigate("${MainRoute.INSERT_REVIEW}/modify")

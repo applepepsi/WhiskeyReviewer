@@ -1,6 +1,8 @@
 package com.example.whiskeyreviewer.repository
 
+import android.media.Image
 import android.util.Log
+import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
@@ -17,6 +19,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import okio.Buffer
 import java.io.File
 import javax.inject.Inject
 
@@ -123,27 +127,29 @@ class MainRepositoryImpl @Inject constructor(
     }
 
     override fun addCustomWhisky(
-        image: File?,
+        image:File?,
         data: CustomWhiskyData,
         callback: (ServerResponse<Any>?) -> Unit
     ) {
 
-        val requestFile = image?.asRequestBody("image/*".toMediaTypeOrNull())
-        val convertImage = requestFile?.let { MultipartBody.Part.createFormData("image", image.name, it) }
-
-
-        // 리뷰 데이터 json으로 변환
-        val json = Gson().toJson(data)
-        val reviewRequestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
-
 
         CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="커스텀 위스키 추가") { api.customWhiskySave(image = convertImage,data=reviewRequestBody) }
+
+            val imageLink = image?.let {
+                postImage(it).also { link ->
+                    Log.d("이미지 링크", link ?: "null")
+                }
+            }
+            val newData=data.copy(image_name = imageLink)
+
+            val result = ApiHandler.makeApiCall(tag="커스텀 위스키 추가") { api.customWhiskySave(data=newData) }
             withContext(Dispatchers.Main) {
                 callback(result)
             }
         }
     }
+
+
 
     override fun getWhiskyList(
         name: String,
@@ -155,4 +161,34 @@ class MainRepositoryImpl @Inject constructor(
     ) {
         TODO("Not yet implemented")
     }
+
+    suspend fun postImage(image: File?):String? {
+        val requestFile = image?.asRequestBody("image/*".toMediaTypeOrNull())
+        val convertImage = requestFile?.let { MultipartBody.Part.createFormData("image", image.name, it) }
+
+
+        val result = withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag = "이미지 전송") {
+                api.imageUpload(image = convertImage)
+            }
+        }
+
+        return if (result != null && result.code == SUCCESS_CODE) {
+            result.data
+        } else {
+            null
+        }
+    }
+
+    override fun getImage(image_name: String, callback: (ResponseBody?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = ApiHandler.makeApiCall(tag="이미지 가져오기") { api.getImage(image_name=image_name) }
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
+
+
 }

@@ -1,7 +1,6 @@
 package com.example.whiskeyreviewer.data
 
 data class WhiskyName(
-    val whisky_name:String?="",
     val korea_name:String?="",
     val english_name:String="",
     val strength:String?=null,

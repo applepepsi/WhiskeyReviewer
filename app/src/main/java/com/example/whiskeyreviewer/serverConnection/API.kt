@@ -2,14 +2,18 @@ package com.example.oneplusone.serverConnection
 
 
 
+import android.media.Image
 import com.example.nextclass.utils.ADD_CUSTOM_WHISKY
 import com.example.nextclass.utils.ADD_WHISKY_NAME_SEARCH
 import com.example.nextclass.utils.DELETE_REVIEW
+import com.example.nextclass.utils.GET_IMAGE
 import com.example.nextclass.utils.GET_REVIEW
 import com.example.nextclass.utils.GET_WHISKY_LIST
+import com.example.nextclass.utils.IMAGE_UPLOAD
 import com.example.nextclass.utils.REGISTER
 import com.example.nextclass.utils.REVIEW_MODIFY
 import com.example.nextclass.utils.REVIEW_SAVE
+import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
@@ -17,6 +21,7 @@ import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -27,6 +32,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.io.File
 
 interface API {
 
@@ -85,11 +91,22 @@ interface API {
 
     ):Response<ServerResponse<Any>>
 
-    @Multipart
+
     @POST(ADD_CUSTOM_WHISKY)
     suspend fun customWhiskySave(
-        @Part image: MultipartBody.Part?,
-        @Part("data") data: RequestBody
+        @Body data: CustomWhiskyData
     ):Response<ServerResponse<Any>>
 
+
+    @Multipart
+    @POST(IMAGE_UPLOAD)
+    suspend fun imageUpload(
+        @Part image: MultipartBody.Part?,
+    ):Response<ServerResponse<String>>
+
+
+    @GET(GET_IMAGE)
+    suspend fun getImage(
+        @Path("image_name") image_name: String,
+    ):Response<ResponseBody>
 }

@@ -73,6 +73,7 @@ import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
+import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
@@ -140,16 +141,15 @@ fun MyWhiskyDetailInfoComponent(
             color = Color.LightGray
         )
 
-        DetailInfoTextComponent(name="위스키 이름", value = selectWhiskyData.name)
-        DetailInfoTextComponent(name="영문 이름", value = selectWhiskyData.name)
+        DetailInfoTextComponent(name="위스키 이름", value = selectWhiskyData.korea_name ?: "")
+        DetailInfoTextComponent(name="영문 이름", value = selectWhiskyData.english_name)
         DetailInfoTextComponent(name="메모", value = "qwqwfqf")
-        DetailInfoTextComponent(name="종류", value = selectWhiskyData.category ?: "")
+        DetailInfoTextComponent(name="종류", value = selectWhiskyData.category?.let{WhiskyLanguageTransfer.getKoreanTitle(it)}?:"")
         DetailInfoTextComponent(name="국가", value = "test")
         DetailInfoTextComponent(name="캐스크 타입", value = "qwq")
-        DetailInfoTextComponent(name="개봉일", value = "qwq")
         DetailInfoTextComponent(name="도수", value = selectWhiskyData.strength.toString()+ " %")
-        DetailInfoTextComponent(name="병입 년도", value = selectWhiskyData.release_year?.toString()?.let { "$it 년" } ?: "")
-        DetailInfoTextComponent(name="개봉일", value = TimeFormatter.formatDate(selectWhiskyData.reg_date))
+        DetailInfoTextComponent(name="병입 년도", value = selectWhiskyData.bottled_year?.toString()?.let { "$it 년" } ?: "")
+        DetailInfoTextComponent(name="개봉일", value = selectWhiskyData.open_date?.let { it } ?: "")
 
         HorizontalDivider(
             modifier = Modifier
@@ -179,7 +179,7 @@ fun DetailInfoTextComponent(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    modifier = Modifier.padding(end=60.dp),
+                    modifier = Modifier.padding(end=70.dp),
                     text = name,
                     style = TextStyle.Default.copy(
                         color = Color.Gray,

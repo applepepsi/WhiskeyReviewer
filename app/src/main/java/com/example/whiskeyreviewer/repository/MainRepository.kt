@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.repository
 
 
+import android.media.Image
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
@@ -8,6 +9,7 @@ import com.example.whiskeyreviewer.data.TokenData
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
+import okhttp3.ResponseBody
 import java.io.File
 
 interface MainRepository{
@@ -54,4 +56,8 @@ interface MainRepository{
         callback: (ServerResponse<Any>?) -> Unit
     )
 
+    fun getImage(
+        image_name:String,
+        callback: (ResponseBody?) -> Unit
+    )
 }

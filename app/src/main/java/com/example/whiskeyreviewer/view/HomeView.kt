@@ -102,7 +102,6 @@ fun HomeView(
                 WhiskeyReviewData(
                     whiskyUuid = mainViewModel.selectNewWhiskyData.value.whisky_uuid
                 ),
-                mainViewModel.selectNewWhiskyData.value.whisky_name ?:
                 mainViewModel.selectNewWhiskyData.value.korea_name ?:
                 mainViewModel.selectNewWhiskyData.value.english_name,
 
@@ -143,7 +142,8 @@ fun HomeView(
         searchWhisky={mainViewModel.whiskySearch()},
         mainViewModel = mainViewModel,
         toggleInsertDetailDialog = {
-            mainViewModel.toggleCustomWhiskySelectDialogState()
+            Log.d("직접 입력", it.toString())
+            mainViewModel.toggleCustomWhiskySelectDialogState(selfInput = it)
         }
     )
 

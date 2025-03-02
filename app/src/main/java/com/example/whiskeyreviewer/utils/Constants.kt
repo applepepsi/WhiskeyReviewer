@@ -47,6 +47,8 @@ const val REVIEW_MODIFY="/review/{identifier}"
 const val DELETE_REVIEW="/review/{identifier}"
 const val GET_REVIEW="/my-reviews/whisky/{whiskyUuid}/bottle/{bottleNumber}"
 const val ADD_CUSTOM_WHISKY="/my-whisky"
+const val IMAGE_UPLOAD="/image-upload"
+const val GET_IMAGE="/image/{image_name}"
 
 val whiskeyData = listOf(
     TapLayoutItems.AllWhiskey,

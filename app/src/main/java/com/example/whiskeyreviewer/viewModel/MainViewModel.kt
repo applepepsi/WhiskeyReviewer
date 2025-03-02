@@ -2,7 +2,9 @@ package com.example.whiskeyreviewer.viewModel
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -40,6 +42,7 @@ import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.InputStream
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -350,6 +353,8 @@ class MainViewModel @Inject constructor(
     private val _singleWhiskyDropDownMenuState=mutableStateOf<Boolean>(false)
     val singleWhiskyDropDownMenuState: State<Boolean> = _singleWhiskyDropDownMenuState
 
+    private val _whiskyImageList= mutableStateOf<List<ByteArray>>(emptyList())
+    val whiskyImageList: State<List<ByteArray>> = _whiskyImageList
 
 
 //    private val _openDate=mutableStateOf<LocalDate>(LocalDate.now())
@@ -574,12 +579,19 @@ class MainViewModel @Inject constructor(
         _selectWhiskyDialogState.value=!_selectWhiskyDialogState.value
     }
 
-    fun toggleCustomWhiskySelectDialogState(modify:Boolean=false){
+    fun toggleCustomWhiskySelectDialogState(modify:Boolean=false,selfInput:Boolean=false){
         if(modify){
             resetAddCustomWhiskyDialog()
         }
+        if(selfInput){
+            resetAddCustomWhiskyDialog()
+        }else{
+            setWhiskyInfo()
+        }
+
         _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
-        setWhiskyInfo()
+
+
     }
 
 
@@ -671,7 +683,15 @@ class MainViewModel @Inject constructor(
             if(serverResponse !=null ){
                 if(serverResponse.code== SUCCESS_CODE){
                     _myWhiskyList.value=serverResponse.data!!
-                    initializeDropDownStates()
+                    Log.d("위스키 데이터", _myWhiskyList.value.toString())
+                    initializeListSize()
+
+
+                    myWhiskyList.value.forEach { data ->
+
+                            getImage(data.image_name)
+                        }
+
                 }
 
             }
@@ -802,25 +822,31 @@ class MainViewModel @Inject constructor(
             _tinyProgressIndicatorState.value=true
             val customWhiskyImage=ImageConverter.convertUrisToFiles(applicationContext, selectedImageUri.value)
             Log.d("커스텀 위스키 데이터", _customWhiskyData.value.toString())
-            mainRepository.addCustomWhisky(image = customWhiskyImage, data=_customWhiskyData.value){serverResponse ->
-                if(serverResponse!=null){
-                    //todo 서버에 물어볼점, tags 리스트 아니지않음?, 사용자가 직접 입력했을때 uuid는 어떻게 되는건지
-                    if(serverResponse.code== SUCCESS_CODE){
 
-                        setErrorToastMessage(
-                            icon=R.drawable.success_icon,
-                            text="위스키가 등록되었습니다."
-                        )
-                        toggleCustomWhiskySelectDialogState()
+
+                mainRepository.addCustomWhisky(image=customWhiskyImage,data=_customWhiskyData.value){serverResponse ->
+                    if(serverResponse!=null){
+                        //todo 서버에 물어볼점, tags 리스트 아니지않음?, 사용자가 직접 입력했을때 uuid는 어떻게 되는건지
+                        if(serverResponse.code== SUCCESS_CODE){
+
+                            setErrorToastMessage(
+                                icon=R.drawable.success_icon,
+                                text="위스키가 등록되었습니다."
+                            )
+
+                            getMyWhiskeyData()
+                            toggleCustomWhiskySelectDialogState()
+                            toggleWhiskySelectDialogState()
 //                        _selectWhiskyState.value=true
+                        }else{
+
+                        }
                     }else{
 
                     }
-                }else{
-
+                    _tinyProgressIndicatorState.value=false
                 }
-                _tinyProgressIndicatorState.value=false
-            }
+
 
         }
 
@@ -940,13 +966,16 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun initializeDropDownStates() {
+    fun initializeListSize() {
 //        Log.d("카운트", count.toString())
+        //todo 여기에 게시물의 수 만큼 이미지
         _whiskyOptionDropDownMenuState.clear()
 
         repeat(_myWhiskyList.value.size) {
             _whiskyOptionDropDownMenuState.add(false)
         }
+
+
     }
 
     fun updateSelectImageType(type: ImageSelectType) {
@@ -1064,7 +1093,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateOpenDate(openDate:LocalDate){
-        _customWhiskyData.value=_customWhiskyData.value.copy(open_date=openDate)
+        _customWhiskyData.value=_customWhiskyData.value.copy(open_date=openDate.toString())
     }
 
     fun updateCaskType(text:String){
@@ -1086,7 +1115,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateWhiskyTagText(tagText:String){
-        _customWhiskyData.value=_customWhiskyData.value.copy(tags = tagText)
+        _customWhiskyData.value=_customWhiskyData.value.copy(memo = tagText)
     }
 
     fun toggleSingleWhiskyDropDownMenuState(){
@@ -1122,6 +1151,25 @@ class MainViewModel @Inject constructor(
             )
 
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun getImage(imageName: String?) {
+
+        if(imageName==null){
+            //순서를 맞추기 위해 공백을 할당함
+            _whiskyImageList.value+= ByteArray(0)
+        }else{
+            mainRepository.getImage(imageName){result->
+
+                Log.d("이미지",result?.byteStream().toString())
+                val image=result?.byteStream()
+                _whiskyImageList.value += result!!.bytes()
+            }
+        }
+
+
+
     }
 
 }

@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.component.home
 
-import android.net.Uri
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -22,16 +21,24 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,6 +47,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 import com.example.whiskeyreviewer.component.customComponent.WhiskyOptionDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
@@ -67,10 +75,16 @@ fun SingleWhiskeyComponent(
     toggleDropDownMenuState:()->Unit={},
     imageClick:()->Unit={},
     imageClickAllow:Boolean=false,
-    modifyWhiskyData:()->Unit={}
+    modifyWhiskyData:()->Unit={},
+    image:ByteArray
+
 ) {
 
     val dropDownMenuItems=listOf(WhiskyOptionItems.DeleteWhisky,WhiskyOptionItems.ModifyWhisky)
+    var extendedState by remember { mutableStateOf( false ) }
+    var showReadMoreButtonState by remember { mutableStateOf(false) }
+
+
 
     Column(
         modifier = Modifier
@@ -133,7 +147,8 @@ fun SingleWhiskeyComponent(
 
 
             GlideImage(
-                imageModel = singleWhiskeyData.photo_url ?: R.drawable.empty_image_icon,
+                imageModel = if(image.contentEquals(ByteArray(0))) R.drawable.empty_image_icon else image ,
+
                 modifier = Modifier
                     .size(200.dp)
                     .then(
@@ -141,7 +156,7 @@ fun SingleWhiskeyComponent(
                             Modifier.clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
-                            ){
+                            ) {
                                 imageClick()
                             }
                         } else {
@@ -164,43 +179,79 @@ fun SingleWhiskeyComponent(
 
             verticalArrangement = Arrangement.Center
         ) {
+            val name=singleWhiskeyData.korea_name?:singleWhiskeyData.english_name
 
             Text(
-                text = singleWhiskeyData.name,
+                text = name,
                 style = TextStyle.Default.copy(
                     color = Color.Black,
-                    fontSize = 20.sp,
+                    fontSize = 17.sp,
                     fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.padding(start = 15.dp)
-
+                modifier = Modifier.padding(start = 15.dp,end=10.dp)
             )
-            //todo 메모를 보여줘야함
-            Text(
-                text = singleWhiskeyData.name,
-                style = TextStyle.Default.copy(
-                    color = LightBlackColor,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(start = 15.dp)
 
-            )
+
 
 
 
             Spacer(modifier = Modifier.height(3.dp))
 
-            Text(
-                text = singleWhiskeyData.strength.toString() + "%",
-                style = TextStyle.Default.copy(
-                    color = Color.Gray,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(start = 17.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .padding(start = 17.dp)
+                    .width(80.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+
+                Text(
+                    text = singleWhiskeyData.strength.toString() + "%",
+                    style = TextStyle.Default.copy(
+                        color = Color.Gray,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+
+                )
+
+                IconButton(
+                    onClick = { extendedState = !extendedState },
+                    modifier = Modifier.size(25.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.ArrowDropDown,
+                        null,
+                        modifier= Modifier
+                            .rotate(if (extendedState) 180f else 0f)
+                            .padding(0.dp)
+                        ,
+                        tint = LightBlackColor
+                    )
+                }
+
+            }
+
+
+
+
+            //todo 메모를 보여줘야함
+            if(extendedState){
+                Text(
+                    text = singleWhiskeyData.memo,
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier.padding(start = 15.dp,end=15.dp)
+
+                )
+
+            }
+
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier.padding(start = 15.dp),
@@ -219,12 +270,14 @@ fun SingleWhiskeyComponent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ){
                     item{
+                        singleWhiskeyData.open_date?.let{
+                            TagComponent(text = "개봉 + " + TimeFormatter.stringTimeFormatter(it))
+                        }
 
-                        TagComponent(text = "개봉 + " + TimeFormatter.stringTimeFormatter(singleWhiskeyData.reg_date))
                     }
                     item{
-                        singleWhiskeyData.release_year?.let{
-                            TagComponent(text=singleWhiskeyData.release_year.toString()+"년")
+                        singleWhiskeyData.bottled_year?.let{
+                            TagComponent(text=it.toString()+"년")
                         }
 
                     }
@@ -292,7 +345,8 @@ fun MyReviewComponent(
                 modifyWhiskyData = {
                     //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
                     mainViewModel.toggleCustomWhiskySelectDialogState(modify = true)
-                }
+                },
+                image=mainViewModel.whiskyImageList.value[index]
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -328,7 +382,7 @@ fun SelectWhiskyComponent(
         horizontalArrangement = Arrangement.SpaceBetween
     ){
         Text(
-            text = whiskeyData.whisky_name ?: whiskeyData.korea_name ?: whiskeyData.english_name,
+            text = whiskeyData.korea_name ?: whiskeyData.english_name,
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 17.sp,
@@ -336,7 +390,9 @@ fun SelectWhiskyComponent(
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(start = 10.dp,end=10.dp).weight(1f)
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp)
+                .weight(1f)
         )
         if(whiskeyData.check == true){
             CheckBoxSelected(animatedChecked)
@@ -398,16 +454,16 @@ fun DialogLabel(
 fun HomeComponentPreview() {
 
     val whiskeyData= listOf(SelectWhiskyData())
-    WhiskeyReviewerTheme {
-        SingleWhiskeyComponent(
-            singleWhiskeyData =
-        SingleWhiskeyData(
-            name="잭 다니엘 10년",
-            strength = 20.0,
-            score=4.5,
-            reg_date= LocalDateTime.now().toString(),
-            photo_url ="test"),
-
-        reviewClick = { /*TODO*/ }, deleteWhisky = {},showOption = true, modifyWhiskyData = {})
-    }
+//    WhiskeyReviewerTheme {
+//        SingleWhiskeyComponent(
+//            singleWhiskeyData =
+//        SingleWhiskeyData(
+//
+//            strength = 20.0,
+//            score=4.5,
+//            reg_date= LocalDateTime.now().toString(),
+//            image_name ="test"),
+//
+//        reviewClick = { /*TODO*/ }, deleteWhisky = {},showOption = true, modifyWhiskyData = {})
+//    }
 }

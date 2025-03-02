@@ -335,7 +335,8 @@ fun OtherUserReviewDetailView(
                 singleWhiskeyData = SingleWhiskeyData(),
                 reviewClick = {},
                 deleteWhisky = {},
-                showOption = false
+                showOption = false,
+                image=ByteArray(0)
             )
 
 
