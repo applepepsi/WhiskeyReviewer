@@ -75,7 +75,7 @@ fun SingleWhiskeyComponent(
     toggleDropDownMenuState:()->Unit={},
     imageClick:()->Unit={},
     imageClickAllow:Boolean=false,
-    modifyWhiskyData:()->Unit={},
+    modifyWhiskyData:(SingleWhiskeyData)->Unit={},
     image:ByteArray
 
 ) {
@@ -138,7 +138,7 @@ fun SingleWhiskeyComponent(
                         onClick = {
                             when(it){
                                 WhiskyOptionItems.DeleteWhisky->{deleteWhisky(singleWhiskeyData)}
-                                WhiskyOptionItems.ModifyWhisky -> {modifyWhiskyData()}
+                                WhiskyOptionItems.ModifyWhisky -> {modifyWhiskyData(singleWhiskeyData)}
                             }
                         }
                     )
@@ -344,7 +344,7 @@ fun MyReviewComponent(
                 toggleDropDownMenuState = { if (showOption) toggleDropDownMenuState(index) },
                 modifyWhiskyData = {
                     //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
-                    mainViewModel.toggleCustomWhiskySelectDialogState(modify = true)
+                    mainViewModel.toggleCustomWhiskySelectDialogState(modify = true,data=it)
                 },
                 image=mainViewModel.whiskyImageList.value[index]
             )

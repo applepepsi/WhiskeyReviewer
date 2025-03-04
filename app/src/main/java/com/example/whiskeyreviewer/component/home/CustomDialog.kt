@@ -416,7 +416,8 @@ fun SelectWhiskeyDialog(
     text: String = "",
     updateText: (String) -> Unit,
     searchWhisky: () -> Unit,
-    toggleInsertDetailDialog:(Boolean)->Unit={}
+    toggleInsertDetailDialog:()->Unit={},
+    selfInput:()->Unit,
     ) {
 
     val customToast = CustomToast(LocalContext.current)
@@ -651,7 +652,7 @@ fun SelectWhiskeyDialog(
                                     )
                                 }
                                 .clickable {
-                                    toggleInsertDetailDialog(true)
+                                    selfInput()
                                 }
                         )
                     }
@@ -680,7 +681,7 @@ fun SelectWhiskeyDialog(
 //                                    submitWhiskey()
                                     //구조 변경으로 세부 입력 다이얼로그로 이동해야함
                                     //todo 세부 입력 다이얼로 이동하기 전에 정보 넘겨야함
-                                    toggleInsertDetailDialog(false)
+                                    toggleInsertDetailDialog()
                                 }
                         )
 

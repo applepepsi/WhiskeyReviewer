@@ -271,7 +271,8 @@ fun WhiskeyDetailView(
                 imageClick = { mainViewModel.toggleSelectedWhiskyDialogState() },
                 imageClickAllow = true,
                 modifyWhiskyData = {
-                    mainViewModel.toggleCustomWhiskySelectDialogState(modify = true)
+
+                    mainViewModel.toggleCustomWhiskySelectDialogState(modify = true,data=it)
                 },
                 image=ByteArray(0)
             )

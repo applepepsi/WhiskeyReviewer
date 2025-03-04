@@ -142,8 +142,11 @@ fun HomeView(
         searchWhisky={mainViewModel.whiskySearch()},
         mainViewModel = mainViewModel,
         toggleInsertDetailDialog = {
-            Log.d("직접 입력", it.toString())
-            mainViewModel.toggleCustomWhiskySelectDialogState(selfInput = it)
+
+            mainViewModel.toggleCustomWhiskySelectDialogState()
+        },
+        selfInput = {
+            mainViewModel.selfInputWhiskyMode()
         }
     )
 
