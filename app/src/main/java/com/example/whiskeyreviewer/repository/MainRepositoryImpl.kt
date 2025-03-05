@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.repository
 
-import android.media.Image
 import android.util.Log
 import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.oneplusone.serverConnection.API
@@ -8,9 +7,9 @@ import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.utils.ApiHandler
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,9 +17,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.ResponseBody
-import okio.Buffer
 import java.io.File
 import javax.inject.Inject
 
@@ -73,12 +69,6 @@ class MainRepositoryImpl @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             val result = ApiHandler.makeApiCall(tag="나의 위스키 목록 가져오기") {
 
-                Log.d("WhiskyList", "이름: ${name ?: "없음"}")
-                Log.d("WhiskyList", "카테고리: ${category ?: "없음"}")
-                Log.d("WhiskyList", "날짜 정렬: $date_order")
-                Log.d("WhiskyList", "이름 정렬: $name_order")
-                Log.d("WhiskyList", "점수 정렬: $score_order")
-
                 api.getMyWhiskys(
                 name=name,
                 category=category,
@@ -86,33 +76,91 @@ class MainRepositoryImpl @Inject constructor(
                 name_order=name_order,
                 score_order=score_order,
             ) }
+
+            val updatedServerResponse=result?.let{
+                val whiskyDataList = mutableListOf<SingleWhiskeyData>()
+
+                result.data?.forEach { singleWhiskeyData ->
+                    val updatedData = getImage(singleWhiskeyData)
+                    whiskyDataList.add(updatedData)
+                }
+                result.copy(data = whiskyDataList)
+            }
+
             withContext(Dispatchers.Main) {
-                callback(result)
+                callback(updatedServerResponse)
             }
         }
     }
 
+    private suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData {
+        if(singleWhiskeyData.image_name==null){
+
+            return singleWhiskeyData
+        }
+        return withContext(Dispatchers.IO) {
+            val result = ApiHandler.makeApiCall(tag = "이미지 가져오기") {
+                api.getImage(image_name = singleWhiskeyData.image_name)
+            }
+            singleWhiskeyData.copy(image = result?.bytes())
+        }
+    }
+
+
+
     override fun getMyReviewList(
         whiskyUuid: String,
-        bottleNumber: Int,
-        order: String,
-        callback: (ServerResponse<Any>?) -> Unit
-    ){
 
+        order: String,
+        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
+    ){
+        Log.d("whiskyUuid",whiskyUuid)
         CoroutineScope(Dispatchers.IO).launch {
             val result = ApiHandler.makeApiCall(tag="나의 리뷰 가져오기") {
 
                 api.getReview(
-                    uuid=whiskyUuid,
-                    bottleNumber=bottleNumber,
+                    myWhiskyUuid=whiskyUuid,
                     order=order
-                ) }
+                )
+            }
+
+            val updatedServerResponse=result?.let{
+                val whiskyDataList = mutableListOf<WhiskyReviewData>()
+
+                result.data?.forEach { singleReviewData->
+                    val updatedData = getImageList(singleReviewData)
+                    whiskyDataList.add(updatedData)
+                }
+                result.copy(data = whiskyDataList)
+            }
+
             withContext(Dispatchers.Main) {
-                callback(result)
+                callback(updatedServerResponse)
             }
         }
     }
 
+    private suspend fun getImageList(singleWhiskeyData: WhiskyReviewData):WhiskyReviewData {
+        if(singleWhiskeyData.image_url==null){
+
+            return singleWhiskeyData
+        }
+        return withContext(Dispatchers.IO) {
+            val imageList = mutableListOf<ByteArray>()
+
+            singleWhiskeyData.image_url.forEach{singleImageUrl->
+
+                val result=ApiHandler.makeApiCall(tag = "이미지 가져오기") {
+                    api.getImage(image_name = singleImageUrl)
+                }
+                result?.let{
+                    imageList.add(result.bytes())
+                }
+            }
+
+            singleWhiskeyData.copy(imageList = imageList)
+        }
+    }
     override fun addWhiskyNameSearch(name: String,category:String?, callback: (ServerResponse<List<WhiskyName>>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -180,15 +228,7 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getImage(image_name: String, callback: (ResponseBody?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
 
-            val result = ApiHandler.makeApiCall(tag="이미지 가져오기") { api.getImage(image_name=image_name) }
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
-        }
-    }
 
 
 }

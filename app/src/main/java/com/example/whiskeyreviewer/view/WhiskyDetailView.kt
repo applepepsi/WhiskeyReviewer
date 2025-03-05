@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,15 +21,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +38,6 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customComponent.CustomFloatingActionButton
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.EmptyReviewDataComponent
-import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailBottleNumDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
@@ -55,11 +51,10 @@ import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
-import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
-import java.io.File
 
 @Composable
 fun WhiskeyDetailView(
@@ -217,7 +212,7 @@ fun WhiskeyDetailView(
                         FloatingActionButtonItems.NewReview.screenRoute -> {
                             Log.d("루트", it.screenRoute)
                             writeReviewViewModel.synchronizationWhiskyData(
-                                WhiskeyReviewData(
+                                WhiskyReviewData(
                                     whiskyUuid = mainViewModel.selectWhiskyData.value.whisky_uuid
                                 ),
                                 mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
@@ -274,7 +269,7 @@ fun WhiskeyDetailView(
 
                     mainViewModel.toggleCustomWhiskySelectDialogState(modify = true,data=it)
                 },
-                image=ByteArray(0)
+
             )
 
             Row(
@@ -359,7 +354,7 @@ fun WhiskeyDetailView(
                     } else {
                         Column(
                             modifier = Modifier
-                                .height(1000.dp)
+                                .heightIn(max=400.dp)
                         ) {
                             MyReviewPost(
                                 reviewDataList = mainViewModel.myReviewDataList.value,

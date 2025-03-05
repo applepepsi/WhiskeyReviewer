@@ -336,7 +336,7 @@ fun OtherUserReviewDetailView(
                 reviewClick = {},
                 deleteWhisky = {},
                 showOption = false,
-                image=ByteArray(0)
+
             )
 
 

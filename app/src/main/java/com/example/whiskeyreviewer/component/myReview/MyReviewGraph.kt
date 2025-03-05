@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
-import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -150,7 +150,7 @@ fun Holder(
 
 @Composable
 fun MyReviewGraphComponent2(
-    whiskeyReviewDataList: List<WhiskeyReviewData> = (emptyList())
+    whiskeyReviewDataList: List<WhiskyReviewData> = (emptyList())
 ) {
 
     val TRANSACTION_INTERVAL_MS = 2000L
@@ -299,7 +299,7 @@ fun MyReviewGraphComponent2(
 internal fun rememberMarker(
     labelPosition: DefaultCartesianMarker.LabelPosition = DefaultCartesianMarker.LabelPosition.Top,
     showIndicator: Boolean = true,
-    sortedReviewDataList:List<WhiskeyReviewData>
+    sortedReviewDataList:List<WhiskyReviewData>
 ): CartesianMarker {
     val labelBackgroundShape = markerCorneredShape(
         CorneredShape.Companion.rounded(10f)

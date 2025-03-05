@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.time.format.DateTimeParseException
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
@@ -96,5 +97,10 @@ object TimeFormatter {
         val currentDate = LocalDate.now()
 
         return ChronoUnit.DAYS.between(pastDate, currentDate).toString()
+    }
+
+    fun stringToLocalDate(dateString: String): LocalDate {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.parse(dateString, formatter)
     }
 }

@@ -76,7 +76,7 @@ fun SingleWhiskeyComponent(
     imageClick:()->Unit={},
     imageClickAllow:Boolean=false,
     modifyWhiskyData:(SingleWhiskeyData)->Unit={},
-    image:ByteArray
+
 
 ) {
 
@@ -147,7 +147,7 @@ fun SingleWhiskeyComponent(
 
 
             GlideImage(
-                imageModel = if(image.contentEquals(ByteArray(0))) R.drawable.empty_image_icon else image ,
+                imageModel = singleWhiskeyData.image ?: R.drawable.empty_image_icon,
 
                 modifier = Modifier
                     .size(200.dp)
@@ -346,7 +346,7 @@ fun MyReviewComponent(
                     //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
                     mainViewModel.toggleCustomWhiskySelectDialogState(modify = true,data=it)
                 },
-                image=mainViewModel.whiskyImageList.value[index]
+
             )
 
             Spacer(modifier = Modifier.height(10.dp))

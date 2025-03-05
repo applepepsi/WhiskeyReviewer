@@ -48,15 +48,13 @@ import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordCom
 
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
-import com.example.whiskeyreviewer.component.home.InsertWhiskyDetailDialog
-import com.example.whiskeyreviewer.component.home.MyWhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SelectWhiskeyDialog
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
-import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -99,7 +97,7 @@ fun HomeView(
         Log.d("상태", mainViewModel.selectNewWhiskyState.value.toString())
         if(mainViewModel.selectNewWhiskyState.value){
             writeReviewViewModel.synchronizationWhiskyData(
-                WhiskeyReviewData(
+                WhiskyReviewData(
                     whiskyUuid = mainViewModel.selectNewWhiskyData.value.whisky_uuid
                 ),
                 mainViewModel.selectNewWhiskyData.value.korea_name ?:

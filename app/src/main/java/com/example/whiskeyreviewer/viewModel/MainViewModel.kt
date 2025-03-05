@@ -2,9 +2,7 @@ package com.example.whiskeyreviewer.viewModel
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -31,7 +29,7 @@ import com.example.whiskeyreviewer.data.ReviewData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.data.WhiskeyFilterItems
-import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.MyWhiskyFilterData
 import com.example.whiskeyreviewer.data.OderUserReviewDropDownMenuState
 import com.example.whiskeyreviewer.data.WhiskyFilterData
@@ -40,9 +38,9 @@ import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.repository.MainRepository
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.TokenManager
+import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.InputStream
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -176,11 +174,11 @@ class MainViewModel @Inject constructor(
     private val _whiskyFilterDropDownMenuState = mutableStateOf(OderUserReviewDropDownMenuState())
     val whiskyFilterDropDownMenuState: State<OderUserReviewDropDownMenuState> = _whiskyFilterDropDownMenuState
 
-    private val _myReviewDataList=mutableStateOf<List<WhiskeyReviewData>>(
+    private val _myReviewDataList=mutableStateOf<List<WhiskyReviewData>>(
         listOf(
         )
     )
-    val myReviewDataList: State<List<WhiskeyReviewData>> = _myReviewDataList
+    val myReviewDataList: State<List<WhiskyReviewData>> = _myReviewDataList
 
     private val _homeSearchBarState= mutableStateOf(false)
     val homeSearchBarState: State<Boolean> = _homeSearchBarState
@@ -204,8 +202,8 @@ class MainViewModel @Inject constructor(
     private val _whiskeySearchBarState= mutableStateOf(true)
     val whiskeySearchBarState: State<Boolean> = _whiskeySearchBarState
 
-    private val _selectWhiskyReviewData=mutableStateOf(WhiskeyReviewData())
-    val selectWhiskyReviewData: State<WhiskeyReviewData> = _selectWhiskyReviewData
+    private val _selectWhiskyReviewData=mutableStateOf(WhiskyReviewData())
+    val selectWhiskyReviewData: State<WhiskyReviewData> = _selectWhiskyReviewData
 
     private val _loginResult=mutableStateOf<Boolean?>(null)
     val loginResult: State<Boolean?> = _loginResult
@@ -476,6 +474,10 @@ class MainViewModel @Inject constructor(
                     name_order = filterKey
                 )
             }
+
+            else -> {}
+        }.also {
+            getMyWhiskeyData()
         }
     }
 
@@ -526,7 +528,7 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun setSelectReviewData(reviewData: WhiskeyReviewData){
+    fun setSelectReviewData(reviewData: WhiskyReviewData){
         _selectWhiskyReviewData.value=reviewData
     }
 
@@ -582,7 +584,7 @@ class MainViewModel @Inject constructor(
     fun toggleCustomWhiskySelectDialogState(modify:Boolean=false,data:SingleWhiskeyData?=null){
         if(modify){
             resetAddCustomWhiskyDialog()
-            Log.d("커스텀",data.toString())
+            Log.d("커스텀",data!!.category!!)
             _customWhiskyData.value=_customWhiskyData.value.copy(
                 whisky_uuid=data!!.whisky_uuid,
                 image_name=data.image_name,
@@ -596,6 +598,7 @@ class MainViewModel @Inject constructor(
                 cask_type=data.cask_type,
                 memo=data.memo,
             )
+            _currentCustomWhiskyType.value=WhiskyLanguageTransfer.fineWhiskyCategory(data.category)
         }else{
             setWhiskyInfo()
         }.also{
@@ -700,13 +703,8 @@ class MainViewModel @Inject constructor(
                 if(serverResponse.code== SUCCESS_CODE){
                     _myWhiskyList.value=serverResponse.data!!
                     Log.d("위스키 데이터", _myWhiskyList.value.toString())
+                    Log.d("위스키 데이터2", _myWhiskyFilterData.value.toString())
                     initializeListSize()
-
-
-                    myWhiskyList.value.forEach { data ->
-
-                            getImage(data.image_name)
-                        }
 
                 }
 
@@ -1083,12 +1081,12 @@ class MainViewModel @Inject constructor(
 
         mainRepository.getMyReviewList(
             whiskyUuid = _selectWhiskyData.value.whisky_uuid,
-            bottleNumber = _currentMyReviewBottleNumFilter.value,
             order = currentMyReviewDayFilter.value.orderType
         ){ serverResponse ->
             if(serverResponse !=null ){
-                if(serverResponse.code== SUCCESS_CODE){
 
+                if(serverResponse.code== SUCCESS_CODE){
+                    _myReviewDataList.value=serverResponse.data ?: emptyList()
                 }
             }
 
@@ -1169,23 +1167,5 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun getImage(imageName: String?) {
-
-        if(imageName==null){
-            //순서를 맞추기 위해 공백을 할당함
-            _whiskyImageList.value+= ByteArray(0)
-        }else{
-            mainRepository.getImage(imageName){result->
-
-                Log.d("이미지",result?.byteStream().toString())
-                val image=result?.byteStream()
-                _whiskyImageList.value += result!!.bytes()
-            }
-        }
-
-
-
-    }
 
 }

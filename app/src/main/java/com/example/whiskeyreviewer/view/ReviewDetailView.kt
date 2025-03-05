@@ -143,7 +143,7 @@ fun ReviewDetailView(
         Spacer(modifier = Modifier.height(7.dp))
 
         ReviewImageLazyRowComponent(
-            imageList = mainViewModel.selectWhiskyReviewData.value.imageList,
+            imageList = emptyList(),
             deleteImage = {
 
             },

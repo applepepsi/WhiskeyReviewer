@@ -17,7 +17,7 @@ data class SingleWhiskeyData(
     val memo:String="",
     val reg_date:String?=null,
 //    val reg_date:LocalDateTime= LocalDateTime.MIN,
-    val mod_date:LocalDateTime?=null,
-
+    val mod_date:String?=null,
+    val image:ByteArray?=null,
 
 )

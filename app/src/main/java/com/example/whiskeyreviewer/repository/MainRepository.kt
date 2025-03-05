@@ -1,15 +1,12 @@
 package com.example.whiskeyreviewer.repository
 
 
-import android.media.Image
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
-import com.example.whiskeyreviewer.data.WhiskeyFilterItems
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WhiskyName
-import com.example.whiskeyreviewer.data.WriteReviewData
-import okhttp3.ResponseBody
 import java.io.File
 
 interface MainRepository{
@@ -29,9 +26,8 @@ interface MainRepository{
 
     fun getMyReviewList(
         whiskyUuid:String,
-        bottleNumber:Int,
         order:String,
-        callback: (ServerResponse<Any>?) -> Unit
+        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
     )
 
     fun addWhiskyNameSearch(
@@ -56,8 +52,4 @@ interface MainRepository{
         callback: (ServerResponse<Any>?) -> Unit
     )
 
-    fun getImage(
-        image_name:String,
-        callback: (ResponseBody?) -> Unit
-    )
 }

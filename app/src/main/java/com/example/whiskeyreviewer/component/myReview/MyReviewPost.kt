@@ -2,8 +2,6 @@ package com.example.whiskeyreviewer.component.myReview
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,10 +34,8 @@ import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,48 +46,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
-import com.example.whiskeyreviewer.data.SelectWhiskyData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
-import com.example.whiskeyreviewer.data.WhiskyDrinkingType
-import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
-import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
 import com.skydoves.landscapist.glide.GlideImage
-import java.time.LocalDate
 
 @Composable
 fun MyReviewPost(
-    reviewDataList:List<WhiskeyReviewData>,
-    singleReviewClick:(WhiskeyReviewData)->Unit,
+    reviewDataList:List<WhiskyReviewData>,
+    singleReviewClick:(WhiskyReviewData)->Unit,
     modifyAllow: Boolean=true,
     onImageSelect: (String) -> Unit={},
-    deleteReview:(WhiskeyReviewData)->Unit={},
-    modifyReview:(WhiskeyReviewData)->Unit={},
+    deleteReview:(WhiskyReviewData)->Unit={},
+    modifyReview:(WhiskyReviewData)->Unit={},
 
-) {
-
-
+    ) {
 
     LazyColumn(
         modifier = Modifier
@@ -205,13 +189,13 @@ fun DetailInfoTextComponent(
 @OptIn(ExperimentalRichTextApi::class)
 @Composable
 fun MyReviewSinglePost(
-    singleReview: WhiskeyReviewData,
+    singleReview: WhiskyReviewData,
 
     singleReviewClick: () -> Unit,
     modifyAllow: Boolean = true,
     onImageSelect: (String) -> Unit = {},
-    deleteReview: (WhiskeyReviewData) -> Unit={},
-    modifyReview: (WhiskeyReviewData) -> Unit={},
+    deleteReview: (WhiskyReviewData) -> Unit={},
+    modifyReview: (WhiskyReviewData) -> Unit={},
     onLikeClick:()->Unit={},
 ) {
 
@@ -315,7 +299,7 @@ fun MyReviewSinglePost(
 //        Spacer(modifier = Modifier.height(7.dp))
 
         ReviewImageLazyRowComponent(
-            imageList = singleReview.imageList,
+            imageList = singleReview.imageList ?: emptyList(),
             deleteImage = {
 
             },
@@ -372,7 +356,7 @@ fun MyReviewSinglePost(
 
 @Composable
 fun ReviewImageLazyRowComponent(
-    imageList:List<String>,
+    imageList:List<ByteArray>,
     deleteImage:(Int)->Unit,
     deleteImageAllow:Boolean=true,
     onImageSelect:(String)->Unit={},
@@ -401,19 +385,19 @@ fun ReviewImageLazyRowComponent(
 //                        .clip(RoundedCornerShape(8.dp))
 //                )
                 GlideImage(
-                    imageModel = Uri.parse("content://media/picker/0/com.android.providers.media.photopicker/media/1000000041"),
+                    imageModel = image,
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
-                        .then(
-                            if (image != null && image != "") {
-                                Modifier.clickable {
-                                    onImageSelect(image)
-                                }
-                            } else {
-                                Modifier
-                            }
-                        )
+//                        .then(
+//                            if (image != null && image != "") {
+//                                Modifier.clickable {
+//                                    onImageSelect(image)
+//                                }
+//                            } else {
+//                                Modifier
+//                            }
+//                        )
 
                 )
                 if(deleteImageAllow){
@@ -629,7 +613,7 @@ fun MyReviewPostPreview() {
 
     WhiskeyReviewerTheme {
         MyReviewSinglePost(
-            singleReview = WhiskeyReviewData(content = "wdwd"),
+            singleReview = WhiskyReviewData(content = "wdwd",),
             singleReviewClick = {},
             modifyAllow = false
         )

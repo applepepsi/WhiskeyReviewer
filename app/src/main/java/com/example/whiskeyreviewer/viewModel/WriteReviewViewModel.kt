@@ -20,10 +20,11 @@ import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.SubmitWhiskyData
 import com.example.whiskeyreviewer.data.ToolBarItems
-import com.example.whiskeyreviewer.data.WhiskeyReviewData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.repository.WriteReviewRepository
 import com.example.whiskeyreviewer.utils.ImageConverter
+import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.mohamedrejeb.richeditor.model.RichTextState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -322,8 +323,8 @@ class WriteReviewViewModel @Inject constructor(
                 _writeReviewData.value.open_date.toString(),
                 _writeReviewData.value.tags,
                 _writeReviewData.value.score.toInt(),
-                _writeReviewData.value.bottle_num,
-                _writeReviewData.value.whiskey_uuid
+                _writeReviewData.value.whiskey_uuid,
+
             )
 
             Log.d("submitWhiskyData", submitWhiskyData.toString())
@@ -442,21 +443,22 @@ class WriteReviewViewModel @Inject constructor(
         _errorToastIcon.value=icon
     }
 
-    fun synchronizationWhiskyData(whiskyData: WhiskeyReviewData, whiskyName: String, bottleNum: Int) {
+    fun synchronizationWhiskyData(whiskyData: WhiskyReviewData, whiskyName: String, bottleNum: Int) {
         //todo 수정 기능 구현해야함
         _writeReviewData.value=_writeReviewData.value.copy(
             whiskey_uuid =whiskyData.whiskyUuid,
             content = whiskyData.content,
             is_anonymous = whiskyData.is_anonymous,
-            open_date = whiskyData.open_date,
+            open_date = TimeFormatter.stringToLocalDate(whiskyData.open_date),
             tags= whiskyData.tags,
             score=whiskyData.score,
             bottle_num = bottleNum,
 //            imageList = whiskyData.imageList,
             whiskyName=whiskyName
         )
-        val stringList: List<Uri> = whiskyData.imageList.map { it.toUri() }
-        _selectedImageUri.value = stringList
+        //todo 이미지 새로 동기화 하기
+//        val stringList: List<Uri> = whiskyData.imageList.map { it.toUri() }
+//        _selectedImageUri.value = stringList
     }
 
     //todo 새로운 병을 추가했을떄 한번 데이터를 리셋하고 시작해야함 지금 어떤걸 리셋해야할지 고민중 서버측에서 알려줘야함

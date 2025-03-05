@@ -2,7 +2,6 @@ package com.example.oneplusone.serverConnection
 
 
 
-import android.media.Image
 import com.example.nextclass.utils.ADD_CUSTOM_WHISKY
 import com.example.nextclass.utils.ADD_WHISKY_NAME_SEARCH
 import com.example.nextclass.utils.DELETE_REVIEW
@@ -16,9 +15,10 @@ import com.example.nextclass.utils.REVIEW_SAVE
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.SubmitWhiskyData
 import com.example.whiskeyreviewer.data.TokenData
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WhiskyName
-import com.example.whiskeyreviewer.data.WriteReviewData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -32,7 +32,6 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.io.File
 
 interface API {
 
@@ -56,12 +55,11 @@ interface API {
         @Query("category") category: String?,
     ): Response<ServerResponse<List<WhiskyName>>>
 
-    @Multipart
+
     @POST(REVIEW_SAVE)
     suspend fun reviewSave(
-        @Part images: List<MultipartBody.Part>,
         //멀티파트로 전송할때는 객체를 보내지 못함 -> JSON 형태로 직렬화하여 RequestBody로 변환한 후 전송해야함
-        @Part("data") writeReviewData: RequestBody
+        @Body writeReviewData: SubmitWhiskyData
     ):Response<ServerResponse<Any>>
 
 
@@ -76,10 +74,9 @@ interface API {
 
     @GET(GET_REVIEW)
     suspend fun getReview(
-        @Path("whiskyUuid") uuid: String,
-        @Path("bottleNumber") bottleNumber: Int,
+        @Path("myWhiskyUuid") myWhiskyUuid: String,
         @Query("order") order: String
-    ): Response<ServerResponse<Any>>
+    ): Response<ServerResponse<List<WhiskyReviewData>>>
 
     @DELETE(DELETE_REVIEW)
     suspend fun deleteReview(@Path("identifier") identifier:String):Response<ServerResponse<Any>>

@@ -2,14 +2,15 @@ package com.example.whiskeyreviewer.data
 
 import java.time.LocalDate
 
-data class WhiskeyReviewData(
+data class WhiskyReviewData(
     val whiskyUuid:String="",
     val content:String="",
     val is_anonymous:Boolean=false,
-    val open_date: LocalDate= LocalDate.now(),
+    val open_date: String= LocalDate.now().toString(),
     val score: Double=1.0,
     val tags:List<String> = listOf(),
-    val imageList:List<String> = emptyList()
+    val image_url:List<String>?=null,
+    val imageList:List<ByteArray>? = emptyList()
 )
 
 
