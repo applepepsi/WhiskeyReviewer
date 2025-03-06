@@ -24,7 +24,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
@@ -53,18 +55,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
+
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
+import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
 import com.skydoves.landscapist.glide.GlideImage
+import my.nanihadesuka.compose.LazyColumnScrollbar
+import my.nanihadesuka.compose.ScrollbarSettings
 
 @Composable
 fun MyReviewPost(
@@ -74,31 +80,48 @@ fun MyReviewPost(
     onImageSelect: (String) -> Unit={},
     deleteReview:(WhiskyReviewData)->Unit={},
     modifyReview:(WhiskyReviewData)->Unit={},
-
+    onLikeClick:()->Unit={}
     ) {
 
-    LazyColumn(
-        modifier = Modifier
-            .padding(vertical = 12.dp, horizontal = 8.dp),
+    val listState = rememberLazyListState()
+    val customScrollbarSettings = ScrollbarSettings(
+        thumbUnselectedColor = MainColor,
 
+        thumbThickness = 6.dp,
+        thumbMinLength = 0.1f,
+        thumbMaxLength = 0.7f
+    )
+    LazyColumnScrollbar(
+        state = listState,
+        settings = customScrollbarSettings,
 
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        items(items=reviewDataList){singleReview->
-            MyReviewSinglePost(
-                singleReview=singleReview,
-                singleReviewClick = { singleReviewClick(singleReview) },
-                modifyAllow = modifyAllow,
-                onImageSelect = {
-                    onImageSelect(it)
-                },
-                deleteReview={
-                    deleteReview(it)
-                },
-                modifyReview={
-                    modifyReview(it)
-                }
-            )
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 8.dp).padding(bottom=5.dp,top=2.dp),
+            state=listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(items = reviewDataList) { singleReview ->
+                MyReviewSinglePost(
+                    singleReview = singleReview,
+                    singleReviewClick = { singleReviewClick(singleReview) },
+                    modifyAllow = modifyAllow,
+                    onImageSelect = {
+                        onImageSelect(it)
+                    },
+                    deleteReview = {
+                        deleteReview(it)
+                    },
+                    modifyReview = {
+                        modifyReview(it)
+                    },
+                    onLikeClick = {
+
+                    }
+                )
+            }
+
         }
     }
 }
@@ -262,7 +285,7 @@ fun MyReviewSinglePost(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = "10",
+                    text = (singleReview.likeCount ?: 0).toString(),
                     style = TextStyle.Default.copy(
                         color = Color.Gray,
                         fontSize = 15.sp,

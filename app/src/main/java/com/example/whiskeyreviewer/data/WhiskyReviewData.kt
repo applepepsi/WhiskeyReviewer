@@ -10,7 +10,9 @@ data class WhiskyReviewData(
     val score: Double=1.0,
     val tags:List<String> = listOf(),
     val image_url:List<String>?=null,
-    val imageList:List<ByteArray>? = emptyList()
+    val imageList:List<ByteArray>? = emptyList(),
+    val likeState:Boolean?=null,
+    val likeCount:Int?=null,
 )
 
 

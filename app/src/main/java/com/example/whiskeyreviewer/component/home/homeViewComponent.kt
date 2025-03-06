@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -62,6 +63,8 @@ import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage
+import my.nanihadesuka.compose.LazyColumnScrollbar
+import my.nanihadesuka.compose.ScrollbarSettings
 import java.time.LocalDateTime
 
 
@@ -325,31 +328,45 @@ fun MyReviewComponent(
 //        SingleWhiskeyData(
 //        )
 //    )
+    val listState = rememberLazyListState()
+    val customScrollbarSettings = ScrollbarSettings(
+        thumbUnselectedColor = MainColor,
 
-    LazyColumn(
-        modifier = Modifier.padding(top=3.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        item{
-            MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
-        }
+        thumbThickness = 6.dp,
+        thumbMinLength = 0.1f,
+        thumbMaxLength = 0.7f
+    )
+    LazyColumnScrollbar(
+        state = listState,
+        settings = customScrollbarSettings,
 
-        itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->
-            SingleWhiskeyComponent(
-                singleWhiskeyData = singleWhiskeyData,
-                reviewClick = { setSelectReview(singleWhiskeyData) },
-                showOption = showOption,
-                deleteWhisky = { toggleConfirmDialogState(singleWhiskeyData) },
-                dropDownMenuState = if (showOption) dropDownMenuState[index] else false,
-                toggleDropDownMenuState = { if (showOption) toggleDropDownMenuState(index) },
-                modifyWhiskyData = {
-                    //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
-                    mainViewModel.toggleCustomWhiskySelectDialogState(modify = true,data=it)
-                },
+        ) {
+        LazyColumn(
+            state=listState,
+            modifier = Modifier.padding(top = 3.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            item {
+                MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
+            }
 
-            )
+            itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->
+                SingleWhiskeyComponent(
+                    singleWhiskeyData = singleWhiskeyData,
+                    reviewClick = { setSelectReview(singleWhiskeyData) },
+                    showOption = showOption,
+                    deleteWhisky = { toggleConfirmDialogState(singleWhiskeyData) },
+                    dropDownMenuState = if (showOption) dropDownMenuState[index] else false,
+                    toggleDropDownMenuState = { if (showOption) toggleDropDownMenuState(index) },
+                    modifyWhiskyData = {
+                        //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
+                        mainViewModel.toggleCustomWhiskySelectDialogState(modify = true, data = it)
+                    },
 
-            Spacer(modifier = Modifier.height(10.dp))
+                    )
+
+                Spacer(modifier = Modifier.height(10.dp))
+            }
         }
     }
 }

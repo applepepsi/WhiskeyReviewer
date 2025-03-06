@@ -98,6 +98,10 @@ fun TapLayoutComponent(
 
     val pagerState = rememberPagerState(pageCount = { whiskeyData.size })
 
+    LaunchedEffect(pagerState.currentPage) {
+        updateCurrentPage(whiskeyData[pagerState.currentPage])
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
