@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -130,6 +131,7 @@ fun TagComponent(
             .clip(shape = RoundedCornerShape(7.dp))
             .background(OrangeColor)
             .padding(start = 8.dp,end=8.dp,top=5.dp,bottom=5.dp)
+            .heightIn(min=15.dp)
             .widthIn(30.dp),
 
         contentAlignment = Alignment.Center

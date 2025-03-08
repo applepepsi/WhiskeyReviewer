@@ -6,6 +6,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
@@ -39,9 +41,12 @@ import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
 import com.patrykandpatrick.vico.compose.common.dimensions
 import com.patrykandpatrick.vico.compose.common.fill
 import com.patrykandpatrick.vico.compose.common.shape.markerCorneredShape
+import com.patrykandpatrick.vico.core.cartesian.CartesianMeasuringContext
+import com.patrykandpatrick.vico.core.cartesian.axis.Axis
 import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianLayerRangeProvider
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
@@ -57,6 +62,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 
 @Composable
 fun MyReviewGraphComponent(
@@ -155,18 +161,24 @@ fun MyReviewGraphComponent2(
 
     val TRANSACTION_INTERVAL_MS = 2000L
 
-    val sortedReviewDataList = whiskeyReviewDataList.sortedBy { it.open_date }
+    val sortedReviewDataList = whiskeyReviewDataList.sortedBy { TimeFormatter.stringToLocalDate(it.open_date) }
 
     val reviewDataMapList: Map<Int, Float> = sortedReviewDataList.mapIndexed { index, writeReviewData ->
         index to writeReviewData.score.toFloat()
     }.toMap()
+
+
+    Log.d("reviewDataMapList", reviewDataMapList.toString())
 
     val bottomAxisValueFormatter = CartesianValueFormatter { _, x, _ ->
         TimeFormatter.formatDate(sortedReviewDataList[x.toInt()].open_date)
     }
     val verticalAxisValueFormatter = CartesianValueFormatter { _, y, _ ->
         "${y.toInt()} 점"
+
     }
+
+
 
     val modelProducer = remember { CartesianChartModelProducer() }
 
@@ -252,31 +264,35 @@ fun MyReviewGraphComponent2(
                                 ),
                                 sizeDp = 14f
                             )
-                        )
+                        ),
+
                     )
                 ),
-                pointSpacing = 80.dp
+                pointSpacing = 90.dp,
+                //힘들게 찾은 값 강제 지정
+                rangeProvider = CartesianLayerRangeProvider.fixed(minY=0.0,maxY = 5.0),
+
             ),
 
             startAxis = VerticalAxis.rememberStart(
-                label= TextComponent(
-                    color= LightBlackColor.toArgb(),
-                    textSizeSp =13f,
+                label= rememberTextComponent(
+                    color= LightBlackColor,
+                    textSize =14.sp,
                     lineCount = 1,
                     typeface = Typeface.DEFAULT
                 ),
                 //구분선
                 guideline = rememberAxisGuidelineComponent(),
                 valueFormatter = verticalAxisValueFormatter,
-                //플레이셔로 y축 간격 조정 가능
-                itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 6 }) },
+                //플레이서로 y축 간격 조정 가능
+                itemPlacer = remember { VerticalAxis.ItemPlacer.step({ 1.0 }) },
             ),
 //            endAxis = VerticalAxis.rememberEnd(guideline = null),
             bottomAxis =
             HorizontalAxis.rememberBottom(
-                label= TextComponent(
-                    color= LightBlackColor.toArgb(),
-                    textSizeSp =10f,
+                label= rememberTextComponent(
+                    color= LightBlackColor,
+                    textSize =12.sp,
                     lineCount = 2
                 ),
                 valueFormatter = bottomAxisValueFormatter,
@@ -288,7 +304,10 @@ fun MyReviewGraphComponent2(
 
         ),
         modelProducer = modelProducer,
-        modifier = Modifier.padding(start=5.dp,end=5.dp).fillMaxHeight().padding(bottom=20.dp),
+        modifier = Modifier
+            .padding(start = 5.dp, end = 5.dp)
+            .fillMaxHeight()
+            .padding(bottom = 10.dp),
         zoomState = rememberVicoZoomState(zoomEnabled = false),
 
     )

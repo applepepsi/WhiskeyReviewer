@@ -37,7 +37,7 @@ object TimeFormatter {
     }
 
     fun formatDate(date: String): String {
-        val dateTime = LocalDateTime.parse(date)
+        val dateTime = LocalDate.parse(date)
 
         val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
         return dateTime.format(formatter)

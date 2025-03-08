@@ -354,7 +354,7 @@ fun WhiskeyDetailView(
                             )
                         } else {
                             Column(
-                                modifier = Modifier.height(300.dp)
+                                modifier = Modifier.height(330.dp)
                             ) {
                                 MyReviewGraphComponent2(mainViewModel.myReviewDataList.value)
                             }

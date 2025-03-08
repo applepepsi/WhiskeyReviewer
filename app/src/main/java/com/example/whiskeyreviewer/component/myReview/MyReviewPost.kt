@@ -178,7 +178,7 @@ fun DetailInfoTextComponent(
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(horizontal = 15.dp)
+                .padding(horizontal = 10.dp)
         ) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -186,21 +186,21 @@ fun DetailInfoTextComponent(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    modifier = Modifier.padding(end=70.dp),
+                    modifier = Modifier,
                     text = name,
                     style = TextStyle.Default.copy(
                         color = Color.Gray,
-                        fontSize = 15.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
                 )
 
                 Text(
-                    modifier = Modifier,
+                    modifier = Modifier.padding(start=40.dp),
                     text = value,
                     style = TextStyle.Default.copy(
                         color = LightBlackColor,
-                        fontSize = 15.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
                 )
@@ -321,18 +321,21 @@ fun MyReviewSinglePost(
 //
 //        Spacer(modifier = Modifier.height(7.dp))
 
-        ReviewImageLazyRowComponent(
-            imageList = singleReview.imageList ?: emptyList(),
-            deleteImage = {
+        if(singleReview.imageList!=null){
+            ReviewImageLazyRowComponent(
+                imageList = singleReview.imageList,
+                deleteImage = {
 
-            },
-            deleteImageAllow = false,
-            onImageSelect = {
-                onImageSelect(it)
-            }
-        )
+                },
+                deleteImageAllow = false,
+                onImageSelect = {
+                    onImageSelect(it)
+                }
+            )
 
-        Spacer(modifier = Modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+
         //리치텍스트로 수정예정
 
 
@@ -341,7 +344,7 @@ fun MyReviewSinglePost(
 //            style = MaterialTheme.typography.displaySmall,
 //            textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(start=10.dp,end=10.dp,top=3.dp)
+                .padding(start=7.dp,end=7.dp,top=3.dp)
         )
 //        Text(
 //            text = reviewText,
