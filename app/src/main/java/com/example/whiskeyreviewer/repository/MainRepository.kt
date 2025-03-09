@@ -37,9 +37,10 @@ interface MainRepository{
     )
 
 
-    fun addCustomWhisky(
+    fun saveOrModifyCustomWhisky(
         image:File?,
         data:CustomWhiskyData,
+        modify:Boolean,
         callback: (ServerResponse<Any>?) -> Unit
     )
 
@@ -49,6 +50,11 @@ interface MainRepository{
         date_order: String,
         name_order:String,
         score_order:String,
+        callback: (ServerResponse<Any>?) -> Unit
+    )
+
+    fun deleteReview(
+        reviewUuid:String,
         callback: (ServerResponse<Any>?) -> Unit
     )
 

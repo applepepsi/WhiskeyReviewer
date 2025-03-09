@@ -1,9 +1,11 @@
 package com.example.whiskeyreviewer.repository
 
+import android.media.Image
 import android.util.Log
 import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.data.CustomWhiskyData
+import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
@@ -141,14 +143,14 @@ class MainRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getImageList(singleWhiskeyData: WhiskyReviewData):WhiskyReviewData {
-        if(singleWhiskeyData.image_url==null){
+        if(singleWhiskeyData.image_names==null){
 
             return singleWhiskeyData
         }
         return withContext(Dispatchers.IO) {
             val imageList = mutableListOf<ByteArray>()
 
-            singleWhiskeyData.image_url.forEach{singleImageUrl->
+            singleWhiskeyData.image_names.forEach{ singleImageUrl->
 
                 val result=ApiHandler.makeApiCall(tag = "이미지 가져오기") {
                     api.getImage(image_name = singleImageUrl)
@@ -174,13 +176,12 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun addCustomWhisky(
-        image:File?,
+    override fun saveOrModifyCustomWhisky(
+        image: File?,
         data: CustomWhiskyData,
+        modify: Boolean,
         callback: (ServerResponse<Any>?) -> Unit
     ) {
-
-
         CoroutineScope(Dispatchers.IO).launch {
 
             val imageLink = image?.let {
@@ -188,15 +189,28 @@ class MainRepositoryImpl @Inject constructor(
                     Log.d("이미지 링크", link ?: "null")
                 }
             }
-            val newData=data.copy(image_name = imageLink)
 
-            val result = ApiHandler.makeApiCall(tag="커스텀 위스키 추가") { api.customWhiskySave(data=newData) }
+
+            val newData = data.copy(image_name = imageLink ?: data.image_name)
+
+            val result = if (modify) {
+                // 수정
+                Log.d("수정 데이터", newData.toString())
+                ApiHandler.makeApiCall(tag = "위스키 수정") {
+                    api.modifyWhisky(myWhiskyUuid = data.whisky_uuid, data = newData)
+                }
+            } else {
+                // 추가
+                ApiHandler.makeApiCall(tag = "커스텀 위스키 추가") {
+                    api.customWhiskySave(data = newData)
+                }
+            }
+
             withContext(Dispatchers.Main) {
                 callback(result)
             }
         }
     }
-
 
 
     override fun getWhiskyList(
@@ -208,6 +222,16 @@ class MainRepositoryImpl @Inject constructor(
         callback: (ServerResponse<Any>?) -> Unit
     ) {
         TODO("Not yet implemented")
+    }
+
+    override fun deleteReview(reviewUuid: String, callback: (ServerResponse<Any>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = ApiHandler.makeApiCall(tag="리뷰 제거") { api.deleteReview(reviewUuid=reviewUuid) }
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
     }
 
     suspend fun postImage(image: File?):String? {

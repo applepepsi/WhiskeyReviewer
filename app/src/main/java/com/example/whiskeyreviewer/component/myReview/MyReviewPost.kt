@@ -1,6 +1,6 @@
 package com.example.whiskeyreviewer.component.myReview
 
-import android.net.Uri
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -24,9 +24,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
@@ -58,12 +56,14 @@ import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
+import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -77,7 +77,7 @@ fun MyReviewPost(
     reviewDataList:List<WhiskyReviewData>,
     singleReviewClick:(WhiskyReviewData)->Unit,
     modifyAllow: Boolean=true,
-    onImageSelect: (String) -> Unit={},
+    onImageSelect: (ByteArray) -> Unit={},
     deleteReview:(WhiskyReviewData)->Unit={},
     modifyReview:(WhiskyReviewData)->Unit={},
     onLikeClick:()->Unit={}
@@ -150,10 +150,10 @@ fun MyWhiskyDetailInfoComponent(
 
         DetailInfoTextComponent(name="위스키 이름", value = selectWhiskyData.korea_name ?: "")
         DetailInfoTextComponent(name="영문 이름", value = selectWhiskyData.english_name)
-        DetailInfoTextComponent(name="메모", value = "qwqwfqf")
+        DetailInfoTextComponent(name="메모", value = selectWhiskyData.memo)
         DetailInfoTextComponent(name="종류", value = selectWhiskyData.category?.let{WhiskyLanguageTransfer.getKoreanTitle(it)}?:"")
-        DetailInfoTextComponent(name="국가", value = "test")
-        DetailInfoTextComponent(name="캐스크 타입", value = "qwq")
+        DetailInfoTextComponent(name="국가", value = selectWhiskyData.country)
+        DetailInfoTextComponent(name="캐스크 타입", value = selectWhiskyData.cask_type)
         DetailInfoTextComponent(name="도수", value = selectWhiskyData.strength.toString()+ " %")
         DetailInfoTextComponent(name="병입 년도", value = selectWhiskyData.bottled_year?.toString()?.let { "$it 년" } ?: "")
         DetailInfoTextComponent(name="개봉일", value = selectWhiskyData.open_date?.let { it } ?: "")
@@ -216,7 +216,7 @@ fun MyReviewSinglePost(
 
     singleReviewClick: () -> Unit,
     modifyAllow: Boolean = true,
-    onImageSelect: (String) -> Unit = {},
+    onImageSelect: (ByteArray) -> Unit = {},
     deleteReview: (WhiskyReviewData) -> Unit={},
     modifyReview: (WhiskyReviewData) -> Unit={},
     onLikeClick:()->Unit={},
@@ -385,7 +385,7 @@ fun ReviewImageLazyRowComponent(
     imageList:List<ByteArray>,
     deleteImage:(Int)->Unit,
     deleteImageAllow:Boolean=true,
-    onImageSelect:(String)->Unit={},
+    onImageSelect:(ByteArray)->Unit={},
 ) {
     val scrollState = rememberLazyListState()
 
@@ -410,22 +410,18 @@ fun ReviewImageLazyRowComponent(
 //                        .fillMaxSize()
 //                        .clip(RoundedCornerShape(8.dp))
 //                )
+
                 GlideImage(
                     imageModel = image,
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
-//                        .then(
-//                            if (image != null && image != "") {
-//                                Modifier.clickable {
-//                                    onImageSelect(image)
-//                                }
-//                            } else {
-//                                Modifier
-//                            }
-//                        )
-
+                        .clickable {
+                            onImageSelect(image)
+                        }
                 )
+
+                }
                 if(deleteImageAllow){
                     Icon(
                         imageVector = Icons.Default.Clear,
@@ -442,7 +438,7 @@ fun ReviewImageLazyRowComponent(
             }
         }
     }
-}
+
 
 @Composable
 fun RatingStarComponent(

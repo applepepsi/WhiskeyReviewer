@@ -214,14 +214,13 @@ fun InsertReviewView(
         ) {
             ImageLazyRowComponent(
                 imageList = writeReviewViewModel.selectedImageUri.value,
-                deleteImage = {
+                deleteImageUri = {
                     writeReviewViewModel.deleteImage(it)
                 },
                 onImageAddButtonClick={
                     mainViewModel.toggleImageTypeSelectDialogState()
                 },
                 currentState=writeReviewViewModel.imageSelectorState.value,
-
             )
 
             Row(
@@ -230,19 +229,6 @@ fun InsertReviewView(
                     .padding(top = 15.dp, start = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){
-//                Text(
-//                    text = writeReviewViewModel.writeReviewData.value.bottle_num.toString()+"병",
-//                    color = Color.Gray,
-//                    modifier = Modifier,
-//                    style = TextStyle(
-//                        fontSize = 17.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        fontStyle = FontStyle.Normal,
-//                        color = Color.Black
-//                    ),
-//                )
-//
-//                Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
                     text = writeReviewViewModel.writeReviewData.value.whiskyName,

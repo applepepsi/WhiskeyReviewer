@@ -19,6 +19,7 @@ import com.example.whiskeyreviewer.data.CustomWhiskyData
 
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
+import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectState
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
@@ -308,8 +309,8 @@ class MainViewModel @Inject constructor(
     private val _imageDialogState=mutableStateOf<Boolean>(false)
     val imageDialogState: State<Boolean> = _imageDialogState
 
-    private val _selectImageUrl=mutableStateOf<String>("")
-    val selectImageUrl: State<String> = _selectImageUrl
+    private val _selectImageUrl=mutableStateOf<ByteArray?>(null)
+    val selectImageUrl: State<ByteArray?> = _selectImageUrl
 
     private val _selectWhiskyData=mutableStateOf<SingleWhiskeyData>(SingleWhiskeyData())
     val selectWhiskyData: State<SingleWhiskeyData> = _selectWhiskyData
@@ -355,6 +356,8 @@ class MainViewModel @Inject constructor(
     val whiskyImageList: State<List<ByteArray>> = _whiskyImageList
 
 
+    private val _whiskyModifyState=mutableStateOf<Boolean>(false)
+    val whiskyModifyState: State<Boolean> = _whiskyModifyState
 //    private val _openDate=mutableStateOf<LocalDate>(LocalDate.now())
 //    val openDate: State<LocalDate> = _openDate
 //
@@ -584,7 +587,7 @@ class MainViewModel @Inject constructor(
     fun toggleCustomWhiskySelectDialogState(modify:Boolean=false,data:SingleWhiskeyData?=null){
         if(modify){
             resetAddCustomWhiskyDialog()
-            Log.d("커스텀",data!!.category!!)
+            Log.d("커스텀", data!!.toString())
             _customWhiskyData.value=_customWhiskyData.value.copy(
                 whisky_uuid=data!!.whisky_uuid,
                 image_name=data.image_name,
@@ -599,8 +602,10 @@ class MainViewModel @Inject constructor(
                 memo=data.memo,
             )
             _currentCustomWhiskyType.value=WhiskyLanguageTransfer.fineWhiskyCategory(data.category)
+            _whiskyModifyState.value=true
         }else{
             setWhiskyInfo()
+            _whiskyModifyState.value=false
         }.also{
             _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
         }
@@ -835,12 +840,11 @@ class MainViewModel @Inject constructor(
         }else{
             _tinyProgressIndicatorState.value=true
             val customWhiskyImage=ImageConverter.convertUrisToFiles(applicationContext, selectedImageUri.value)
-            Log.d("커스텀 위스키 데이터", _customWhiskyData.value.toString())
+            Log.d("커스텀 위스키 데이터", customWhiskyImage.toString())
 
-
-                mainRepository.addCustomWhisky(image=customWhiskyImage,data=_customWhiskyData.value){serverResponse ->
+                mainRepository.saveOrModifyCustomWhisky(image=customWhiskyImage,data=_customWhiskyData.value,_whiskyModifyState.value){serverResponse ->
                     if(serverResponse!=null){
-                        //todo 서버에 물어볼점, tags 리스트 아니지않음?, 사용자가 직접 입력했을때 uuid는 어떻게 되는건지
+
                         if(serverResponse.code== SUCCESS_CODE){
 
                             setErrorToastMessage(
@@ -859,8 +863,9 @@ class MainViewModel @Inject constructor(
 
                     }
                     _tinyProgressIndicatorState.value=false
-                }
+                    _whiskyModifyState.value=if(_whiskyModifyState.value) false else _whiskyModifyState.value
 
+                }
 
         }
 
@@ -1041,7 +1046,7 @@ class MainViewModel @Inject constructor(
         _imageDialogState.value=!_imageDialogState.value
     }
 
-    fun setSelectImage(url:String){
+    fun setSelectImage(url: ByteArray){
         _selectImageUrl.value=url
     }
 
@@ -1078,7 +1083,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getMyReviewList(){
-
+        _smallProgressIndicatorState.value=true
         mainRepository.getMyReviewList(
             whiskyUuid = _selectWhiskyData.value.whisky_uuid,
             order = currentMyReviewDayFilter.value.orderType
@@ -1086,10 +1091,12 @@ class MainViewModel @Inject constructor(
             if(serverResponse !=null ){
 
                 if(serverResponse.code== SUCCESS_CODE){
+
                     _myReviewDataList.value=serverResponse.data ?: emptyList()
+                    Log.d("리뷰 데이터", _myReviewDataList.value.toString())
                 }
             }
-
+            _smallProgressIndicatorState.value=false
         }
     }
 
@@ -1164,6 +1171,33 @@ class MainViewModel @Inject constructor(
                 text="위스키를 선택해 주세요"
             )
 
+        }
+    }
+
+    fun deleteReviewData() {
+        toggleProgressIndicatorState(state = true,text="")
+        mainRepository.deleteReview(
+            reviewUuid = selectWhiskyReviewData.value.review_uuid
+        ){ serverResponse ->
+            if(serverResponse !=null ){
+
+                if(serverResponse.code== SUCCESS_CODE){
+                    getMyReviewList()
+                }else{
+                    setErrorToastMessage(
+                        icon=R.drawable.fail_icon,
+                        text="리뷰를 제거하지 못했습니다.."
+                    )
+                }
+            }else{
+                setErrorToastMessage(
+                    icon=R.drawable.fail_icon,
+                    text="리뷰를 제거하지 못했습니다.."
+                )
+            }
+
+
+            toggleProgressIndicatorState(state = false,text="")
         }
     }
 

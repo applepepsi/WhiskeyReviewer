@@ -34,7 +34,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
             val imageLinks = imageFiles?.map { singleImage ->
                 postImage(singleImage)
             }
-            val newData = reviewData.copy(image_url = imageLinks)
+            val newData = reviewData.copy(image_names = imageLinks)
 
             Log.d("리뷰 데이터", newData.toString())
 //            api.reviewSave(
@@ -77,6 +77,8 @@ class WriteReviewRepositoryImpl @Inject constructor(
 
     }
 
+
+    //todo 이미지 어떻게 보내야 하는지 물어보기
     override fun reviewModify(
         imageFiles:List<File>?,
         reviewData: SubmitWhiskyData,
@@ -84,23 +86,16 @@ class WriteReviewRepositoryImpl @Inject constructor(
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = ApiHandler.makeApiCall(tag="리뷰 수정") {
+                Log.d("수정 이미지 대기", imageFiles.toString())
+                val imageLinks = imageFiles?.map { singleImage ->
+                    postImage(singleImage)
+                }
 
-                //이미지를 멀티파트바디로 변환
-                val imageParts = imageFiles?.map { file ->
-                    val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-                    MultipartBody.Part.createFormData("images", file.name, requestFile)
-                } ?: emptyList()
+                Log.d("수정 이미지 결과", imageLinks.toString())
+                val newData = reviewData.copy(image_names = imageLinks)
 
-                // 리뷰 데이터 json으로 변환
-                val json = Gson().toJson(reviewData)
-                val reviewRequestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
-                val buffer = Buffer()
-                reviewRequestBody.writeTo(buffer)
 
-                api.reviewModify(
-                    imageParts,
-                    reviewRequestBody
-                ) }
+                api.reviewModify(reviewUuid = newData.my_whisky_uuid, writeReviewData = newData) }
             withContext(Dispatchers.Main) {
                 callback(result)
             }

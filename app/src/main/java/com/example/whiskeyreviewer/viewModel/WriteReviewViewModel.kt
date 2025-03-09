@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.whiskeyreviewer.R
@@ -335,9 +334,10 @@ class WriteReviewViewModel @Inject constructor(
                     imageFiles =imageFiles,
                     reviewData = submitWhiskyData
                 ){modifyResult->
-                    _loadingState.value=false
+
                     if(modifyResult!=null){
                         if(modifyResult.code== SUCCESS_CODE){
+                            ImageConverter.clearCache(context = applicationContext)
                             toggleReviewSaveResult()
                         }else{
                             setErrorToastMessage(
@@ -351,6 +351,7 @@ class WriteReviewViewModel @Inject constructor(
                             text="서버와의 연결 상태가 좋지 않습니다."
                         )
                     }
+                    _loadingState.value=false
                 }
             }else{
                 writeReviewRepository.reviewSave(
@@ -374,7 +375,9 @@ class WriteReviewViewModel @Inject constructor(
                             text="서버와의 연결 상태가 좋지 않습니다."
                         )
                     }
+
                 }
+                _loadingState.value=false
             }
 
             Log.d("작성이미지", imageFiles.toString())
@@ -443,19 +446,20 @@ class WriteReviewViewModel @Inject constructor(
         _errorToastIcon.value=icon
     }
 
-    fun synchronizationWhiskyData(whiskyData: WhiskyReviewData, whiskyName: String, bottleNum: Int) {
+    fun synchronizationWhiskyData(whiskyData: WhiskyReviewData, whiskyName: String,uriList:List<Uri>?) {
         //todo 수정 기능 구현해야함
         _writeReviewData.value=_writeReviewData.value.copy(
-            whiskey_uuid =whiskyData.whiskyUuid,
+            whiskey_uuid =whiskyData.review_uuid,
             content = whiskyData.content,
             is_anonymous = whiskyData.is_anonymous,
             open_date = TimeFormatter.stringToLocalDate(whiskyData.open_date),
             tags= whiskyData.tags,
             score=whiskyData.score,
-            bottle_num = bottleNum,
 //            imageList = whiskyData.imageList,
             whiskyName=whiskyName
         )
+        _selectedImageUri.value=uriList ?: emptyList()
+
         //todo 이미지 새로 동기화 하기
 //        val stringList: List<Uri> = whiskyData.imageList.map { it.toUri() }
 //        _selectedImageUri.value = stringList

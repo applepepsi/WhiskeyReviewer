@@ -189,6 +189,6 @@ fun ProgressBarPreview(){
 //            text="로딩중"
 //        )
 
-        PostProgressIndicator()
+        SmallSizeProgressIndicator(modifier = Modifier)
     }
 }

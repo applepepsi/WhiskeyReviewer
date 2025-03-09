@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.component.home
 
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -86,6 +87,7 @@ import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIn
 import com.example.whiskeyreviewer.component.customComponent.StrengthInputComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.TapLayoutItems
@@ -93,6 +95,7 @@ import com.example.whiskeyreviewer.data.TapLayoutItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -1914,14 +1917,14 @@ fun MethodSelectComponent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageViewerDialog(
-    currentImage:String="",
+    currentImage: ByteArray?=null,
     toggleOption: () -> Unit,
     currentState: Boolean = true,
 ){
 
 
     if (currentState) {
-        Log.d("현재이미지",currentImage)
+
         Dialog(
             onDismissRequest = { toggleOption() },
             properties = properties.let {
@@ -1955,12 +1958,16 @@ fun ImageViewerDialog(
 
                 }
 
-                GlideImage(
-                    imageModel = currentImage,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .align(Alignment.Center)
-                )
+                currentImage?.let { imageData ->
+
+                    GlideImage(
+                        imageModel = imageData,
+                        modifier = Modifier
+                            .size(350.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+
             }
         }
     }

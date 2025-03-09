@@ -593,7 +593,7 @@ fun ControlWrapper(
 @Composable
 fun ImageLazyRowComponent(
     imageList: List<Any>,
-    deleteImage: (Int) -> Unit,
+    deleteImageUri: (Int) -> Unit,
     onImageAddButtonClick:()->Unit,
     currentState: Boolean,
 
@@ -635,7 +635,7 @@ fun ImageLazyRowComponent(
                                 .size(25.dp)
                                 .padding(top = 5.dp, end = 5.dp)
                                 .clickable {
-                                    deleteImage(index)
+                                    deleteImageUri(index)
                                 }
                         )
                     }
@@ -817,12 +817,12 @@ fun WheelPreview() {
 
 
     WhiskeyReviewerTheme {
-        ImageLazyRowComponent(
-            imageList = testUris,
-            deleteImage = {},
-            currentState = true,
-            onImageAddButtonClick = {}
-        )
+//        ImageLazyRowComponent(
+//            imageList = testUris,
+//            deleteImage = {},
+//            currentState = true,
+//            onImageAddButtonClick = {}
+//        )
     }
 }
 

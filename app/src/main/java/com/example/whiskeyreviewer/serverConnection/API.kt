@@ -9,6 +9,7 @@ import com.example.nextclass.utils.GET_IMAGE
 import com.example.nextclass.utils.GET_REVIEW
 import com.example.nextclass.utils.GET_WHISKY_LIST
 import com.example.nextclass.utils.IMAGE_UPLOAD
+import com.example.nextclass.utils.MODIFY_WHISKY
 import com.example.nextclass.utils.REGISTER
 import com.example.nextclass.utils.REVIEW_MODIFY
 import com.example.nextclass.utils.REVIEW_SAVE
@@ -63,11 +64,11 @@ interface API {
     ):Response<ServerResponse<Any>>
 
 
-    @Multipart
+
     @PUT(REVIEW_MODIFY)
     suspend fun reviewModify(
-        @Part images: List<MultipartBody.Part>,
-        @Part("data") writeReviewData: RequestBody
+        @Path("reviewUuid") reviewUuid: String,
+        @Body writeReviewData: SubmitWhiskyData
 
     ):Response<ServerResponse<Any>>
 
@@ -77,10 +78,6 @@ interface API {
         @Path("myWhiskyUuid") myWhiskyUuid: String,
         @Query("order") order: String
     ): Response<ServerResponse<List<WhiskyReviewData>>>
-
-    @DELETE(DELETE_REVIEW)
-    suspend fun deleteReview(@Path("identifier") identifier:String):Response<ServerResponse<Any>>
-
 
     @POST(REVIEW_SAVE)
     suspend fun whiskySave(
@@ -92,6 +89,12 @@ interface API {
     @POST(ADD_CUSTOM_WHISKY)
     suspend fun customWhiskySave(
         @Body data: CustomWhiskyData
+    ):Response<ServerResponse<Any>>
+
+    @POST(MODIFY_WHISKY)
+    suspend fun modifyWhisky(
+        @Path("myWhiskyUuid") myWhiskyUuid: String,
+        @Body data: CustomWhiskyData,
     ):Response<ServerResponse<Any>>
 
 
@@ -106,4 +109,10 @@ interface API {
     suspend fun getImage(
         @Path("image_name") image_name: String,
     ):Response<ResponseBody>
+
+
+    @DELETE(DELETE_REVIEW)
+    suspend fun deleteReview(
+        @Path("reviewUuid") reviewUuid: String,
+    ):Response<ServerResponse<Any>>
 }

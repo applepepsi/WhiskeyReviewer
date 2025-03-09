@@ -7,5 +7,5 @@ data class SubmitWhiskyData(
     val tags: List<String>,
     val score: Int,
     val my_whisky_uuid:String,
-    val image_url:List<String?>?=null,
+    val image_names:List<String?>?=null,
 )

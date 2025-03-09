@@ -2,9 +2,11 @@ package com.example.whiskeyreviewer.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import com.example.whiskeyreviewer.data.ImageData
 import java.io.File
 import java.io.FileOutputStream
 
@@ -48,14 +50,14 @@ object ImageConverter {
     // 파일 이름 및 확장자 가져오기
     private fun getFileName(context: Context, uri: Uri): String {
         val name = uri.toString().split("/").last()
-        val ext = context.contentResolver.getType(uri)!!.split("/").last()
+        val ext = context.contentResolver.getType(uri)?.split("/")?.last() ?: "jpg"
         return "$name.$ext"
     }
 
     // URI 리스트를 파일 리스트로 변환
     fun convertUrisToFiles(context: Context, uriList: List<Uri>): List<File> {
         val fileList = mutableListOf<File>()
-
+        Log.d("이미지 가공 전", uriList.toString())
         for (uri in uriList) {
             try {
 
@@ -81,4 +83,53 @@ object ImageConverter {
         return file
     }
 
+    fun castImageFile(imageData: ImageData): Any {
+        return when (imageData) {
+            is ImageData.StringData -> imageData.name
+            is ImageData.ByteArrayData -> BitmapFactory.decodeByteArray(
+                imageData.byteArray,
+                0,
+                imageData.byteArray.size
+            )
+
+            is ImageData.UriData -> TODO()
+        }
+    }
+
+    fun byteArrayToCacheUri(context: Context, byteArrayList: List<ByteArray>?, fileNameList: List<String>?): List<Uri>? {
+
+        if (byteArrayList.isNullOrEmpty()) return null
+
+        val imageUrlList = mutableListOf<Uri>()
+
+        for (i in byteArrayList.indices) {
+            val byteArray = byteArrayList[i]
+            val fileName = fileNameList?.getOrNull(i) ?: "image_$i.jpg"
+
+            try {
+
+                val file = File(context.cacheDir, fileName)
+                FileOutputStream(file).use { fos ->
+                    fos.write(byteArray)
+                }
+
+                val uri = Uri.fromFile(file)
+                imageUrlList.add(uri)
+            } catch (e: Exception) {
+                Log.d("Uri 가져오기 실패", e.toString())
+            }
+        }
+
+        return if (imageUrlList.isEmpty()) null else imageUrlList
+    }
+
+    fun clearCache(context: Context) {
+        val cacheDir = context.cacheDir
+        if (cacheDir.isDirectory) {
+            val files = cacheDir.listFiles()
+            files?.forEach { file ->
+                file.delete()
+            }
+        }
+    }
 }

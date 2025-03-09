@@ -1,19 +1,27 @@
 package com.example.whiskeyreviewer.data
 
+import android.net.Uri
 import java.time.LocalDate
 
 data class WhiskyReviewData(
-    val whiskyUuid:String="",
+    val review_uuid:String="",
     val content:String="",
     val is_anonymous:Boolean=false,
     val open_date: String= LocalDate.now().toString(),
     val score: Double=1.0,
     val tags:List<String> = listOf(),
-    val image_url:List<String>?=null,
+    val image_names:List<String>?=null,
     val imageList:List<ByteArray>? = emptyList(),
     val likeState:Boolean?=null,
     val likeCount:Int?=null,
 )
+
+sealed class ImageData {
+    data class StringData(val name: String) : ImageData()
+    data class ByteArrayData(val byteArray: ByteArray) : ImageData()
+
+    data class UriData(val uri: Uri) :ImageData()
+}
 
 
 data class WhiskyReviewData2(

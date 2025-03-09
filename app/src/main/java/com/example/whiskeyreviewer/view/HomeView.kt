@@ -56,6 +56,7 @@ import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -93,22 +94,21 @@ fun HomeView(
         )
     }
 
-    LaunchedEffect(mainViewModel.selectNewWhiskyState.value) {
-        Log.d("상태", mainViewModel.selectNewWhiskyState.value.toString())
-        if(mainViewModel.selectNewWhiskyState.value){
-            writeReviewViewModel.synchronizationWhiskyData(
-                WhiskyReviewData(
-                    whiskyUuid = mainViewModel.selectNewWhiskyData.value.whisky_uuid
-                ),
-                mainViewModel.selectNewWhiskyData.value.korea_name ?:
-                mainViewModel.selectNewWhiskyData.value.english_name,
-
-                bottleNum=1
-            )
-            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
-
-        }
-    }
+//    LaunchedEffect(mainViewModel.selectNewWhiskyState.value) {
+//        Log.d("상태", mainViewModel.selectNewWhiskyState.value.toString())
+//        if(mainViewModel.selectNewWhiskyState.value){
+//            writeReviewViewModel.synchronizationWhiskyData(
+//                WhiskyReviewData(
+//                    review_uuid = mainViewModel.selectNewWhiskyData.value.whisky_uuid
+//                ),
+//                mainViewModel.selectNewWhiskyData.value.korea_name ?:
+//                mainViewModel.selectNewWhiskyData.value.english_name,
+//
+//            )
+//            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
+//
+//        }
+//    }
 
     LaunchedEffect(mainViewModel.selectWhiskyState.value) {
         if(mainViewModel.selectWhiskyState.value){

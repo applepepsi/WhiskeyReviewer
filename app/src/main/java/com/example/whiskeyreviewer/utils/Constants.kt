@@ -43,12 +43,15 @@ const val REGISTER="/register"
 const val GET_WHISKY_LIST="/my-whiskys"
 const val ADD_WHISKY_NAME_SEARCH="/whiskys"
 const val REVIEW_SAVE="/review"
-const val REVIEW_MODIFY="/review/{identifier}"
-const val DELETE_REVIEW="/review/{identifier}"
+const val REVIEW_MODIFY="/review/{reviewUuid}"
+const val DELETE_REVIEW="/review/{reviewUuid}"
 const val GET_REVIEW="/my-whisky/{myWhiskyUuid}/my-reviews"
 const val ADD_CUSTOM_WHISKY="/my-whisky"
+const val MODIFY_WHISKY="/my-whisky/{myWhiskyUuid}"
 const val IMAGE_UPLOAD="/image-upload"
 const val GET_IMAGE="/image/{image_name}"
+
+
 
 val whiskeyData = listOf(
     TapLayoutItems.AllWhiskey,
