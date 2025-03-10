@@ -366,6 +366,10 @@ class MainViewModel @Inject constructor(
 //
 //    private val _whiskyEngName=mutableStateOf<String>("")
 //    val whiskyEngName: State<String> = _whiskyEngName
+
+    private val _whiskyListRefreshState=mutableStateOf<Boolean>(false)
+    val whiskyListRefreshState: State<Boolean> = _whiskyListRefreshState
+
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -674,7 +678,7 @@ class MainViewModel @Inject constructor(
         _currentCustomWhiskyDropDownState.value=!_currentCustomWhiskyDropDownState.value
     }
 
-    fun getMyWhiskeyData(){
+    fun getMyWhiskeyData(refresh:Boolean=false){
 //        _homeSearchBarSText.value //검색
 //        _currentWhiskeyFilter.value //위스키 종류
 //
@@ -695,8 +699,12 @@ class MainViewModel @Inject constructor(
 //
 //        }
 
+
+//        _whiskyListRefreshState.value=true
         val searchWord=if (myWhiskyFilterData.value.name=="" || !_searchButtonState.value) null else myWhiskyFilterData.value.name
-        _postProgressIndicatorState.value=true
+        if(refresh) _whiskyListRefreshState.value=true else _postProgressIndicatorState.value=true
+
+//        _postProgressIndicatorState.value=true
         mainRepository.getMyWhiskyList(
             name=searchWord,
             category= _myWhiskyFilterData.value.category.name,
@@ -708,14 +716,18 @@ class MainViewModel @Inject constructor(
                 if(serverResponse.code== SUCCESS_CODE){
                     _myWhiskyList.value=serverResponse.data!!
                     Log.d("위스키 데이터", _myWhiskyList.value.toString())
-                    Log.d("위스키 데이터2", _myWhiskyFilterData.value.toString())
+
                     initializeListSize()
 
                 }
 
             }
-            _postProgressIndicatorState.value=false
+//            _postProgressIndicatorState.value=false
+            if(refresh) _whiskyListRefreshState.value=false else _postProgressIndicatorState.value=false
+
         }
+
+
     }
 
     fun toggleDialogSelectWhiskyState(index: Int) {
@@ -1201,5 +1213,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun toggleRefreshState(){
+
+        _whiskyListRefreshState.value=!_whiskyListRefreshState.value
+        Log.d("새로고침 상태", _whiskyListRefreshState.value.toString())
+    }
 
 }

@@ -322,6 +322,8 @@ fun MyReviewSinglePost(
 //        Spacer(modifier = Modifier.height(7.dp))
 
         if(singleReview.imageList!=null){
+            Spacer(modifier = Modifier.height(5.dp))
+
             ReviewImageLazyRowComponent(
                 imageList = singleReview.imageList,
                 deleteImage = {

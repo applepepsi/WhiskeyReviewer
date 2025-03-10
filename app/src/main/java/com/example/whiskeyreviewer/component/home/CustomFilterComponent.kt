@@ -29,7 +29,7 @@ fun MyWhiskyCustomFilterRow(
 
 ) {
 
-    Column() {
+
         LazyRow(
             modifier = Modifier
                 .padding( horizontal = 8.dp).padding(top=12.dp,bottom=10.dp)
@@ -103,7 +103,7 @@ fun MyWhiskyCustomFilterRow(
 //
 //            HorizontalDivider(thickness = 0.6.dp, color = Color.LightGray)
 //        }
-    }
+
 
 }
 

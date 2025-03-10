@@ -49,6 +49,7 @@ import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordCom
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
+import com.example.whiskeyreviewer.component.home.MyWhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SelectWhiskeyDialog
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
@@ -310,6 +311,8 @@ fun HomeView(
                                     text="작성된 리뷰가 없습니다."
                                 )
                             }else{
+
+
                                 MyReviewComponent(
                                     myReviewItems = mainViewModel.myWhiskyList.value,
                                     setSelectReview = {singleWhiskyData->

@@ -24,15 +24,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +54,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
+import com.example.whiskeyreviewer.component.customComponent.PostProgressIndicator
+import com.example.whiskeyreviewer.component.customComponent.RefreshProgressIndicator
+import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.WhiskyOptionDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
@@ -63,6 +71,8 @@ import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
 import java.time.LocalDateTime
@@ -299,6 +309,7 @@ fun SingleWhiskeyComponent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyReviewComponent(
     mainViewModel:MainViewModel,
@@ -328,7 +339,9 @@ fun MyReviewComponent(
 //        SingleWhiskeyData(
 //        )
 //    )
+    val refreshState = rememberPullToRefreshState()
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     val customScrollbarSettings = ScrollbarSettings(
         thumbUnselectedColor = MainColor,
 
@@ -341,33 +354,71 @@ fun MyReviewComponent(
         settings = customScrollbarSettings,
 
         ) {
-        LazyColumn(
-            state=listState,
-            modifier = Modifier.padding(top = 3.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            item {
-                MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
-            }
 
-            itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->
-                SingleWhiskeyComponent(
-                    singleWhiskeyData = singleWhiskeyData,
-                    reviewClick = { setSelectReview(singleWhiskeyData) },
-                    showOption = showOption,
-                    deleteWhisky = { toggleConfirmDialogState(singleWhiskeyData) },
-                    dropDownMenuState = if (showOption) dropDownMenuState[index] else false,
-                    toggleDropDownMenuState = { if (showOption) toggleDropDownMenuState(index) },
-                    modifyWhiskyData = {
-                        //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
-                        mainViewModel.toggleCustomWhiskySelectDialogState(modify = true, data = it)
-                    },
+        Column {
+            MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
 
+            PullToRefreshBox(
+                isRefreshing = mainViewModel.whiskyListRefreshState.value,
+                onRefresh = {
+
+
+                    mainViewModel.getMyWhiskeyData(refresh = true)
+
+                },
+                modifier = Modifier,
+                indicator = {
+//                    Indicator(
+//                        modifier = Modifier.align(Alignment.TopCenter).size(50.dp),
+//                        isRefreshing = mainViewModel.whiskyListRefreshState.value,
+//                        state = refreshState,
+//                        color= LightBlackColor,
+////                        containerColor = Color.White
+//                    )
+                    RefreshProgressIndicator(
+                        isRefreshing = mainViewModel.whiskyListRefreshState.value,
+                        state=refreshState,
+                        strokeWidth = 4.dp,
+                        modifier = Modifier.align(Alignment.TopCenter)
                     )
+                },
+                state=refreshState
+            ) {
 
-                Spacer(modifier = Modifier.height(10.dp))
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.padding(top = 3.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+
+                    itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->
+                        SingleWhiskeyComponent(
+                            singleWhiskeyData = singleWhiskeyData,
+                            reviewClick = { setSelectReview(singleWhiskeyData) },
+                            showOption = showOption,
+                            deleteWhisky = { toggleConfirmDialogState(singleWhiskeyData) },
+                            dropDownMenuState = if (showOption) dropDownMenuState[index] else false,
+                            toggleDropDownMenuState = {
+                                if (showOption) toggleDropDownMenuState(
+                                    index
+                                )
+                            },
+                            modifyWhiskyData = {
+                                //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
+                                mainViewModel.toggleCustomWhiskySelectDialogState(
+                                    modify = true,
+                                    data = it
+                                )
+                            },
+
+                            )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
             }
         }
+
     }
 }
 
