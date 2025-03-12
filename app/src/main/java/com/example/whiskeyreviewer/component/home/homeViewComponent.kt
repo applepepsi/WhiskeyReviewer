@@ -27,13 +27,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -53,10 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.R
-import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
-import com.example.whiskeyreviewer.component.customComponent.PostProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.RefreshProgressIndicator
-import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.WhiskyOptionDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
@@ -66,16 +59,12 @@ import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WhiskyOptionItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
-import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.TimeFormatter
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
-import java.time.LocalDateTime
 
 
 @Composable
@@ -355,9 +344,6 @@ fun MyReviewComponent(
 
         ) {
 
-        Column {
-            MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
-
             PullToRefreshBox(
                 isRefreshing = mainViewModel.whiskyListRefreshState.value,
                 onRefresh = {
@@ -390,6 +376,9 @@ fun MyReviewComponent(
                     modifier = Modifier.padding(top = 3.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    item{
+                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
+                    }
 
                     itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->
                         SingleWhiskeyComponent(
@@ -405,8 +394,7 @@ fun MyReviewComponent(
                             },
                             modifyWhiskyData = {
                                 //todo 다이얼로그를 켜고 데이터를 다시 할당해야함
-                                mainViewModel.toggleCustomWhiskySelectDialogState(
-                                    modify = true,
+                                mainViewModel.modifyWhiskyMode(
                                     data = it
                                 )
                             },
@@ -417,7 +405,7 @@ fun MyReviewComponent(
                     }
                 }
             }
-        }
+
 
     }
 }

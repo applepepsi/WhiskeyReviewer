@@ -88,7 +88,7 @@ fun Greeting(ssaId: String) {
     )
 
     InsertWhiskyDetailDialog(
-        toggleOption = { mainViewModel.toggleCustomWhiskySelectDialogState() },
+        toggleOption = { mainViewModel.toggleInsertWhiskyState() },
         currentState = mainViewModel.insertWhiskyDetailDialogState.value,
         text=mainViewModel.customWhiskyData.value.korea_name,
         whiskyEngName = mainViewModel.customWhiskyData.value.english_name,

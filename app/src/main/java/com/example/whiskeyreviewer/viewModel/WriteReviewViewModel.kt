@@ -337,7 +337,7 @@ class WriteReviewViewModel @Inject constructor(
 
                     if(modifyResult!=null){
                         if(modifyResult.code== SUCCESS_CODE){
-                            ImageConverter.clearCache(context = applicationContext)
+
                             toggleReviewSaveResult()
                         }else{
                             setErrorToastMessage(
@@ -352,6 +352,7 @@ class WriteReviewViewModel @Inject constructor(
                         )
                     }
                     _loadingState.value=false
+                    ImageConverter.clearCache(context = applicationContext)
                 }
             }else{
                 writeReviewRepository.reviewSave(

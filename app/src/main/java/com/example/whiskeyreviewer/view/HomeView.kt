@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -49,15 +48,12 @@ import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordCom
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.MyReviewComponent
-import com.example.whiskeyreviewer.component.home.MyWhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SelectWhiskeyDialog
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
-import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -142,7 +138,7 @@ fun HomeView(
         mainViewModel = mainViewModel,
         toggleInsertDetailDialog = {
 
-            mainViewModel.toggleCustomWhiskySelectDialogState()
+            mainViewModel.selectNewWhiskyInfoMode()
         },
         selfInput = {
             mainViewModel.selfInputWhiskyMode()

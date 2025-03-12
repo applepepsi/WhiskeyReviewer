@@ -96,7 +96,7 @@ object ImageConverter {
         }
     }
 
-    fun byteArrayToCacheUri(context: Context, byteArrayList: List<ByteArray>?, fileNameList: List<String>?): List<Uri>? {
+    fun byteArrayListToCacheUriList(context: Context, byteArrayList: List<ByteArray>?, fileNameList: List<String>?): List<Uri>? {
 
         if (byteArrayList.isNullOrEmpty()) return null
 
@@ -121,6 +121,26 @@ object ImageConverter {
         }
 
         return if (imageUrlList.isEmpty()) null else imageUrlList
+    }
+
+    fun byteArrayToCacheUri(context: Context, byteArray: ByteArray?, fileName: String?): Uri? {
+
+        if (byteArray==null) return null
+
+        return try {
+
+            val file = File(context.cacheDir, fileName ?: "image_temp.jpg")
+            FileOutputStream(file).use { fos ->
+                fos.write(byteArray)
+            }
+
+            Uri.fromFile(file)
+
+        } catch (e: Exception) {
+            Log.d("Uri 가져오기 실패", e.toString())
+            null
+        }
+
     }
 
     fun clearCache(context: Context) {

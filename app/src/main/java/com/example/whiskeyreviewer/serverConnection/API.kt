@@ -91,7 +91,7 @@ interface API {
         @Body data: CustomWhiskyData
     ):Response<ServerResponse<Any>>
 
-    @POST(MODIFY_WHISKY)
+    @PUT(MODIFY_WHISKY)
     suspend fun modifyWhisky(
         @Path("myWhiskyUuid") myWhiskyUuid: String,
         @Body data: CustomWhiskyData,

@@ -19,7 +19,6 @@ import com.example.whiskeyreviewer.data.CustomWhiskyData
 
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
-import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectState
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
@@ -528,7 +527,7 @@ class MainViewModel @Inject constructor(
 
         Log.d("선택된 위스키",selectWhisky.toString())
         _selectWhiskyData.value=selectWhisky
-        _selectWhiskyState.value=true
+//        _selectWhiskyState.value=true
     }
 
     fun updateOderUserSelectReview(selectReview:SingleWhiskeyData) {
@@ -588,37 +587,49 @@ class MainViewModel @Inject constructor(
         _selectWhiskyDialogState.value=!_selectWhiskyDialogState.value
     }
 
-    fun toggleCustomWhiskySelectDialogState(modify:Boolean=false,data:SingleWhiskeyData?=null){
-        if(modify){
-            resetAddCustomWhiskyDialog()
-            Log.d("커스텀", data!!.toString())
-            _customWhiskyData.value=_customWhiskyData.value.copy(
-                whisky_uuid=data!!.whisky_uuid,
-                image_name=data.image_name,
-                korea_name=data.korea_name!!,
-                english_name = data.english_name,
-                category=data.category!!,
-                strength=data.strength.toString(),
-                country=data.country,
-                bottled_year=data.bottled_year ?: 0,
-                open_date=data.open_date ?: "",
-                cask_type=data.cask_type,
-                memo=data.memo,
-            )
-            _currentCustomWhiskyType.value=WhiskyLanguageTransfer.fineWhiskyCategory(data.category)
-            _whiskyModifyState.value=true
-        }else{
-            setWhiskyInfo()
-            _whiskyModifyState.value=false
-        }.also{
-            _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
+    fun modifyWhiskyMode( data:SingleWhiskeyData?=null){
+        resetAddCustomWhiskyDialog()
+        Log.d("커스텀", data!!.toString())
+        _customWhiskyData.value=_customWhiskyData.value.copy(
+            whisky_uuid=data!!.whisky_uuid,
+            image_name=data.image_name,
+            korea_name=data.korea_name!!,
+            english_name = data.english_name,
+            category=data.category!!,
+            strength=data.strength.toString(),
+            country=data.country,
+            bottled_year=data.bottled_year ?: 0,
+            open_date=data.open_date ?: "",
+            cask_type=data.cask_type,
+            memo=data.memo,
+        )
+        data.image?.let{
+            ImageConverter.byteArrayToCacheUri(context = applicationContext,byteArray = data.image,fileName=data.image_name!!)?.let{
+                _selectedImageUri.value=it
+            }
         }
-
+        _currentCustomWhiskyType.value=WhiskyLanguageTransfer.fineWhiskyCategory(data.category)
+        _whiskyModifyState.value=true
     }
 
+    fun toggleInsertWhiskyState(){
+
+        _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
+    }
+
+    fun selectNewWhiskyInfoMode(){
+        resetAddCustomWhiskyDialog()
+        val checkResult=setWhiskyInfo()
+        _whiskyModifyState.value=false
+        if(checkResult){
+            _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
+        }
+    }
 
     fun selfInputWhiskyMode(){
+
         resetAddCustomWhiskyDialog()
+        _whiskyModifyState.value=false
         _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
     }
 
@@ -791,7 +802,7 @@ class MainViewModel @Inject constructor(
             val findOldWhisky=myWhiskyList.value.find { it.whisky_uuid == info.whisky_uuid }
             toggleWhiskySelectDialogState()
             updateSelectWhisky(findOldWhisky!!)
-            setWhiskyInfo()
+//            setWhiskyInfo()
             _selectWhiskyState.value=true
         } else {
             setErrorToastMessage(
@@ -865,7 +876,7 @@ class MainViewModel @Inject constructor(
                             )
 
                             getMyWhiskeyData()
-                            toggleCustomWhiskySelectDialogState()
+                            toggleInsertWhiskyState()
                             toggleWhiskySelectDialogState()
 //                        _selectWhiskyState.value=true
                         }else{
@@ -874,6 +885,7 @@ class MainViewModel @Inject constructor(
                     }else{
 
                     }
+                    ImageConverter.clearCache(context = applicationContext)
                     _tinyProgressIndicatorState.value=false
                     _whiskyModifyState.value=if(_whiskyModifyState.value) false else _whiskyModifyState.value
 
@@ -1159,7 +1171,7 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun setWhiskyInfo() {
+    fun setWhiskyInfo():Boolean {
         val info = _dialogSelectWhiskyData.value.find{ whiskyName ->
             whiskyName.check==true
         }
@@ -1167,22 +1179,21 @@ class MainViewModel @Inject constructor(
 
         Log.d("인포", info.toString())
 
-        if (info != null) {
+        return if (info != null) {
             _customWhiskyData.value=_customWhiskyData.value.copy(
                 whisky_uuid = info.whisky_uuid,
                 korea_name = info.korea_name ?: "",
                 english_name = info.english_name,
                 strength = info.strength ?:"",
                 country = info.country,
-
             )
-
+            true
         } else {
             setErrorToastMessage(
                 icon=R.drawable.fail_icon,
                 text="위스키를 선택해 주세요"
             )
-
+            false
         }
     }
 
