@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -98,6 +99,8 @@ import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage
+import my.nanihadesuka.compose.LazyColumnScrollbar
+import my.nanihadesuka.compose.ScrollbarSettings
 
 @Composable
 fun GetBackupCodeDialog(
@@ -1213,7 +1216,14 @@ fun InsertWhiskyDetailDialog(
 //    )
 
 
+    val listState = rememberLazyListState()
+    val customScrollbarSettings = ScrollbarSettings(
+        thumbUnselectedColor = MainColor,
 
+        thumbThickness = 6.dp,
+        thumbMinLength = 0.1f,
+        thumbMaxLength = 0.7f
+    )
 
     if(mainViewModel.errorToastState.value) {
 
@@ -1299,333 +1309,336 @@ fun InsertWhiskyDetailDialog(
                         .padding(start = 17.dp,bottom=5.dp)
                 )
 
-                Column(
-                    modifier= Modifier
-                        .height(470.dp)
-                        .verticalScroll(state = rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-
-                    Row(Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center){
-                        ImageComponent(
-                            imageClick = {
-                                mainViewModel.toggleImageTypeSelectDialogState()
-                            },
-                            image = mainViewModel.selectedImageUri.value,
-                            modifier = Modifier.padding(top=10.dp)
-                        )
-                    }
-
-
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ){
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "종류",
-                                style = TextStyle(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Normal,
-                                    color = LightBlackColor
-                                ),
-                                modifier = Modifier
-                                    .padding(start=5.dp,bottom=4.dp)
-
-                            )
-                            WhiskeyFilterDropDownMenuComponent(
-                                value = mainViewModel.currentCustomWhiskyType.value,
-                                onValueChange = { mainViewModel.updateCurrentCustomWhiskyType(it) },
-                                dropDownMenuOption = mainViewModel.currentCustomWhiskyDropDownState.value,
-                                toggleDropDownMenuOption = { mainViewModel.toggleCustomWhiskyDropDownMenuState() },
-                                menuItems = whiskeyData.filter { it != TapLayoutItems.AllWhiskey },
-                                modifier = Modifier
-                            )
+                LazyColumnScrollbar(
+                    state = listState,
+                    settings = customScrollbarSettings,
+                    modifier=Modifier
+                    ) {
+                    LazyColumn(
+                        modifier = Modifier,
+                        state=listState,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                ImageComponent(
+                                    imageClick = {
+                                        mainViewModel.toggleImageTypeSelectDialogState()
+                                    },
+                                    image = mainViewModel.selectedImageUri.value,
+                                    modifier = Modifier.padding(top = 10.dp)
+                                )
+                            }
                         }
 
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "국가",
-                                style = TextStyle(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Normal,
-                                    color = LightBlackColor
-                                ),
+                        item {
+                            Row(
                                 modifier = Modifier
-                                    .padding(start=5.dp,bottom=4.dp)
-
-                            )
-                            SelectCountryDropDownMenuComponent(
-                                value = mainViewModel.customWhiskyData.value.country,
-                                onValueChange = {
-                                    mainViewModel.updateCurrentCountry(it)
-                                },
-                                dropDownMenuOption = mainViewModel.currentCountryDropDownMenuState.value,
-                                toggleDropDownMenuOption = { mainViewModel.toggleCurrentCountryDropDownMenuState() },
-                                menuItems = countryData,
-                                modifier = Modifier
-                            )
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ){
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "캐스크 타입",
-                                style = TextStyle(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Normal,
-                                    color = LightBlackColor
-                                ),
-                                modifier = Modifier
-                                    .padding(start=5.dp,bottom=4.dp)
-
-                            )
-                            ShortTextInputComponent(
-
-                                text = mainViewModel.customWhiskyData.value.cask_type,
-                                hint = "캐스크 타입",
-                                updateText={
-                                    mainViewModel.updateCaskType(it)
-                                },
-                                isModify = true,
-
-                            )
-                        }
-
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "개봉일",
-                                style = TextStyle(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Normal,
-                                    color = LightBlackColor
-                                ),
-                                modifier = Modifier
-                                    .padding(start = 5.dp, bottom = 4.dp)
-
-
-                            )
-                            ShortTextInputComponent(
-
-                                text = mainViewModel.customWhiskyData.value.open_date.toString(),
-                                hint = "개봉일",
-                                updateText={
-
-                                },
-                                isModify = false,
-                                clickable = {
-                                    mainViewModel.toggleOpenDateBottomSheetState()
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "종류",
+                                        style = TextStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontStyle = FontStyle.Normal,
+                                            color = LightBlackColor
+                                        ),
+                                        modifier = Modifier
+                                            .padding(start = 5.dp, bottom = 4.dp)
+                                    )
+                                    WhiskeyFilterDropDownMenuComponent(
+                                        value = mainViewModel.currentCustomWhiskyType.value,
+                                        onValueChange = {
+                                            mainViewModel.updateCurrentCustomWhiskyType(
+                                                it
+                                            )
+                                        },
+                                        dropDownMenuOption = mainViewModel.currentCustomWhiskyDropDownState.value,
+                                        toggleDropDownMenuOption = { mainViewModel.toggleCustomWhiskyDropDownMenuState() },
+                                        menuItems = whiskeyData.filter { it != TapLayoutItems.AllWhiskey },
+                                        modifier = Modifier
+                                    )
                                 }
-                            )
-                        }
-                    }
 
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "도수",
-                                style = TextStyle(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Normal,
-                                    color = LightBlackColor
-                                ),
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "국가",
+                                        style = TextStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontStyle = FontStyle.Normal,
+                                            color = LightBlackColor
+                                        ),
+                                        modifier = Modifier
+                                            .padding(start = 5.dp, bottom = 4.dp)
+                                    )
+                                    SelectCountryDropDownMenuComponent(
+                                        value = mainViewModel.customWhiskyData.value.country,
+                                        onValueChange = {
+                                            mainViewModel.updateCurrentCountry(it)
+                                        },
+                                        dropDownMenuOption = mainViewModel.currentCountryDropDownMenuState.value,
+                                        toggleDropDownMenuOption = { mainViewModel.toggleCurrentCountryDropDownMenuState() },
+                                        menuItems = countryData,
+                                        modifier = Modifier
+                                    )
+                                }
+                            }
+                        }
+
+                        item {
+                            Row(
                                 modifier = Modifier
-                                    .padding(start=5.dp,bottom=4.dp)
+                                    .fillMaxWidth()
+                                    .padding(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "캐스크 타입",
+                                        style = TextStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontStyle = FontStyle.Normal,
+                                            color = LightBlackColor
+                                        ),
+                                        modifier = Modifier
+                                            .padding(start = 5.dp, bottom = 4.dp)
+                                    )
+                                    ShortTextInputComponent(
+                                        text = mainViewModel.customWhiskyData.value.cask_type,
+                                        hint = "캐스크 타입",
+                                        updateText = {
+                                            mainViewModel.updateCaskType(it)
+                                        },
+                                        isModify = true,
+                                    )
+                                }
 
-                            )
-                            StrengthInputComponent(mainViewModel)
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "개봉일",
+                                        style = TextStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontStyle = FontStyle.Normal,
+                                            color = LightBlackColor
+                                        ),
+                                        modifier = Modifier
+                                            .padding(start = 5.dp, bottom = 4.dp)
+                                    )
+                                    ShortTextInputComponent(
+                                        text = mainViewModel.customWhiskyData.value.open_date.toString(),
+                                        hint = "개봉일",
+                                        updateText = {},
+                                        isModify = false,
+                                        clickable = {
+                                            mainViewModel.toggleOpenDateBottomSheetState()
+                                        }
+                                    )
+                                }
+                            }
                         }
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text="병입 년도",
-                                style = TextStyle(
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Normal,
-                                    color = LightBlackColor
-                                ),
+
+                        item {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "도수",
+                                        style = TextStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontStyle = FontStyle.Normal,
+                                            color = LightBlackColor
+                                        ),
+                                        modifier = Modifier
+                                            .padding(start = 5.dp, bottom = 4.dp)
+                                    )
+                                    StrengthInputComponent(mainViewModel)
+                                }
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "병입 년도",
+                                        style = TextStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            fontStyle = FontStyle.Normal,
+                                            color = LightBlackColor
+                                        ),
+                                        modifier = Modifier
+                                            .padding(start = 5.dp, bottom = 4.dp)
+                                    )
+                                    BottlingDateInputComponent(
+                                        mainViewModel = mainViewModel
+                                    )
+                                }
+                            }
+                        }
+
+                        item {
+                            Column {
+                                Text(
+                                    text = "위스키 이름",
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontStyle = FontStyle.Normal,
+                                        color = LightBlackColor
+                                    ),
+                                    modifier = Modifier
+                                        .padding(start = 12.dp)
+                                )
+                                LongTextInputComponent(
+                                    text = text,
+                                    updateText = {
+                                        updateText(it)
+                                    },
+                                    helpText = "등록하려는 위스키의 이름을 입력해 주세요.",
+                                )
+                            }
+                        }
+
+                        item {
+                            Column {
+                                Text(
+                                    text = "위스키 영문 이름",
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontStyle = FontStyle.Normal,
+                                        color = LightBlackColor
+                                    ),
+                                    modifier = Modifier
+                                        .padding(start = 12.dp)
+                                )
+                                LongTextInputComponent(
+                                    text = whiskyEngName,
+                                    updateText = {
+                                        updateWhiskyEngName(it)
+                                    },
+                                    helpText = "등록하려는 위스키의 영문 이름을 입력해 주세요."
+                                )
+                            }
+                        }
+
+                        item {
+                            Column {
+                                Text(
+                                    text = "메모",
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        fontStyle = FontStyle.Normal,
+                                        color = LightBlackColor
+                                    ),
+                                    modifier = Modifier
+                                        .padding(start = 12.dp)
+                                )
+                                LongTextInputComponent(
+                                    text = tagText,
+                                    updateText = {
+                                        updateTagText(it)
+                                    },
+                                    helpText = "메모 사항을 입력해 주세요."
+                                )
+                            }
+                        }
+
+                        item{
+                            Row(
                                 modifier = Modifier
-                                    .padding(start=5.dp,bottom=4.dp)
+                                    .fillMaxWidth()
 
-                            )
-                            BottlingDateInputComponent(
-                                mainViewModel=mainViewModel
-                            )
+                                    .padding(end = 20.dp, bottom = 13.dp, top = 7.dp),
+
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                if(mainViewModel.tinyProgressIndicatorState.value){
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .padding(start = 5.dp)
+                                            .size(25.dp),
+                                        color = MainColor,
+                                        strokeWidth = 3.dp,
+                                        trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(15.dp))
+
+                                Text(
+                                    text = "확인",
+                                    style = TextStyle.Default.copy(
+                                        color = LightBlackColor,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Normal
+                                    ),
+                                    modifier = Modifier
+
+                                        .clip(
+                                            RoundedCornerShape(8.dp)
+                                        )
+
+                                        .clickable {
+                                            submitWhiskey()
+                                        }
+
+                                )
+
+                                Spacer(modifier = Modifier.width(15.dp))
+
+                                Text(
+                                    text = "취소",
+                                    style = TextStyle.Default.copy(
+                                        color = LightBlackColor,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Normal
+                                    ),
+                                    modifier = Modifier
+                                        .clip(
+                                            RoundedCornerShape(8.dp)
+                                        )
+                                        .clickable {
+                                            toggleOption()
+                                        }
+                                )
+
+                            }
                         }
-
-                    }
-
-
-
-                    Column {
-                        Text(
-                            text="위스키 이름",
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Normal,
-                                color = LightBlackColor
-                            ),
-                            modifier = Modifier
-                                .padding(start=12.dp)
-
-                        )
-                        LongTextInputComponent(
-                            text=text,
-                            updateText={
-                                updateText(it)
-                            },
-                            helpText="등록하려는 위스키의 이름을 입력해 주세요.",
-                        )
-                    }
-
-                    Column {
-                        Text(
-                            text = "위스키 영문 이름",
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Normal,
-                                color = LightBlackColor
-                            ),
-                            modifier = Modifier
-                                .padding(start = 12.dp)
-
-                        )
-                        LongTextInputComponent(
-                            text = whiskyEngName,
-                            updateText = {
-                                updateWhiskyEngName(it)
-                            },
-                            helpText = "등록하려는 위스키의 영문 이름을 입력해 주세요."
-                        )
-                    }
-
-                    Column {
-                        Text(
-                            text="메모",
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontStyle = FontStyle.Normal,
-                                color = LightBlackColor
-                            ),
-                            modifier = Modifier
-                                .padding(start=12.dp)
-
-                        )
-                        LongTextInputComponent(
-                            text=tagText,
-                            updateText={
-                                updateTagText(it)
-                            },
-                            helpText="메모 사항을 입력해 주세요."
-                        )
                     }
                 }
-
-
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(end = 20.dp, bottom = 13.dp, top = 7.dp),
-
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    if(mainViewModel.tinyProgressIndicatorState.value){
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .padding(start = 5.dp)
-                                .size(25.dp),
-                            color = MainColor,
-                            strokeWidth = 3.dp,
-                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(15.dp))
-
-                    Text(
-                        text = "확인",
-                        style = TextStyle.Default.copy(
-                            color = LightBlackColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        modifier = Modifier
-
-                            .clip(
-                                RoundedCornerShape(8.dp)
-                            )
-
-                            .clickable {
-                                submitWhiskey()
-                            }
-
-                    )
-
-                    Spacer(modifier = Modifier.width(15.dp))
-
-                    Text(
-                        text = "취소",
-                        style = TextStyle.Default.copy(
-                            color = LightBlackColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(8.dp)
-                            )
-                            .clickable {
-                                toggleOption()
-                            }
-                    )
-
-                }
-
             }
 
         }

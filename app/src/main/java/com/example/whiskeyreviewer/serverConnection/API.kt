@@ -45,9 +45,9 @@ interface API {
     suspend fun getMyWhiskys(
         @Query("name") name: String?,
         @Query("category") category: String?,
-        @Query("date_order") date_order: String,
-        @Query("name_order") name_order: String,
-        @Query("score_order") score_order: String
+        @Query("date_order") date_order: String?,
+        @Query("name_order") name_order: String?,
+        @Query("score_order") score_order: String?
     ): Response<ServerResponse<List<SingleWhiskeyData>>>
 
     @GET(ADD_WHISKY_NAME_SEARCH)

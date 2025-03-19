@@ -44,66 +44,58 @@ fun MyWhiskyCustomFilterRow(
 
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item{
-                CustomDropDownMenuComponent(
-                    category = WhiskeyFilterItems.DAY,
-                    value = mainViewModel.myWhiskyFilterData.value.date_order,
-                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
-                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.day,
-                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskyFilterDropDownMenuState(WhiskeyFilterItems.DAY) },
-                    menuItems = listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder),
-
-                    )
-            }
-
-            item{
-                CustomDropDownMenuComponent(
-                    category = WhiskeyFilterItems.SCORE,
-                    value = mainViewModel.myWhiskyFilterData.value.score_order,
-                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
-                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.score,
-                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskyFilterDropDownMenuState(WhiskeyFilterItems.SCORE) },
-                    menuItems = listOf(WhiskeyFilterItems.ScoreAscendingOrder,WhiskeyFilterItems.ScoreDescendingOrder)
-                )
-            }
-            item{
-                CustomDropDownMenuComponent(
-                    category = WhiskeyFilterItems.OPEN_DATE,
-                    value = mainViewModel.currentOpenDateFilter.value,
-                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
-                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.openDate,
-                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskyFilterDropDownMenuState(WhiskeyFilterItems.OPEN_DATE) },
-                    menuItems = listOf(WhiskeyFilterItems.OpenDateAscendingOrder,WhiskeyFilterItems.OpenDateDescendingOrder)
-                )
-            }
-            item{
-                CustomDropDownMenuComponent(
-                    category = WhiskeyFilterItems.NAME,
-                    value = mainViewModel.myWhiskyFilterData.value.name_order,
-                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
-                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.name,
-                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskyFilterDropDownMenuState(WhiskeyFilterItems.NAME) },
-                    menuItems = listOf(WhiskeyFilterItems.NameAscendingOrder,WhiskeyFilterItems.NameDescendingOrder)
-                )
-            }
-
-        }
-//        Box(
-//            Modifier
-//                .fillMaxWidth()
-////                .height(6.dp)
-//                .clip(GenericShape { size, _ ->
-//                    lineTo(size.width, 0f)
-//                    lineTo(size.width, Float.MAX_VALUE)
-//                    lineTo(0f, Float.MAX_VALUE)
-//                })
-//                .shadow(8.dp)
-//                .background(Color.White))
-//        {
+//            item{
+//                CustomDropDownMenuComponent(
+//                    category = WhiskeyFilterItems.DAY,
+//                    value = mainViewModel.myWhiskyFilterData.value.date_order,
+//                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
+//                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.day,
+//                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskyFilterDropDownMenuState(WhiskeyFilterItems.DAY) },
+//                    menuItems = listOf(WhiskeyFilterItems.DayAscendingOrder,WhiskeyFilterItems.DayDescendingOrder),
 //
-//            HorizontalDivider(thickness = 0.6.dp, color = Color.LightGray)
-//        }
+//                    )
+//            }
+//
+//            item{
+//                CustomDropDownMenuComponent(
+//                    category = WhiskeyFilterItems.SCORE,
+//                    value = mainViewModel.myWhiskyFilterData.value.score_order,
+//                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
+//                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.score,
+//                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskyFilterDropDownMenuState(WhiskeyFilterItems.SCORE) },
+//                    menuItems = listOf(WhiskeyFilterItems.ScoreAscendingOrder,WhiskeyFilterItems.ScoreDescendingOrder)
+//                )
+//            }
+//            item{
+//                CustomDropDownMenuComponent(
+//                    category = WhiskeyFilterItems.OPEN_DATE,
+//                    value = mainViewModel.currentOpenDateFilter.value,
+//                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
+//                    dropDownMenuOption = mainViewModel.myWhiskyFilterDropDownMenuState.value.openDate,
+//                    toggleDropDownMenuOption = { mainViewModel.toggleMyWhiskyFilterDropDownMenuState(WhiskeyFilterItems.OPEN_DATE) },
+//                    menuItems = listOf(WhiskeyFilterItems.OpenDateAscendingOrder,WhiskeyFilterItems.OpenDateDescendingOrder)
+//                )
+//            }
 
+            item{
+                CustomDropDownMenuComponent(
+                    category = mainViewModel.currentHomeFilter.value.title,
+                    value = mainViewModel.currentHomeFilter.value,
+                    onValueChange = { mainViewModel.updateMyWhiskyFilter(it) },
+                    dropDownMenuOption = mainViewModel.homeFilterDropDownMenuState.value,
+                    toggleDropDownMenuOption = { mainViewModel.toggleHomeFilterState()},
+                    menuItems = listOf(
+                        WhiskeyFilterItems.DayAscendingOrder,
+                        WhiskeyFilterItems.DayDescendingOrder,
+                        WhiskeyFilterItems.ScoreAscendingOrder,
+                        WhiskeyFilterItems.ScoreDescendingOrder,
+                        WhiskeyFilterItems.OpenDateAscendingOrder,
+                        WhiskeyFilterItems.OpenDateDescendingOrder
+
+                    ),
+                )
+            }
+        }
 
 }
 

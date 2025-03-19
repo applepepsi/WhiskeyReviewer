@@ -63,19 +63,21 @@ class MainRepositoryImpl @Inject constructor(
     override fun getMyWhiskyList(
         name: String?,
         category: String?,
-        date_order: String,
-        name_order: String,
-        score_order: String,
+        date_order: String?,
+//        name_order: String,
+        score_order: String?,
         callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
     ) {
+
         CoroutineScope(Dispatchers.IO).launch {
             val result = ApiHandler.makeApiCall(tag="나의 위스키 목록 가져오기") {
 
+                //이름순은 제거 예정 임시로 asc
                 api.getMyWhiskys(
                 name=name,
                 category=category,
                 date_order=date_order,
-                name_order=name_order,
+                name_order="asc",
                 score_order=score_order,
             ) }
 

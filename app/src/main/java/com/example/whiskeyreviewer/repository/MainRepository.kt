@@ -18,9 +18,9 @@ interface MainRepository{
     fun getMyWhiskyList(
         name:String?,
         category: String?,
-        date_order: String,
-        name_order:String,
-        score_order:String,
+        date_order: String?,
+//        name_order:String,
+        score_order:String?,
         callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
     )
 

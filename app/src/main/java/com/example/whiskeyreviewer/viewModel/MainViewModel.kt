@@ -140,9 +140,15 @@ class MainViewModel @Inject constructor(
 //    private val _currentNameFilter = mutableStateOf<WhiskeyFilterItems>(WhiskeyFilterItems.NameAscendingOrder)
 //    val currentNameFilter: State<WhiskeyFilterItems> = _currentNameFilter
 
+    private val _currentHomeFilter = mutableStateOf<WhiskeyFilterItems>(WhiskeyFilterItems.DayAscendingOrder)
+    val currentHomeFilter: State<WhiskeyFilterItems> = _currentHomeFilter
+
 
     private val _myWhiskyFilterDropDownMenuState = mutableStateOf(FilterDropDownMenuState())
     val myWhiskyFilterDropDownMenuState: State<FilterDropDownMenuState> = _myWhiskyFilterDropDownMenuState
+
+    private val _homeFilterDropDownMenuState = mutableStateOf(false)
+    val homeFilterDropDownMenuState: State<Boolean> = _homeFilterDropDownMenuState
 
     private val _writeReviewDate = mutableStateOf(WriteReviewData())
     val writeReviewDate: State<WriteReviewData> = _writeReviewDate
@@ -281,6 +287,7 @@ class MainViewModel @Inject constructor(
 
     private val _myWhiskyFilterData=mutableStateOf<MyWhiskyFilterData>(MyWhiskyFilterData())
     val myWhiskyFilterData: State<MyWhiskyFilterData> = _myWhiskyFilterData
+
 
     private val _whiskyFilterData=mutableStateOf<WhiskyFilterData>(WhiskyFilterData())
     val whiskyFilterData: State<WhiskyFilterData> = _whiskyFilterData
@@ -450,41 +457,55 @@ class MainViewModel @Inject constructor(
         getMyWhiskeyData()
     }
 
-    fun updateMyWhiskyFilter(filterKey: WhiskeyFilterItems) {
-        Log.d("필터키",filterKey.toString())
-        when(filterKey.type){
-            WhiskeyFilterItems.DAY->{
-
-
-                _myWhiskyFilterData.value=_myWhiskyFilterData.value.copy(
-                    date_order = filterKey
-                )
-            }
-            WhiskeyFilterItems.SCORE->{
-
-
-                _myWhiskyFilterData.value=_myWhiskyFilterData.value.copy(
-                    score_order = filterKey
-                )
-            }
-            WhiskeyFilterItems.OPEN_DATE->{
-                _currentOpenDateFilter.value=filterKey
-
-                //서버측에서 개봉일 기준을 만들지않았음 문의해야함
-//                _whiskyFilterData.value=_whiskyFilterData.value.copy(
+//    fun updateMyWhiskyFilter(filterKey: WhiskeyFilterItems) {
+//        Log.d("필터키",filterKey.toString())
+//        when(filterKey.type){
+//            WhiskeyFilterItems.DAY->{
+//
+//
+//                _myWhiskyFilterData.value=_myWhiskyFilterData.value.copy(
+//                    date_order = filterKey
+//                )
+//            }
+//            WhiskeyFilterItems.SCORE->{
+//                _myWhiskyFilterData.value=_myWhiskyFilterData.value.copy(
+//                    score_order = filterKey
+//                )
+//            }
+//            WhiskeyFilterItems.OPEN_DATE->{
+//                _currentOpenDateFilter.value=filterKey
+//
+//                //서버측에서 개봉일 기준을 만들지않았음 문의해야함
+////                _whiskyFilterData.value=_whiskyFilterData.value.copy(
+////                    name_order = filterKey
+////                )
+//            }
+//            WhiskeyFilterItems.NAME->{
+//                _myWhiskyFilterData.value=_myWhiskyFilterData.value.copy(
 //                    name_order = filterKey
 //                )
-            }
-            WhiskeyFilterItems.NAME->{
-                _myWhiskyFilterData.value=_myWhiskyFilterData.value.copy(
-                    name_order = filterKey
-                )
-            }
+//            }
+//
+//            else -> {}
+//        }.also {
+//            getMyWhiskeyData()
+//        }
+//    }
 
-            else -> {}
-        }.also {
-            getMyWhiskeyData()
-        }
+    //필터를 하나로 통합하기로 결정
+    fun updateMyWhiskyFilter(filterKey: WhiskeyFilterItems) {
+        Log.d("필터키",filterKey.toString())
+        val updatedFilterData = _myWhiskyFilterData.value.copy(
+            date_order = if (filterKey.type == WhiskeyFilterItems.DAY) filterKey else null,
+            score_order = if (filterKey.type == WhiskeyFilterItems.SCORE) filterKey else null,
+            name_order = if (filterKey.type == WhiskeyFilterItems.NAME) filterKey else null
+        )
+
+        _myWhiskyFilterData.value = updatedFilterData
+
+        _currentHomeFilter.value = filterKey
+        getMyWhiskeyData()
+
     }
 
     fun toggleMyWhiskyFilterDropDownMenuState(filterKey: String) {
@@ -495,6 +516,10 @@ class MainViewModel @Inject constructor(
             openDate = if (filterKey == WhiskeyFilterItems.OPEN_DATE) !_myWhiskyFilterDropDownMenuState.value.openDate else false,
             name = if (filterKey == WhiskeyFilterItems.NAME) !_myWhiskyFilterDropDownMenuState.value.name else false,
         )
+    }
+
+    fun toggleHomeFilterState(){
+        _homeFilterDropDownMenuState.value=!_homeFilterDropDownMenuState.value
     }
 
     fun toggleMyWhiskeyReviewDropDownMenuState(filterKey: String) {
@@ -527,7 +552,7 @@ class MainViewModel @Inject constructor(
 
         Log.d("선택된 위스키",selectWhisky.toString())
         _selectWhiskyData.value=selectWhisky
-//        _selectWhiskyState.value=true
+        _selectWhiskyState.value=true
     }
 
     fun updateOderUserSelectReview(selectReview:SingleWhiskeyData) {
@@ -610,6 +635,7 @@ class MainViewModel @Inject constructor(
         }
         _currentCustomWhiskyType.value=WhiskyLanguageTransfer.fineWhiskyCategory(data.category)
         _whiskyModifyState.value=true
+        toggleInsertWhiskyState()
     }
 
     fun toggleInsertWhiskyState(){
@@ -716,12 +742,15 @@ class MainViewModel @Inject constructor(
         if(refresh) _whiskyListRefreshState.value=true else _postProgressIndicatorState.value=true
 
 //        _postProgressIndicatorState.value=true
+
+        Log.d("필터 내용", _myWhiskyFilterData.value.toString())
         mainRepository.getMyWhiskyList(
             name=searchWord,
             category= _myWhiskyFilterData.value.category.name,
-            date_order= _myWhiskyFilterData.value.date_order.orderType,
-            name_order=_myWhiskyFilterData.value.name_order.orderType,
-            score_order=_myWhiskyFilterData.value.score_order.orderType,
+            date_order= _myWhiskyFilterData.value.date_order?.orderType,
+//            name_order=_myWhiskyFilterData.value.name_order.orderType,
+            score_order=_myWhiskyFilterData.value.score_order?.orderType,
+            //개봉일 추가해야함
         ){serverResponse ->
             if(serverResponse !=null ){
                 if(serverResponse.code== SUCCESS_CODE){
@@ -960,20 +989,20 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getWhiskeyData(){
-
-        val searchWord=if (whiskyFilterData.value.name=="") null else whiskyFilterData.value.name
-
-        mainRepository.getMyWhiskyList(
-            name=searchWord,
-            category= _myWhiskyFilterData.value.category.title,
-            date_order= _myWhiskyFilterData.value.date_order.title,
-            name_order=_myWhiskyFilterData.value.name_order.orderType,
-            score_order=_myWhiskyFilterData.value.score_order.orderType,
-        ){
-
-        }
-    }
+//    fun getWhiskeyData(){
+//
+//        val searchWord=if (whiskyFilterData.value.name=="") null else whiskyFilterData.value.name
+//
+//        mainRepository.getMyWhiskyList(
+//            name=searchWord,
+//            category= _myWhiskyFilterData.value.category.title,
+//            date_order= _myWhiskyFilterData.value.date_order.title,
+////            name_order=_myWhiskyFilterData.value.name_order.orderType,
+//            score_order=_myWhiskyFilterData.value.score_order.orderType,
+//        ){
+//
+//        }
+//    }
 
     fun updateWhiskyType(currentWhiskey: TapLayoutItems) {
 //        _currentWhiskeyFilter.value=currentWhiskey
