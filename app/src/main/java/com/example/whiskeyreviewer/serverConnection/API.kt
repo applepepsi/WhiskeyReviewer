@@ -7,6 +7,7 @@ import com.example.nextclass.utils.ADD_WHISKY_NAME_SEARCH
 import com.example.nextclass.utils.DELETE_REVIEW
 import com.example.nextclass.utils.GET_IMAGE
 import com.example.nextclass.utils.GET_REVIEW
+import com.example.nextclass.utils.GET_REVIEW_SEARCH_LIST
 import com.example.nextclass.utils.GET_WHISKY_LIST
 import com.example.nextclass.utils.IMAGE_UPLOAD
 import com.example.nextclass.utils.MODIFY_WHISKY
@@ -115,4 +116,14 @@ interface API {
     suspend fun deleteReview(
         @Path("reviewUuid") reviewUuid: String,
     ):Response<ServerResponse<Any>>
+
+    @GET(GET_REVIEW_SEARCH_LIST)
+    suspend fun getSearchReviewList(
+        @Path("searchWord") searchWord: String?,
+        @Path("detailSearchWord") detailSearchWord: String?,
+        @Path("lastIndex") lastIndex: Int,
+        @Path("likeAsc") likeAsc: String?,
+        @Path("scoreAsc") scoreAsc: String?,
+        @Path("createdAtAsc") createdAtAsc: String?,
+    ):Response<ServerResponse<List<WhiskyReviewData>>>
 }

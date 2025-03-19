@@ -84,23 +84,7 @@ fun WhiskeySearchView(
 
     Scaffold(
         floatingActionButton = {
-//            CustomFloatingActionButton(
-//                expendState = writeReviewViewModel.homeFloatingActionButtonState.value,
-//                floatingActionButtonClick = { writeReviewViewModel.toggleHomeFloatingActionButtonState() },
-//                floatingActionItemClick = {
-//                    when(it.screenRoute){
-//                        FloatingActionButtonItems.NewBottle.screenRoute-> {
-//                            Log.d("루트",it.screenRoute)
-//                            navController.navigate(MainRoute.INSERT_REVIEW)
-//                        }
-//                        FloatingActionButtonItems.NewBottle2.screenRoute-> {
-//                            Log.d("루트",it.screenRoute)
-//                            navController.navigate(MainRoute.INSERT_REVIEW)
-//                        }
-//                        else-> Log.d("루트",it.screenRoute)
-//                    }
-//                }
-//            )
+
         }
     ) {
         ModalNavigationDrawer(
@@ -131,7 +115,7 @@ fun WhiskeySearchView(
             ) {
 
                 CustomAppBarComponent(
-                    titleTextValue = "위스키 검색",
+                    titleTextValue = "리뷰 검색",
                     leftButton = {
                         CustomIconComponent(
                             icon = ImageVector.vectorResource(R.drawable.back_button_icon),
@@ -162,7 +146,7 @@ fun WhiskeySearchView(
                         verticalAlignment = Alignment.CenterVertically
                     ){
                         Text(
-                            text="위스키 검색",
+                            text="리뷰 검색",
                             style = TextStyle.Default.copy(
                                 color = Color.Gray,
                                 fontSize = 16.sp,
@@ -198,7 +182,7 @@ fun WhiskeySearchView(
                     }
 
                     CustomSearchBoxComponent(
-                        text=mainViewModel.otherUserWhiskySearchText.value.searchText,
+                        text=mainViewModel.reviewFilterData.value.searchText,
                         onValueChange = {
                             mainViewModel.updateDrawerSearchBarText(it)
                         },
@@ -206,7 +190,7 @@ fun WhiskeySearchView(
                             mainViewModel.setRecentSearchTextList(
                                 RecentSearchWordManager.saveSearchText(
                                     context = context,
-                                    searchText=mainViewModel.otherUserWhiskySearchText.value.searchText,
+                                    searchText=mainViewModel.reviewFilterData.value.searchText,
                                     type = RECENT_SEARCH_WHISKEY_TEXT
                                 ),
                                 type = RECENT_SEARCH_WHISKEY_TEXT
@@ -317,7 +301,7 @@ fun OtherUserReviewDetailView(
         ) {
 
             CustomAppBarComponent(
-                titleTextValue = "위스키 검색",
+                titleTextValue = "리뷰 검색",
                 leftButton = {
                     CustomIconComponent(
                         icon = ImageVector.vectorResource(R.drawable.back_button_icon),

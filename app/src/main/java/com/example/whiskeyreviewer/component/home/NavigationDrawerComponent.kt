@@ -98,7 +98,7 @@ fun NavigationDrawerComponent(
 
     DetailSearchDialog(
         updateText = { mainViewModel.updateDetailSearchWordText(it) },
-        text=mainViewModel.otherUserWhiskySearchText.value.detailSearchText,
+        text=mainViewModel.reviewFilterData.value.detailSearchText,
         toggleOption = {mainViewModel.toggleDetailSearchDialogState()},
         currentState = mainViewModel.detailSearchDialogState.value
         )
@@ -153,7 +153,7 @@ fun NavigationDrawerComponent(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text="위스키 검색",
+                    text="리뷰 검색",
                     style = TextStyle.Default.copy(
                         color = Color.Gray,
                         fontSize = 16.sp,
@@ -195,7 +195,7 @@ fun NavigationDrawerComponent(
                 horizontalArrangement = Arrangement.Center
             ){
                 CustomSearchBoxComponent(
-                    text=mainViewModel.otherUserWhiskySearchText.value.searchText,
+                    text=mainViewModel.reviewFilterData.value.searchText,
                     onValueChange = {
                         mainViewModel.updateDrawerSearchBarText(it)
                     },
@@ -203,13 +203,13 @@ fun NavigationDrawerComponent(
                         mainViewModel.setRecentSearchTextList(
                             RecentSearchWordManager.saveSearchText(
                                 context = context,
-                                searchText=mainViewModel.otherUserWhiskySearchText.value.searchText,
+                                searchText=mainViewModel.reviewFilterData.value.searchText,
                                 type = RECENT_SEARCH_WHISKEY_TEXT
                             ),
                             type = RECENT_SEARCH_WHISKEY_TEXT
                         )
                         //검색
-//                        mainViewModel.otherUserWhiskySearch()
+
                         navController.navigate(MainRoute.WHISKEY_SEARCH)
                     },
                     deleteInputText = {mainViewModel.updateDrawerSearchBarText("") }
@@ -237,7 +237,6 @@ fun NavigationDrawerComponent(
                             },
                             search = {
                                 mainViewModel.updateDrawerSearchBarText(searchWord)
-                                mainViewModel.otherUserWhiskySearch()
 //                                navController.navigate(MainRoute.WHISKEY_SEARCH)
                             }
                         )

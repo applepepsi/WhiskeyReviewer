@@ -44,13 +44,14 @@ interface MainRepository{
         callback: (ServerResponse<Any>?) -> Unit
     )
 
-    fun getWhiskyList(
-        name:String,
-        category: String,
-        date_order: String,
-        name_order:String,
-        score_order:String,
-        callback: (ServerResponse<Any>?) -> Unit
+    fun getReviewSearchList(
+        searchWord:String?,
+        detailSearchWord:String?,
+        lastIndex:Int,
+        likeAsc:String?,
+        scoreAsc:String?,
+        createdAtAsc: String?,
+        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
     )
 
     fun deleteReview(

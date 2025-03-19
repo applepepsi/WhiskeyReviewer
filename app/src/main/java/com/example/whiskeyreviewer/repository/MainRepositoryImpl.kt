@@ -215,16 +215,45 @@ class MainRepositoryImpl @Inject constructor(
     }
 
 
-    override fun getWhiskyList(
-        name: String,
-        category: String,
-        date_order: String,
-        name_order: String,
-        score_order: String,
-        callback: (ServerResponse<Any>?) -> Unit
+    override fun getReviewSearchList(
+        searchWord: String?,
+        detailSearchWord:String?,
+        lastIndex:Int,
+        likeAsc:String?,
+        scoreAsc: String?,
+        createdAtAsc: String?,
+        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
     ) {
-        TODO("Not yet implemented")
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = ApiHandler.makeApiCall(tag = "나의 위스키 목록 가져오기") {
+
+                //이름순은 제거 예정 임시로 asc
+                api.getSearchReviewList(
+                    searchWord = searchWord,
+                    detailSearchWord = detailSearchWord,
+                    lastIndex = lastIndex,
+                    likeAsc = likeAsc,
+                    scoreAsc = scoreAsc,
+                    createdAtAsc = createdAtAsc,
+                )
+            }
+
+            val updatedServerResponse=result?.let{
+                val whiskyDataList = mutableListOf<WhiskyReviewData>()
+
+                result.data?.forEach { singleReviewData->
+                    val updatedData = getImageList(singleReviewData)
+                    whiskyDataList.add(updatedData)
+                }
+                result.copy(data = whiskyDataList)
+            }
+
+            withContext(Dispatchers.Main) {
+                callback(updatedServerResponse)
+            }
+        }
     }
+
 
     override fun deleteReview(reviewUuid: String, callback: (ServerResponse<Any>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
