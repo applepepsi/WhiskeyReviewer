@@ -1,6 +1,5 @@
 package com.example.whiskeyreviewer.component.myReview
 
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -52,19 +51,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.paging.compose.LazyPagingItems
 import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
-import com.example.whiskeyreviewer.data.ImageData
+import com.example.whiskeyreviewer.component.home.WhiskyCustomFilterRow
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
+import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
@@ -125,6 +125,67 @@ fun MyReviewPost(
         }
     }
 }
+
+@Composable
+fun OtherUserReviewPostComponent(
+    mainViewModel:MainViewModel,
+    reviewDataList: LazyPagingItems<WhiskyReviewData>,
+    singleReviewClick:(WhiskyReviewData)->Unit,
+    modifyAllow: Boolean=true,
+    onImageSelect: (ByteArray) -> Unit={},
+    deleteReview:(WhiskyReviewData)->Unit={},
+    modifyReview:(WhiskyReviewData)->Unit={},
+    onLikeClick:()->Unit={}
+) {
+
+    val listState = rememberLazyListState()
+    val customScrollbarSettings = ScrollbarSettings(
+        thumbUnselectedColor = MainColor,
+
+        thumbThickness = 6.dp,
+        thumbMinLength = 0.1f,
+        thumbMaxLength = 0.7f
+    )
+    LazyColumnScrollbar(
+        state = listState,
+        settings = customScrollbarSettings,
+
+        ) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 8.dp).padding(bottom=5.dp,top=2.dp),
+            state=listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item{
+                WhiskyCustomFilterRow(mainViewModel = mainViewModel)
+            }
+
+            Log.d("카운트", reviewDataList.itemCount.toString())
+            items(reviewDataList.itemCount){
+                MyReviewSinglePost(
+                    singleReview = reviewDataList[it] ?: WhiskyReviewData(),
+                    singleReviewClick = {  },
+                    modifyAllow = modifyAllow,
+                    onImageSelect = {
+                        onImageSelect(it)
+                    },
+                    deleteReview = {
+                        deleteReview(it)
+                    },
+                    modifyReview = {
+                        modifyReview(it)
+                    },
+                    onLikeClick = {
+
+                    }
+                )
+            }
+
+        }
+    }
+}
+
 
 @Composable
 fun MyWhiskyDetailInfoComponent(
@@ -224,7 +285,7 @@ fun MyReviewSinglePost(
 
     val richTextState = rememberRichTextState()
     var likeState by remember{ mutableStateOf(false)}
-
+    Log.d("singleReview", singleReview.toString())
 //    val color by animateDpAsState(targetValue = if (likeState) 20.dp else 20.dp, label = "")
 
     LaunchedEffect(Unit) {
@@ -322,7 +383,7 @@ fun MyReviewSinglePost(
 //        Spacer(modifier = Modifier.height(7.dp))
 
         if(singleReview.imageList!=null){
-            Spacer(modifier = Modifier.height(5.dp))
+//            Spacer(modifier = Modifier.height(5.dp))
 
             ReviewImageLazyRowComponent(
                 imageList = singleReview.imageList,

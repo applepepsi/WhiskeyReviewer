@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -42,21 +43,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.EmptyMyWhiskyReviewComponent
+import com.example.whiskeyreviewer.component.customComponent.PostProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ImageViewerDialog
-import com.example.whiskeyreviewer.component.home.MyReviewComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
-import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.component.home.WhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.myReview.MyReviewPost
+import com.example.whiskeyreviewer.component.myReview.OtherUserReviewPostComponent
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
@@ -75,12 +77,15 @@ fun WhiskeySearchView(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-
+    val otherUserReviewList=mainViewModel.otherUserReviewDataList.collectAsLazyPagingItems()
 
     LaunchedEffect(Unit) {
         mainViewModel.toggleDrawerSearchBarState(state = true)
+        mainViewModel.getSearchReviewData()
 //        writeReviewViewModel.updateDrawerSearchBarText(writeReviewViewModel.drawerSearchBarText.value)
     }
+
+    val otherUserReview=mainViewModel.otherUserReviewDataList.collectAsState()
 
     Scaffold(
         floatingActionButton = {
@@ -195,6 +200,7 @@ fun WhiskeySearchView(
                                 ),
                                 type = RECENT_SEARCH_WHISKEY_TEXT
                             )
+                            mainViewModel.getSearchReviewData()
                         },
                         deleteInputText = {mainViewModel.updateDrawerSearchBarText("")}
                     )
@@ -219,7 +225,16 @@ fun WhiskeySearchView(
 
                                     },
                                     search = {
-
+                                        mainViewModel.updateDrawerSearchBarText(searchWord)
+                                        mainViewModel.setRecentSearchTextList(
+                                            RecentSearchWordManager.saveSearchText(
+                                                context = context,
+                                                searchText=mainViewModel.reviewFilterData.value.searchText,
+                                                type = RECENT_SEARCH_WHISKEY_TEXT
+                                            ),
+                                            type = RECENT_SEARCH_WHISKEY_TEXT
+                                        )
+                                        mainViewModel.getSearchReviewData()
                                     }
                                 )
                             }else{
@@ -233,39 +248,37 @@ fun WhiskeySearchView(
                     Modifier.fillMaxWidth()
                 ) {
 
+                    if(mainViewModel.postProgressIndicatorState.value) {
+                        PostProgressIndicator()
+                    }else{
+                        if(otherUserReviewList.itemCount==0){
+                            Log.d("리스트", mainViewModel.reviewList.value.toString())
+                            EmptyMyWhiskyReviewComponent(
+                                text="해당 위스키가 존재하지 않습니다."
+                            )
+                        }else {
 
-                    if(mainViewModel.reviewList.value.isEmpty()){
-                        Log.d("리스트", mainViewModel.reviewList.value.toString())
-                        EmptyMyWhiskyReviewComponent(
-                            text="해당 위스키가 존재하지 않습니다."
-                        )
-                    }else {
-                        WhiskyCustomFilterRow(mainViewModel = mainViewModel)
-//                        MyReviewComponent(
-//                            myReviewItems = mainViewModel.reviewList.value,
-//                            setSelectReview = { singleWhiskyData ->
-//                                mainViewModel.updateOderUserSelectReview(singleWhiskyData)
-//                                navController.navigate(MainRoute.OTHER_USER_REVIEW_DETAIL)
-//                            },
-//                            toggleConfirmDialogState = {},
-//                            showOption = false
-//                        )
-                        MyReviewPost(
-                            reviewDataList = mainViewModel.myReviewDataList.value,
-                            singleReviewClick = {
-                                mainViewModel.setSelectReviewData(it)
-                                navController.navigate(MainRoute.REVIEW_DETAIL)
-                            },
-                            onImageSelect = {
-                                mainViewModel.setSelectImage(it)
-                                mainViewModel.toggleImageDialogState()
-                            },
 
-                            modifyAllow = false
-                        )
+//                            Spacer(modifier = Modifier.height(8.dp))
+                            
+                            OtherUserReviewPostComponent(
+                                reviewDataList = otherUserReviewList,
+                                singleReviewClick = {
+                                    mainViewModel.setSelectReviewData(it)
+                                    navController.navigate(MainRoute.REVIEW_DETAIL)
+                                },
+                                onImageSelect = {
+                                    mainViewModel.setSelectImage(it)
+                                    mainViewModel.toggleImageDialogState()
+                                },
+
+                                modifyAllow = false,
+                                mainViewModel = mainViewModel
+                            )
+
+                        }
                     }
                 }
-
             }
         }
     }
@@ -360,13 +373,14 @@ fun OtherUserReviewDetailView(
                             modifier = Modifier
                                 .height(1000.dp)
                         ) {
-                            MyReviewPost(
+                            OtherUserReviewPostComponent(
+                                mainViewModel=mainViewModel,
                                 singleReviewClick = {
                                     mainViewModel.setSelectReviewData(it)
                                     navController.navigate(MainRoute.REVIEW_DETAIL)
                                 },
                                 modifyAllow = false,
-                                reviewDataList = mainViewModel.myReviewDataList.value,
+                                reviewDataList = mainViewModel.otherUserReviewDataList.collectAsLazyPagingItems(),
                                 onImageSelect = {
                                     mainViewModel.setSelectImage(it)
                                     mainViewModel.toggleImageDialogState()

@@ -4,6 +4,7 @@ package com.example.nextclass.module
 import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.repository.MainRepository
 import com.example.whiskeyreviewer.repository.MainRepositoryImpl
+import com.example.whiskeyreviewer.repository.PagingSource
 import com.example.whiskeyreviewer.repository.WriteReviewRepository
 import com.example.whiskeyreviewer.repository.WriteReviewRepositoryImpl
 
@@ -37,5 +38,6 @@ object AppModule {
     fun provideAPI(retrofit: Retrofit): API {
         return retrofit.create(API::class.java)
     }
+
 
 }

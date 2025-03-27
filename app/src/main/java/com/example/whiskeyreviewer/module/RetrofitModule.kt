@@ -33,7 +33,7 @@ object RetrofitModule {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.HEADERS
             })
-//            .connectTimeout(50, TimeUnit.SECONDS)
+            .connectTimeout(25, TimeUnit.SECONDS)
 //            .readTimeout(50, TimeUnit.SECONDS)
 //            .writeTimeout(50, TimeUnit.SECONDS)
             .build()

@@ -1219,10 +1219,10 @@ fun InsertWhiskyDetailDialog(
     val listState = rememberLazyListState()
     val customScrollbarSettings = ScrollbarSettings(
         thumbUnselectedColor = MainColor,
-
         thumbThickness = 6.dp,
         thumbMinLength = 0.1f,
-        thumbMaxLength = 0.7f
+        thumbMaxLength = 0.7f,
+        alwaysShowScrollbar = true
     )
 
     if(mainViewModel.errorToastState.value) {

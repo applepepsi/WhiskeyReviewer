@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 data class WhiskyReviewData(
     val review_uuid:String="",
+    val user_whisky_uuid:String="",
     val content:String="",
     val is_anonymous:Boolean=false,
     val open_date: String= LocalDate.now().toString(),

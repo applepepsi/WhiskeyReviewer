@@ -2,6 +2,9 @@ package com.example.whiskeyreviewer.repository
 
 import android.media.Image
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.data.CustomWhiskyData
@@ -14,6 +17,7 @@ import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.utils.ApiHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -144,7 +148,7 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getImageList(singleWhiskeyData: WhiskyReviewData):WhiskyReviewData {
+    override suspend fun getImageList(singleWhiskeyData: WhiskyReviewData):WhiskyReviewData {
         if(singleWhiskeyData.image_names==null){
 
             return singleWhiskeyData
@@ -218,40 +222,22 @@ class MainRepositoryImpl @Inject constructor(
     override fun getReviewSearchList(
         searchWord: String?,
         detailSearchWord:String?,
-        lastIndex:Int,
+
         likeAsc:String?,
         scoreAsc: String?,
         createdAtAsc: String?,
-        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag = "나의 위스키 목록 가져오기") {
-
-                //이름순은 제거 예정 임시로 asc
-                api.getSearchReviewList(
-                    searchWord = searchWord,
-                    detailSearchWord = detailSearchWord,
-                    lastIndex = lastIndex,
-                    likeAsc = likeAsc,
-                    scoreAsc = scoreAsc,
-                    createdAtAsc = createdAtAsc,
-                )
-            }
-
-            val updatedServerResponse=result?.let{
-                val whiskyDataList = mutableListOf<WhiskyReviewData>()
-
-                result.data?.forEach { singleReviewData->
-                    val updatedData = getImageList(singleReviewData)
-                    whiskyDataList.add(updatedData)
-                }
-                result.copy(data = whiskyDataList)
-            }
-
-            withContext(Dispatchers.Main) {
-                callback(updatedServerResponse)
-            }
-        }
+    ): Flow<PagingData<WhiskyReviewData>> {
+        Log.d("플로우",searchWord ?: "null")
+        return Pager(PagingConfig(pageSize = 10)) {
+            PagingSource(
+                apiService = api,
+                searchWord = searchWord,
+                detailSearchWord = detailSearchWord,
+                likeAsc = likeAsc,
+                scoreAsc = scoreAsc,
+                createdAtAsc = createdAtAsc
+            )
+        }.flow
     }
 
 

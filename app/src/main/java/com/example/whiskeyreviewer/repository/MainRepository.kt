@@ -1,12 +1,14 @@
 package com.example.whiskeyreviewer.repository
 
 
+import androidx.paging.PagingData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WhiskyName
+import kotlinx.coroutines.flow.Flow
 import java.io.File
 
 interface MainRepository{
@@ -47,16 +49,19 @@ interface MainRepository{
     fun getReviewSearchList(
         searchWord:String?,
         detailSearchWord:String?,
-        lastIndex:Int,
+
         likeAsc:String?,
         scoreAsc:String?,
         createdAtAsc: String?,
-        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
-    )
+    ): Flow<PagingData<WhiskyReviewData>>
 
     fun deleteReview(
         reviewUuid:String,
         callback: (ServerResponse<Any>?) -> Unit
     )
+
+    suspend fun getImageList(
+        singleWhiskeyData: WhiskyReviewData
+    ):WhiskyReviewData
 
 }

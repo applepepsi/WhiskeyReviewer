@@ -4,11 +4,17 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
 
 import com.example.nextclass.utils.RECENT_SEARCH_REVIEW_TEXT
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
@@ -40,6 +46,13 @@ import com.example.whiskeyreviewer.utils.TokenManager
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -215,8 +228,8 @@ class MainViewModel @Inject constructor(
     private val _selectWhiskyReviewData=mutableStateOf(WhiskyReviewData())
     val selectWhiskyReviewData: State<WhiskyReviewData> = _selectWhiskyReviewData
 
-    private val _loginResult=mutableStateOf<Boolean?>(null)
-    val loginResult: State<Boolean?> = _loginResult
+    private val _loginResult=mutableStateOf<Boolean>(false)
+    val loginResult: State<Boolean> = _loginResult
 
     private val _getBackupCodeDialogState= mutableStateOf(false)
     val getBackupCodeDialogState: State<Boolean> = _getBackupCodeDialogState
@@ -381,6 +394,9 @@ class MainViewModel @Inject constructor(
 
     private val _whiskyListRefreshState=mutableStateOf<Boolean>(false)
     val whiskyListRefreshState: State<Boolean> = _whiskyListRefreshState
+
+    private val _otherUserReviewDataList = MutableStateFlow<PagingData<WhiskyReviewData>>(PagingData.empty())
+    val otherUserReviewDataList = _otherUserReviewDataList.asStateFlow()
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -571,7 +587,7 @@ class MainViewModel @Inject constructor(
 
     fun tryLogin(ssaid: String) {
 
-        toggleProgressIndicatorState(state = true,text="로그인 중입니다.")
+//        toggleProgressIndicatorState(state = true,text="로그인 중입니다.")
         mainRepository.register(device_id = ssaid){ postDetailResult->
             Log.d("로그인 결과",postDetailResult.toString())
             if (postDetailResult != null) {
@@ -585,7 +601,7 @@ class MainViewModel @Inject constructor(
                 _loginResult.value=false
             }
 
-            toggleProgressIndicatorState(state = false,text="")
+//            toggleProgressIndicatorState(state = false,text="")
         }
     }
 
@@ -1279,23 +1295,26 @@ class MainViewModel @Inject constructor(
 
         Log.d("필터 내용", reviewFilterData.value.toString())
 
-        reviewFilterData.value.date_order
-        reviewFilterData.value.score_order
-        reviewFilterData.value.vote_order
+//        reviewFilterData.value.date_order
+//        reviewFilterData.value.score_order
+//        reviewFilterData.value.vote_order
 
-        mainRepository.getReviewSearchList(
-            searchWord=searchWord,
-            detailSearchWord = detailSearchWord,
-            lastIndex = 1,
-            likeAsc = reviewFilterData.value.vote_order?.orderType,
-            scoreAsc = reviewFilterData.value.score_order?.orderType,
-            createdAtAsc = reviewFilterData.value.date_order?.orderType
-        ){serverResponse ->
-            
+        viewModelScope.launch {
+            _postProgressIndicatorState.value=true
+            mainRepository.getReviewSearchList(
+                searchWord=reviewFilterData.value.searchText,
+                detailSearchWord = detailSearchWord,
+                likeAsc = reviewFilterData.value.vote_order?.orderType,
+                scoreAsc = reviewFilterData.value.score_order?.orderType,
+                createdAtAsc = reviewFilterData.value.date_order?.orderType
+            ).cachedIn(viewModelScope).collect { pagingData ->
+
+                _otherUserReviewDataList.value=pagingData
+                _postProgressIndicatorState.value=false
+                Log.d("로딩2", _postProgressIndicatorState.value.toString())
+            }
+
         }
-        
-
-
     }
 
 }

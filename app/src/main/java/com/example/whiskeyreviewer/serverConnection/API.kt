@@ -21,6 +21,7 @@ import com.example.whiskeyreviewer.data.SubmitWhiskyData
 import com.example.whiskeyreviewer.data.TokenData
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WhiskyName
+import com.example.whiskeyreviewer.data.pagingResponse.PagingResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -119,11 +120,13 @@ interface API {
 
     @GET(GET_REVIEW_SEARCH_LIST)
     suspend fun getSearchReviewList(
-        @Path("searchWord") searchWord: String?,
-        @Path("detailSearchWord") detailSearchWord: String?,
-        @Path("lastIndex") lastIndex: Int,
-        @Path("likeAsc") likeAsc: String?,
-        @Path("scoreAsc") scoreAsc: String?,
-        @Path("createdAtAsc") createdAtAsc: String?,
-    ):Response<ServerResponse<List<WhiskyReviewData>>>
+        @Query("main_search_word") main_search_word: String?,
+        @Query("sub_search_word") sub_search_word: String?,
+        @Query("like_order") like_order: String?,
+        @Query("score_order") score_order: String?,
+        @Query("name_order") name_order: String?,
+        @Query("create_order") create_order: String?,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ):Response<ServerResponse<PagingResponse>>
 }

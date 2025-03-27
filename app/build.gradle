@@ -129,4 +129,12 @@ dependencies {
     implementation("com.ehsanmsz:msz-progress-indicator:0.8.0")
 
     implementation 'com.github.nanihadesuka:LazyColumnScrollbar:2.2.0'
+
+    //페이징
+    implementation("androidx.paging:paging-runtime:3.3.0")
+
+    implementation("androidx.paging:paging-compose:3.3.6")
+
+    //스플래시
+    implementation 'androidx.core:core-splashscreen:1.0.1'
 }

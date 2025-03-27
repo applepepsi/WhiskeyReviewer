@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDialog
@@ -41,9 +42,17 @@ class MainActivity : ComponentActivity() {
         }
 
         super.onCreate(savedInstanceState)
-
+        val splashScreen = installSplashScreen()
         setContent {
+            val mainViewModel: MainViewModel = hiltViewModel()
 
+            LaunchedEffect(Unit) {
+                mainViewModel.tryLogin( ssaid = ssaId )
+            }
+
+            splashScreen.setKeepOnScreenCondition{
+                mainViewModel.loginResult.value
+            }
             WhiskeyReviewerTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -52,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 //                    FullSizeProgressIndicator()
 
-                    Greeting(ssaId)
+                    Greeting(ssaId,mainViewModel)
                 }
             }
         }
@@ -73,9 +82,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(ssaId: String) {
+fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
-    val mainViewModel: MainViewModel = hiltViewModel()
+
     val mainNavController = rememberNavController()
     val context = LocalContext.current
 
@@ -108,21 +117,18 @@ fun Greeting(ssaId: String) {
         tagText = mainViewModel.customWhiskyData.value.memo
     )
 
-    LaunchedEffect(Unit) {
-        mainViewModel.tryLogin( ssaid = ssaId )
-    }
+
 
 //    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
 
+    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
 
-
-    when(mainViewModel.loginResult.value){
-        true -> {
-            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
-        }
-        false -> { }
-        else -> { }
-    }
+//    when(mainViewModel.loginResult.value){
+//        true -> {
+//            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+//        }
+//        false -> { }
+//    }
 
 
 
@@ -136,7 +142,7 @@ fun Greeting(ssaId: String) {
 @Composable
 fun GreetingPreview() {
     WhiskeyReviewerTheme {
-        Greeting("Android")
+//        Greeting("Android", mainViewModel)
     }
 }
 

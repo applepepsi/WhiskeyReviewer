@@ -237,7 +237,7 @@ fun NavigationDrawerComponent(
                             },
                             search = {
                                 mainViewModel.updateDrawerSearchBarText(searchWord)
-//                                navController.navigate(MainRoute.WHISKEY_SEARCH)
+                                navController.navigate(MainRoute.WHISKEY_SEARCH)
                             }
                         )
                     }else{
