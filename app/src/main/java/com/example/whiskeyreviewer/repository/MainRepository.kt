@@ -64,4 +64,15 @@ interface MainRepository{
         singleWhiskeyData: WhiskyReviewData
     ):WhiskyReviewData
 
+    fun likeReview(
+        reviewUuid: String,
+        callback: (ServerResponse<Any>?) -> Unit
+    )
+
+    fun cancelLikeReview(
+        reviewUuid: String,
+        callback: (ServerResponse<Any>?) -> Unit
+    )
+
+
 }

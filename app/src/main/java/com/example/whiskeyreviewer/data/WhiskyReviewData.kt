@@ -13,8 +13,8 @@ data class WhiskyReviewData(
     val tags:List<String> = listOf(),
     val image_names:List<String>?=null,
     val imageList:List<ByteArray>? = emptyList(),
-    val likeState:Boolean?=null,
-    val likeCount:Int?=null,
+    val like_state:Boolean=false,
+    val like_count:Int=0,
 )
 
 sealed class ImageData {

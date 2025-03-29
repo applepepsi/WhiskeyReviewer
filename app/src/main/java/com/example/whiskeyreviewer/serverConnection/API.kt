@@ -10,6 +10,7 @@ import com.example.nextclass.utils.GET_REVIEW
 import com.example.nextclass.utils.GET_REVIEW_SEARCH_LIST
 import com.example.nextclass.utils.GET_WHISKY_LIST
 import com.example.nextclass.utils.IMAGE_UPLOAD
+import com.example.nextclass.utils.LIKE_REVIEW
 import com.example.nextclass.utils.MODIFY_WHISKY
 import com.example.nextclass.utils.REGISTER
 import com.example.nextclass.utils.REVIEW_MODIFY
@@ -80,6 +81,16 @@ interface API {
         @Path("myWhiskyUuid") myWhiskyUuid: String,
         @Query("order") order: String
     ): Response<ServerResponse<List<WhiskyReviewData>>>
+
+    @POST(LIKE_REVIEW)
+    suspend fun likeReview(
+        @Path("reviewUuid") reviewUuid: String,
+    ): Response<ServerResponse<Any>>
+
+    @DELETE(LIKE_REVIEW)
+    suspend fun cancelLikeReview(
+        @Path("reviewUuid") reviewUuid: String,
+    ): Response<ServerResponse<Any>>
 
     @POST(REVIEW_SAVE)
     suspend fun whiskySave(

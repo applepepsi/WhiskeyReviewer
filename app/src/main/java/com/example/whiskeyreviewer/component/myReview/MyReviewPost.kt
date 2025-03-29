@@ -135,7 +135,7 @@ fun OtherUserReviewPostComponent(
     onImageSelect: (ByteArray) -> Unit={},
     deleteReview:(WhiskyReviewData)->Unit={},
     modifyReview:(WhiskyReviewData)->Unit={},
-    onLikeClick:()->Unit={}
+    onLikeClick:(WhiskyReviewData)->Unit={}
 ) {
 
     val listState = rememberLazyListState()
@@ -177,7 +177,7 @@ fun OtherUserReviewPostComponent(
                         modifyReview(it)
                     },
                     onLikeClick = {
-
+                        onLikeClick(it)
                     }
                 )
             }
@@ -280,7 +280,7 @@ fun MyReviewSinglePost(
     onImageSelect: (ByteArray) -> Unit = {},
     deleteReview: (WhiskyReviewData) -> Unit={},
     modifyReview: (WhiskyReviewData) -> Unit={},
-    onLikeClick:()->Unit={},
+    onLikeClick:(WhiskyReviewData)->Unit={},
 ) {
 
     val richTextState = rememberRichTextState()
@@ -346,7 +346,7 @@ fun MyReviewSinglePost(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = (singleReview.likeCount ?: 0).toString(),
+                    text = (singleReview.like_count ?: 0).toString(),
                     style = TextStyle.Default.copy(
                         color = Color.Gray,
                         fontSize = 15.sp,
@@ -356,11 +356,11 @@ fun MyReviewSinglePost(
                 )
                 IconButton(
                     onClick = {
-                        likeState=!likeState
+                        onLikeClick(singleReview)
                     },
                     modifier = Modifier.size(25.dp)
                 ) {
-                    if (likeState) {
+                    if (singleReview.like_state==true) {
                         Icon(
                             imageVector = Icons.Default.Favorite,
                             contentDescription = null,

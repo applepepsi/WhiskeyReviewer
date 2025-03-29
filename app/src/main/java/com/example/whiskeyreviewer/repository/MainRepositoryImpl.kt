@@ -169,6 +169,39 @@ class MainRepositoryImpl @Inject constructor(
             singleWhiskeyData.copy(imageList = imageList)
         }
     }
+
+    override fun likeReview(reviewUuid: String,callback: (ServerResponse<Any>?) -> Unit){
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = ApiHandler.makeApiCall(tag="리뷰 추천") {
+
+                api.likeReview(
+                    reviewUuid=reviewUuid
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
+
+    override fun cancelLikeReview(reviewUuid: String, callback: (ServerResponse<Any>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = ApiHandler.makeApiCall(tag="리뷰 추천 취소") {
+                api.cancelLikeReview(
+                    reviewUuid=reviewUuid
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
+
+
+
+
     override fun addWhiskyNameSearch(name: String,category:String?, callback: (ServerResponse<List<WhiskyName>>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
 

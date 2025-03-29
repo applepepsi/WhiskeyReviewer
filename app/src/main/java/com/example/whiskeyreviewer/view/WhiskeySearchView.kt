@@ -56,8 +56,6 @@ import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
-import com.example.whiskeyreviewer.component.home.WhiskyCustomFilterRow
-import com.example.whiskeyreviewer.component.myReview.MyReviewPost
 import com.example.whiskeyreviewer.component.myReview.OtherUserReviewPostComponent
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
@@ -258,9 +256,6 @@ fun WhiskeySearchView(
                             )
                         }else {
 
-
-//                            Spacer(modifier = Modifier.height(8.dp))
-                            
                             OtherUserReviewPostComponent(
                                 reviewDataList = otherUserReviewList,
                                 singleReviewClick = {
@@ -271,7 +266,10 @@ fun WhiskeySearchView(
                                     mainViewModel.setSelectImage(it)
                                     mainViewModel.toggleImageDialogState()
                                 },
-
+                                onLikeClick = {
+                                    mainViewModel.setSelectReviewData(it)
+                                    mainViewModel.updateReviewLikeState(it)
+                                },
                                 modifyAllow = false,
                                 mainViewModel = mainViewModel
                             )
@@ -386,7 +384,7 @@ fun OtherUserReviewDetailView(
                                     mainViewModel.toggleImageDialogState()
                                 },
 
-                                )
+                            )
                         }
                     }
 

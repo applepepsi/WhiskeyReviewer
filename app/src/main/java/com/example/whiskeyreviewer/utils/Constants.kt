@@ -51,7 +51,8 @@ const val MODIFY_WHISKY="/my-whisky/{myWhiskyUuid}"
 const val IMAGE_UPLOAD="/image-upload"
 const val GET_IMAGE="/image/{image_name}"
 const val GET_REVIEW_SEARCH_LIST="/other/review"
-
+const val LIKE_REVIEW="/like/{reviewUuid}"
+const val CANCEL_LIKE_REVIEW="/like/{reviewUuid}"
 
 val whiskeyData = listOf(
     TapLayoutItems.AllWhiskey,

@@ -4,8 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,18 +38,16 @@ import com.example.whiskeyreviewer.data.MyWhiskyFilterData
 import com.example.whiskeyreviewer.data.ReviewFilterData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
+import com.example.whiskeyreviewer.data.pagingResponse.LikeState
 import com.example.whiskeyreviewer.repository.MainRepository
 import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.utils.TokenManager
 import com.example.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -397,6 +393,9 @@ class MainViewModel @Inject constructor(
 
     private val _otherUserReviewDataList = MutableStateFlow<PagingData<WhiskyReviewData>>(PagingData.empty())
     val otherUserReviewDataList = _otherUserReviewDataList.asStateFlow()
+
+    private val likeStateFlow = MutableStateFlow<Map<String, LikeState>>(emptyMap())
+
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -1309,11 +1308,81 @@ class MainViewModel @Inject constructor(
                 createdAtAsc = reviewFilterData.value.date_order?.orderType
             ).cachedIn(viewModelScope).collect { pagingData ->
 
+
                 _otherUserReviewDataList.value=pagingData
+
+                //todo 다시 알아보기
+
                 _postProgressIndicatorState.value=false
                 Log.d("로딩2", _postProgressIndicatorState.value.toString())
             }
 
+        }
+    }
+
+    fun updateReviewLikeState(whiskyReviewData: WhiskyReviewData) {
+        Log.d("좋아요 상태", whiskyReviewData.toString())
+
+        val reviewUuid = selectWhiskyReviewData.value.review_uuid
+        val currentLikeStates = likeStateFlow.value.toMutableMap()
+
+        when (whiskyReviewData.like_state) {
+            true -> {
+                cancelLike(reviewUuid, whiskyReviewData, currentLikeStates)
+            }
+            false -> {
+                likeReview(reviewUuid, whiskyReviewData, currentLikeStates)
+            }
+        }
+    }
+
+    private fun cancelLike(reviewUuid: String, whiskyReviewData: WhiskyReviewData, currentLikeStates: MutableMap<String, LikeState>) {
+        mainRepository.cancelLikeReview(reviewUuid) { serverResponse ->
+            serverResponse?.let {
+                if (it.code == SUCCESS_CODE) {
+                    setErrorToastMessage(icon = R.drawable.fail_icon, text = "추천 취소")
+                    updateLikeState(currentLikeStates, whiskyReviewData, -1, false)
+                }
+            }
+        }
+    }
+
+    private fun likeReview(reviewUuid: String, whiskyReviewData: WhiskyReviewData, currentLikeStates: MutableMap<String, LikeState>) {
+        mainRepository.likeReview(reviewUuid) { serverResponse ->
+            serverResponse?.let {
+                if (it.code == SUCCESS_CODE) {
+                    setErrorToastMessage(icon = R.drawable.success_icon, text = "추천 성공")
+                    updateLikeState(currentLikeStates, whiskyReviewData, 1, true)
+                }
+            }
+        }
+    }
+
+    private fun updateLikeState(currentLikeStates: MutableMap<String, LikeState>, whiskyReviewData: WhiskyReviewData, countChange: Int, newState: Boolean) {
+        currentLikeStates[whiskyReviewData.review_uuid] = LikeState(
+            likeCount = (whiskyReviewData.like_count + countChange),
+            likeState = newState
+        )
+
+        Log.d("현재 추천", currentLikeStates.toString())
+        likeStateFlow.value = currentLikeStates
+
+        updateReviewList()
+    }
+
+    private fun updateReviewList() {
+        viewModelScope.launch {
+            combine(_otherUserReviewDataList, likeStateFlow) { paging, likeState ->
+                paging.map { review ->
+                    val likeState2 = likeState[review.review_uuid]
+                    review.copy(
+                        like_state = likeState2?.likeState ?: review.like_state,
+                        like_count = likeState2?.likeCount ?: review.like_count,
+                    )
+                }
+            }.collect { newReviewData ->
+                _otherUserReviewDataList.value = newReviewData
+            }
         }
     }
 
