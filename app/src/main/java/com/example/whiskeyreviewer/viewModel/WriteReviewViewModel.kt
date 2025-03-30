@@ -447,15 +447,16 @@ class WriteReviewViewModel @Inject constructor(
         _errorToastIcon.value=icon
     }
 
-    fun synchronizationWhiskyData(whiskyData: WhiskyReviewData, whiskyName: String,uriList:List<Uri>?) {
+    fun synchronizationWhiskyData(reviewData: WhiskyReviewData, whiskyName: String,uriList:List<Uri>?) {
+        Log.d("싱크", reviewData.toString())
         //todo 수정 기능 구현해야함
         _writeReviewData.value=_writeReviewData.value.copy(
-            whiskey_uuid =whiskyData.review_uuid,
-            content = whiskyData.content,
-            is_anonymous = whiskyData.is_anonymous,
-            open_date = TimeFormatter.stringToLocalDate(whiskyData.open_date),
-            tags= whiskyData.tags,
-            score=whiskyData.score,
+            whiskey_uuid =reviewData.review_uuid,
+            content = reviewData.content,
+            is_anonymous = reviewData.is_anonymous,
+            open_date = TimeFormatter.stringToLocalDate(reviewData.open_date),
+            tags= reviewData.tags,
+            score=reviewData.score,
 //            imageList = whiskyData.imageList,
             whiskyName=whiskyName
         )

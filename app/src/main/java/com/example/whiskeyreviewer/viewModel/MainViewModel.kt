@@ -38,6 +38,7 @@ import com.example.whiskeyreviewer.data.MyWhiskyFilterData
 import com.example.whiskeyreviewer.data.ReviewFilterData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
+import com.example.whiskeyreviewer.data.pagingResponse.ImageState
 import com.example.whiskeyreviewer.data.pagingResponse.LikeState
 import com.example.whiskeyreviewer.repository.MainRepository
 import com.example.whiskeyreviewer.utils.ImageConverter
@@ -396,6 +397,7 @@ class MainViewModel @Inject constructor(
 
     private val likeStateFlow = MutableStateFlow<Map<String, LikeState>>(emptyMap())
 
+    private val imageListFlow = MutableStateFlow<Map<String, ImageState>>(emptyMap())
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -599,7 +601,7 @@ class MainViewModel @Inject constructor(
             }else{
                 _loginResult.value=false
             }
-
+            Log.d("로그인 결과", _loginResult.value.toString())
 //            toggleProgressIndicatorState(state = false,text="")
         }
     }
@@ -1294,10 +1296,6 @@ class MainViewModel @Inject constructor(
 
         Log.d("필터 내용", reviewFilterData.value.toString())
 
-//        reviewFilterData.value.date_order
-//        reviewFilterData.value.score_order
-//        reviewFilterData.value.vote_order
-
         viewModelScope.launch {
             _postProgressIndicatorState.value=true
             mainRepository.getReviewSearchList(
@@ -1326,15 +1324,58 @@ class MainViewModel @Inject constructor(
         val reviewUuid = selectWhiskyReviewData.value.review_uuid
         val currentLikeStates = likeStateFlow.value.toMutableMap()
 
-        when (whiskyReviewData.like_state) {
-            true -> {
-                cancelLike(reviewUuid, whiskyReviewData, currentLikeStates)
-            }
-            false -> {
-                likeReview(reviewUuid, whiskyReviewData, currentLikeStates)
+        if (whiskyReviewData.like_state) {
+            cancelLike(reviewUuid, whiskyReviewData, currentLikeStates)
+        } else {
+            likeReview(reviewUuid, whiskyReviewData, currentLikeStates)
+        }
+    }
+
+    fun getOtherUserImageList(whiskyReviewData: WhiskyReviewData) {
+        Log.d("상태", whiskyReviewData.toString())
+
+        val currentImageList = imageListFlow.value.toMutableMap()
+
+        //사용자가 이미 열어본 경우
+        if (whiskyReviewData.isOpened) {
+            updateImageState(currentImageList, whiskyReviewData)
+        } else {
+            //처음 열었을 때
+            fetchImageList(whiskyReviewData, currentImageList)
+        }
+    }
+
+    private fun updateImageState(currentImageList: MutableMap<String, ImageState>, whiskyReviewData: WhiskyReviewData) {
+        currentImageList[whiskyReviewData.review_uuid] = ImageState(
+            isOpened = true,
+            extendedState = !whiskyReviewData.expendedState,
+            imageList = whiskyReviewData.imageList ?: emptyList()
+        )
+        imageListFlow.value = currentImageList
+        updateReviewList()
+    }
+
+    private fun fetchImageList(whiskyReviewData: WhiskyReviewData, currentImageList: MutableMap<String, ImageState>) {
+        viewModelScope.launch {
+            Log.e("이미지 가져오기 시작", whiskyReviewData.toString())
+            try {
+                val result = mainRepository.getImageList(whiskyReviewData)
+
+                result.imageList?.let { imageList ->
+                    currentImageList[whiskyReviewData.review_uuid] = ImageState(
+                        isOpened = true,
+                        extendedState = true,
+                        imageList = imageList
+                    )
+                }
+                imageListFlow.value = currentImageList
+                updateReviewList()
+            } catch (e: Exception) {
+                Log.e("실패", "이미지 리스트 가져오기 실패: ${e.message}")
             }
         }
     }
+
 
     private fun cancelLike(reviewUuid: String, whiskyReviewData: WhiskyReviewData, currentLikeStates: MutableMap<String, LikeState>) {
         mainRepository.cancelLikeReview(reviewUuid) { serverResponse ->
@@ -1372,12 +1413,16 @@ class MainViewModel @Inject constructor(
 
     private fun updateReviewList() {
         viewModelScope.launch {
-            combine(_otherUserReviewDataList, likeStateFlow) { paging, likeState ->
+            combine(_otherUserReviewDataList, likeStateFlow, imageListFlow) { paging, likeState, imageList ->
                 paging.map { review ->
-                    val likeState2 = likeState[review.review_uuid]
+                    val newLikeState = likeState[review.review_uuid]
+                    val newImageList=imageList[review.review_uuid]
                     review.copy(
-                        like_state = likeState2?.likeState ?: review.like_state,
-                        like_count = likeState2?.likeCount ?: review.like_count,
+                        like_state = newLikeState?.likeState ?: review.like_state,
+                        like_count = newLikeState?.likeCount ?: review.like_count,
+                        imageList = newImageList?.imageList ?:review.imageList,
+                        isOpened = newImageList?.isOpened ?: review.isOpened,
+                        expendedState = newImageList?.extendedState ?: review.expendedState
                     )
                 }
             }.collect { newReviewData ->

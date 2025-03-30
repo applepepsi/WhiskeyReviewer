@@ -86,7 +86,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = ApiHandler.makeApiCall(tag="리뷰 수정") {
-                Log.d("수정 이미지 대기", imageFiles.toString())
+                Log.d("수정 데이터", reviewData.toString())
                 val imageLinks = imageFiles?.map { singleImage ->
                     postImage(singleImage)
                 }

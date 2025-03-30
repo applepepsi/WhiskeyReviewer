@@ -7,7 +7,7 @@ data class WhiskyReviewData(
     val review_uuid:String="",
     val user_whisky_uuid:String="",
     val content:String="",
-    val is_anonymous:Boolean=false,
+    val is_anonymous:Boolean=true,
     val open_date: String= LocalDate.now().toString(),
     val score: Double=1.0,
     val tags:List<String> = listOf(),
@@ -15,6 +15,8 @@ data class WhiskyReviewData(
     val imageList:List<ByteArray>? = emptyList(),
     val like_state:Boolean=false,
     val like_count:Int=0,
+    val isOpened:Boolean=false,
+    val expendedState:Boolean=false,
 )
 
 sealed class ImageData {

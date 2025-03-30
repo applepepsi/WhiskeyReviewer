@@ -44,7 +44,8 @@ import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
 import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
-import com.example.whiskeyreviewer.component.myReview.MyReviewPost
+
+import com.example.whiskeyreviewer.component.myReview.MySingleReviewComponent
 import com.example.whiskeyreviewer.component.myReview.MyWhiskyDetailInfoComponent
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
@@ -305,7 +306,7 @@ fun WhiskeyDetailView(
                                 modifier = Modifier
                                     .heightIn(max=400.dp)
                             ) {
-                                MyReviewPost(
+                                MySingleReviewComponent(
                                     reviewDataList = mainViewModel.myReviewDataList.value,
                                     singleReviewClick = {
                                         mainViewModel.setSelectReviewData(it)

@@ -20,7 +20,7 @@ fun MyWhiskyCustomFilterRow(
 
         LazyRow(
             modifier = Modifier
-                .padding( horizontal = 8.dp).padding(top=12.dp,bottom=10.dp)
+                .padding( horizontal = 8.dp).padding(top=12.dp,bottom=10.dp,end=15.dp)
                 .fillMaxWidth(),
 //            .clip(GenericShape { size, _ ->
 //                lineTo(size.width, 0f)
@@ -29,8 +29,8 @@ fun MyWhiskyCustomFilterRow(
 //            })
 //            .shadow(16.dp)
 //            .background(Color.White),
-
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.End
+//            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 //            item{
 //                CustomDropDownMenuComponent(

@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.component.customComponent
 
 import android.content.res.Resources
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,8 +45,8 @@ fun PrivateCheckboxComponent(
 
     modifier: Modifier = Modifier
 ) {
-
-    val animatedChecked by animateDpAsState(targetValue = if (checked) 20.dp else 0.dp, label = "")
+    Log.d("체크", checked.toString())
+    val animatedChecked by animateDpAsState(targetValue = if (!checked) 20.dp else 0.dp, label = "")
     val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = modifier,
@@ -63,7 +64,7 @@ fun PrivateCheckboxComponent(
                 },
 
         ) {
-            if (checked) CheckBoxSelected(animatedChecked)
+            if (!checked) CheckBoxSelected(animatedChecked)
             else CheckBoxUnSelected()
         }
 

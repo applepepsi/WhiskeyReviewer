@@ -270,8 +270,11 @@ fun WhiskeySearchView(
                                     mainViewModel.setSelectReviewData(it)
                                     mainViewModel.updateReviewLikeState(it)
                                 },
-                                modifyAllow = false,
-                                mainViewModel = mainViewModel
+
+                                mainViewModel = mainViewModel,
+                                getImageList = {
+                                    mainViewModel.getOtherUserImageList(it)
+                                }
                             )
 
                         }
@@ -377,7 +380,7 @@ fun OtherUserReviewDetailView(
                                     mainViewModel.setSelectReviewData(it)
                                     navController.navigate(MainRoute.REVIEW_DETAIL)
                                 },
-                                modifyAllow = false,
+
                                 reviewDataList = mainViewModel.otherUserReviewDataList.collectAsLazyPagingItems(),
                                 onImageSelect = {
                                     mainViewModel.setSelectImage(it)

@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -44,7 +45,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.paging.compose.LazyPagingItems
+import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
@@ -72,119 +76,72 @@ import com.skydoves.landscapist.glide.GlideImage
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
 
-@Composable
-fun MyReviewPost(
-    reviewDataList:List<WhiskyReviewData>,
-    singleReviewClick:(WhiskyReviewData)->Unit,
-    modifyAllow: Boolean=true,
-    onImageSelect: (ByteArray) -> Unit={},
-    deleteReview:(WhiskyReviewData)->Unit={},
-    modifyReview:(WhiskyReviewData)->Unit={},
-    onLikeClick:()->Unit={}
-    ) {
 
-    val listState = rememberLazyListState()
-    val customScrollbarSettings = ScrollbarSettings(
-        thumbUnselectedColor = MainColor,
 
-        thumbThickness = 6.dp,
-        thumbMinLength = 0.1f,
-        thumbMaxLength = 0.7f
-    )
-    LazyColumnScrollbar(
-        state = listState,
-        settings = customScrollbarSettings,
-
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 8.dp).padding(bottom=5.dp,top=2.dp),
-            state=listState,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(items = reviewDataList) { singleReview ->
-                MyReviewSinglePost(
-                    singleReview = singleReview,
-                    singleReviewClick = { singleReviewClick(singleReview) },
-                    modifyAllow = modifyAllow,
-                    onImageSelect = {
-                        onImageSelect(it)
-                    },
-                    deleteReview = {
-                        deleteReview(it)
-                    },
-                    modifyReview = {
-                        modifyReview(it)
-                    },
-                    onLikeClick = {
-
-                    }
-                )
-            }
-
-        }
-    }
-}
-
-@Composable
-fun OtherUserReviewPostComponent(
-    mainViewModel:MainViewModel,
-    reviewDataList: LazyPagingItems<WhiskyReviewData>,
-    singleReviewClick:(WhiskyReviewData)->Unit,
-    modifyAllow: Boolean=true,
-    onImageSelect: (ByteArray) -> Unit={},
-    deleteReview:(WhiskyReviewData)->Unit={},
-    modifyReview:(WhiskyReviewData)->Unit={},
-    onLikeClick:(WhiskyReviewData)->Unit={}
-) {
-
-    val listState = rememberLazyListState()
-    val customScrollbarSettings = ScrollbarSettings(
-        thumbUnselectedColor = MainColor,
-
-        thumbThickness = 6.dp,
-        thumbMinLength = 0.1f,
-        thumbMaxLength = 0.7f
-    )
-    LazyColumnScrollbar(
-        state = listState,
-        settings = customScrollbarSettings,
-
-        ) {
-        LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = 8.dp).padding(bottom=5.dp,top=2.dp),
-            state=listState,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            item{
-                WhiskyCustomFilterRow(mainViewModel = mainViewModel)
-            }
-
-            Log.d("카운트", reviewDataList.itemCount.toString())
-            items(reviewDataList.itemCount){
-                MyReviewSinglePost(
-                    singleReview = reviewDataList[it] ?: WhiskyReviewData(),
-                    singleReviewClick = {  },
-                    modifyAllow = modifyAllow,
-                    onImageSelect = {
-                        onImageSelect(it)
-                    },
-                    deleteReview = {
-                        deleteReview(it)
-                    },
-                    modifyReview = {
-                        modifyReview(it)
-                    },
-                    onLikeClick = {
-                        onLikeClick(it)
-                    }
-                )
-            }
-
-        }
-    }
-}
+//@Composable
+//fun OtherUserReviewPostComponent(
+//    mainViewModel:MainViewModel,
+//    reviewDataList: LazyPagingItems<WhiskyReviewData>,
+//    singleReviewClick:(WhiskyReviewData)->Unit,
+//    modifyAllow: Boolean=true,
+//    onImageSelect: (ByteArray) -> Unit={},
+//    deleteReview:(WhiskyReviewData)->Unit={},
+//    modifyReview:(WhiskyReviewData)->Unit={},
+//    onLikeClick:(WhiskyReviewData)->Unit={},
+//    getImageList: (WhiskyReviewData) -> Unit={}
+//) {
+//
+//    val listState = rememberLazyListState()
+//    val customScrollbarSettings = ScrollbarSettings(
+//        thumbUnselectedColor = MainColor,
+//
+//        thumbThickness = 6.dp,
+//        thumbMinLength = 0.1f,
+//        thumbMaxLength = 0.7f
+//    )
+//    LazyColumnScrollbar(
+//        state = listState,
+//        settings = customScrollbarSettings,
+//
+//        ) {
+//        LazyColumn(
+//            modifier = Modifier
+//                .padding(horizontal = 8.dp)
+//                .padding(bottom = 5.dp, top = 2.dp),
+//            state=listState,
+//            verticalArrangement = Arrangement.spacedBy(8.dp),
+//        ) {
+//            item{
+//                WhiskyCustomFilterRow(mainViewModel = mainViewModel)
+//            }
+//
+//            Log.d("카운트", reviewDataList.itemCount.toString())
+//            items(reviewDataList.itemCount){
+//                OtherUserReviewPost(
+//                    singleReview = reviewDataList[it] ?: WhiskyReviewData(),
+//                    singleReviewClick = {  },
+//                    modifyAllow = modifyAllow,
+//                    onImageSelect = {
+//                        onImageSelect(it)
+//                    },
+//                    deleteReview = {
+//                        deleteReview(it)
+//                    },
+//                    modifyReview = {
+//                        modifyReview(it)
+//                    },
+//                    onLikeClick = {
+//                        onLikeClick(it)
+//                    },
+//                    getImageList={
+//                        getImageList(it)
+//                    }
+//                )
+//            }
+//
+//        }
+//    }
+//}
 
 
 @Composable
@@ -272,176 +229,303 @@ fun DetailInfoTextComponent(
 
 @OptIn(ExperimentalRichTextApi::class)
 @Composable
-fun MyReviewSinglePost(
-    singleReview: WhiskyReviewData,
+fun MySingleReviewComponent(
+    reviewDataList: List<WhiskyReviewData>,
+    singleReviewClick: (WhiskyReviewData) -> Unit,
 
-    singleReviewClick: () -> Unit,
-    modifyAllow: Boolean = true,
     onImageSelect: (ByteArray) -> Unit = {},
-    deleteReview: (WhiskyReviewData) -> Unit={},
-    modifyReview: (WhiskyReviewData) -> Unit={},
-    onLikeClick:(WhiskyReviewData)->Unit={},
+    deleteReview: (WhiskyReviewData) -> Unit = {},
+    modifyReview: (WhiskyReviewData) -> Unit = {},
 ) {
+    val listState = rememberLazyListState()
+    val customScrollbarSettings = ScrollbarSettings(
+        thumbUnselectedColor = MainColor,
+        thumbThickness = 6.dp,
+        thumbMinLength = 0.1f,
+        thumbMaxLength = 0.7f
+    )
 
-    val richTextState = rememberRichTextState()
-    var likeState by remember{ mutableStateOf(false)}
-    Log.d("singleReview", singleReview.toString())
-//    val color by animateDpAsState(targetValue = if (likeState) 20.dp else 20.dp, label = "")
-
-    LaunchedEffect(Unit) {
-        richTextState.setHtml(singleReview.content)
-    }
-
-
-    Column(
-        modifier= Modifier
-            .clickable() {
-                singleReviewClick()
-            }
-            .fillMaxWidth()
-
-            .clip(RoundedCornerShape(8.dp))
-            .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp))
-            .padding(horizontal = 15.dp, vertical = 12.dp)
-
-
+    LazyColumnScrollbar(
+        state = listState,
+        settings = customScrollbarSettings
     ) {
-        if(modifyAllow){
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 10.dp, top = 6.dp),
-                horizontalArrangement = Arrangement.End
-            ){
-                Text(
-                    text = "수정",
-                    style = TextStyle.Default.copy(
-                        color = Color.LightGray,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier
-                        .clickable {
-                            modifyReview(singleReview)
-                        }
-                )
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(bottom = 5.dp, top = 2.dp),
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(items = reviewDataList) { singleReview ->
+                val richTextState = rememberRichTextState()
+                LaunchedEffect(Unit) {
+                    richTextState.setHtml(singleReview.content)
+                }
 
-                Spacer(modifier = Modifier.width(15.dp))
-
-                Text(
-                    text = "제거",
-                    style = TextStyle.Default.copy(
-                        color = Color.LightGray,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
+                Column(
                     modifier = Modifier
-                        .clickable { deleteReview(singleReview) }
-                )
-            }
-        }else{
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(
-                    text = (singleReview.like_count ?: 0).toString(),
-                    style = TextStyle.Default.copy(
-                        color = Color.Gray,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(end=3.dp)
-                )
-                IconButton(
-                    onClick = {
-                        onLikeClick(singleReview)
-                    },
-                    modifier = Modifier.size(25.dp)
+                        .clickable { singleReviewClick(singleReview) }
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 15.dp, vertical = 12.dp)
                 ) {
-                    if (singleReview.like_state==true) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = null,
-                            tint = Color.Red,
-                            modifier = Modifier.size(20.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 10.dp, top = 6.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = "수정",
+                            style = TextStyle.Default.copy(
+                                color = Color.LightGray,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                                .clickable { modifyReview(singleReview) }
                         )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
-                            contentDescription = null,
-                            tint= Color.Gray,
-                            modifier = Modifier.size(20.dp)
+
+                        Spacer(modifier = Modifier.width(15.dp))
+
+                        Text(
+                            text = "제거",
+                            style = TextStyle.Default.copy(
+                                color = Color.LightGray,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                                .clickable { deleteReview(singleReview) }
                         )
                     }
-                }
-            }
 
-        }
-//
-//        Spacer(modifier = Modifier.height(7.dp))
+                    if (singleReview.imageList != null) {
+                        ReviewImageLazyRowComponent(
+                            imageList = singleReview.imageList,
+                            deleteImage = {},
+                            deleteImageAllow = false,
+                            onImageSelect = {
+                                onImageSelect(it)
+                            }
+                        )
 
-        if(singleReview.imageList!=null){
-//            Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
+                    }
 
-            ReviewImageLazyRowComponent(
-                imageList = singleReview.imageList,
-                deleteImage = {
+                    RichText(
+                        state = richTextState,
+                        modifier = Modifier
+                            .padding(start = 7.dp, end = 7.dp, top = 3.dp)
+                    )
 
-                },
-                deleteImageAllow = false,
-                onImageSelect = {
-                    onImageSelect(it)
-                }
-            )
+                    Row(
+                        modifier = Modifier.padding(start = 1.dp, top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        WhiskeyScoreComponent(
+                            score = singleReview.score
+                        )
 
-            Spacer(modifier = Modifier.height(5.dp))
-        }
+                        Spacer(modifier = Modifier.width(15.dp))
 
-        //리치텍스트로 수정예정
-
-
-        RichText(
-            state = richTextState,
-//            style = MaterialTheme.typography.displaySmall,
-//            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(start=7.dp,end=7.dp,top=3.dp)
-        )
-//        Text(
-//            text = reviewText,
-//            style = TextStyle.Default.copy(
-//                color = LightBlackColor,
-//                fontSize = 12.sp,
-//                fontWeight = FontWeight.Normal
-//            ),
-//            modifier = Modifier
-//        )
-        Row(
-            modifier = Modifier.padding(start = 1.dp,top=8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            WhiskeyScoreComponent(
-                score = singleReview.score
-            )
-
-            Spacer(modifier = Modifier.width(15.dp))
-
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                item{
-                    TagComponent(text = "개봉 ${singleReview.open_date}")
-                }
-                items(items=singleReview.tags){singleTag->
-                    TagComponent(text = singleTag)
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            item {
+                                TagComponent(text = "개봉 ${singleReview.open_date}")
+                            }
+                            items(items = singleReview.tags) { singleTag ->
+                                TagComponent(text = singleTag)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+@OptIn(ExperimentalRichTextApi::class)
+@Composable
+fun OtherUserReviewPostComponent(
+    mainViewModel: MainViewModel,
+    reviewDataList: LazyPagingItems<WhiskyReviewData>,
+    singleReviewClick: (WhiskyReviewData) -> Unit,
+
+    onImageSelect: (ByteArray) -> Unit = {},
+
+    onLikeClick: (WhiskyReviewData) -> Unit = {},
+    getImageList: (WhiskyReviewData) -> Unit = {}
+) {
+    val listState = rememberLazyListState()
+    val customScrollbarSettings = ScrollbarSettings(
+        thumbUnselectedColor = MainColor,
+        thumbThickness = 6.dp,
+        thumbMinLength = 0.1f,
+        thumbMaxLength = 0.7f
+    )
+
+    LazyColumnScrollbar(
+        state = listState,
+        settings = customScrollbarSettings
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(bottom = 5.dp, top = 2.dp),
+            state = listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                WhiskyCustomFilterRow(mainViewModel = mainViewModel)
+            }
+
+            Log.d("카운트", reviewDataList.itemCount.toString())
+            items(reviewDataList.itemCount) { index ->
+                val singleReview = reviewDataList[index] ?: WhiskyReviewData()
+                Log.d("이미지 확인", singleReview.image_names.toString())
+                val richTextState = rememberRichTextState()
+
+                val imageStateText = if (!singleReview.expendedState) "이미지 숨기기" else "이미지 표시"
+
+                LaunchedEffect(Unit) {
+                    richTextState.setHtml(singleReview.content)
+                }
+
+                Column(
+                    modifier = Modifier
+                        .clickable { singleReviewClick(singleReview) }
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp))
+                        .padding(horizontal = 15.dp, vertical = 12.dp)
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 9.dp),
+                        horizontalArrangement = if (singleReview.image_names != null) Arrangement.SpaceBetween else Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (singleReview.image_names != null) {
+                            Row(
+                                Modifier,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = imageStateText,
+                                    style = TextStyle.Default.copy(
+                                        color = Color.Gray,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    modifier = Modifier.padding(end = 3.dp)
+                                )
+
+                                IconButton(
+                                    onClick = {
+                                        getImageList(singleReview)
+                                    },
+                                    modifier = Modifier.size(20.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Filled.ArrowDropDown,
+                                        null,
+                                        modifier = Modifier
+                                            .rotate(if (singleReview.expendedState) 180f else 0f)
+                                            .padding(0.dp),
+                                        tint = LightBlackColor
+                                    )
+                                }
+                            }
+                        }
+                        Row(
+                            Modifier,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = (singleReview.like_count ?: 0).toString(),
+                                style = TextStyle.Default.copy(
+                                    color = Color.Gray,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                modifier = Modifier.padding(end = 3.dp)
+                            )
+                            IconButton(
+                                onClick = {
+                                    onLikeClick(singleReview)
+                                },
+                                modifier = Modifier.size(25.dp)
+                            ) {
+                                if (singleReview.like_state) {
+                                    Icon(
+                                        imageVector = Icons.Default.Favorite,
+                                        contentDescription = null,
+                                        tint = Color.Red,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.FavoriteBorder,
+                                        contentDescription = null,
+                                        tint = Color.Gray,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (singleReview.imageList != null && singleReview.expendedState) {
+                        Log.d("이미지 결과", singleReview.imageList.toString())
+                        ReviewImageLazyRowComponent(
+                            imageList = singleReview.imageList,
+                            deleteImage = {},
+                            deleteImageAllow = false,
+                            onImageSelect = {
+                                onImageSelect(it)
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(5.dp))
+                    }
+
+                    RichText(
+                        state = richTextState,
+                        modifier = Modifier
+                            .padding(start = 7.dp, end = 7.dp, top = 3.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier.padding(start = 1.dp, top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        WhiskeyScoreComponent(
+                            score = singleReview.score
+                        )
+
+                        Spacer(modifier = Modifier.width(15.dp))
+
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            item {
+                                TagComponent(text = "개봉 ${singleReview.open_date}")
+                            }
+                            items(items = singleReview.tags) { singleTag ->
+                                TagComponent(text = singleTag)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ReviewImageLazyRowComponent(
@@ -476,12 +560,17 @@ fun ReviewImageLazyRowComponent(
 
                 GlideImage(
                     imageModel = image,
+
+
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
                             onImageSelect(image)
-                        }
+                        },
+                    placeHolder = painterResource(id = R.drawable.empty_image_icon),
+                    error = painterResource(id = R.drawable.empty_image_icon)
+
                 )
 
                 }
@@ -697,11 +786,7 @@ fun MyReviewPostPreview() {
 
 
     WhiskeyReviewerTheme {
-        MyReviewSinglePost(
-            singleReview = WhiskyReviewData(content = "wdwd",),
-            singleReviewClick = {},
-            modifyAllow = false
-        )
+
     }
 }
 

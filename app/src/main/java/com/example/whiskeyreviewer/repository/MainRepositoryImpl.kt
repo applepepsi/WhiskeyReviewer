@@ -161,9 +161,13 @@ class MainRepositoryImpl @Inject constructor(
                 val result=ApiHandler.makeApiCall(tag = "이미지 가져오기") {
                     api.getImage(image_name = singleImageUrl)
                 }
-                result?.let{
+
+                if (result != null) {
                     imageList.add(result.bytes())
+                } else {
+                    imageList.add(ByteArray(0))
                 }
+
             }
 
             singleWhiskeyData.copy(imageList = imageList)
