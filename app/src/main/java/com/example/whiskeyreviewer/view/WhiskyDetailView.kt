@@ -79,8 +79,8 @@ fun WhiskeyDetailView(
         confirm = {
 
         },
-        toggleOption = { mainViewModel.toggleConfirmDialog() },
-        currentState = mainViewModel.confirmDialogState.value
+        toggleOption = { mainViewModel.toggleDeleteReviewConfirmDialog() },
+        currentState = mainViewModel.deleteReviewConfirmDialogState.value
     )
 
     LaunchedEffect(Unit) {
@@ -157,11 +157,11 @@ fun WhiskeyDetailView(
         title = "리뷰 제거",
         text = "리뷰를 제거하시겠습니까?",
         confirm = {
-            mainViewModel.toggleConfirmDialog()
+            mainViewModel.toggleDeleteReviewConfirmDialog()
             mainViewModel.deleteReviewData()
         },
-        toggleOption = { mainViewModel.toggleConfirmDialog() },
-        currentState = mainViewModel.confirmDialogState.value
+        toggleOption = { mainViewModel.toggleDeleteReviewConfirmDialog() },
+        currentState = mainViewModel.deleteReviewConfirmDialogState.value
     )
 
 //    val info=WhiskyName(
@@ -218,7 +218,7 @@ fun WhiskeyDetailView(
                 deleteWhisky = {
                     //제거는 아직
                     mainViewModel.updateSelectWhisky(it)
-                    mainViewModel.toggleConfirmDialog()
+                    mainViewModel.toggleDeleteWhiskyConfirmDialog()
                 },
                 dropDownMenuState = mainViewModel.singleWhiskyDropDownMenuState.value,
                 toggleDropDownMenuState = {mainViewModel.toggleSingleWhiskyDropDownMenuState()},
@@ -317,7 +317,7 @@ fun WhiskeyDetailView(
                                         mainViewModel.toggleImageDialogState()
                                     },
                                     deleteReview = {
-                                        mainViewModel.toggleConfirmDialog()
+                                        mainViewModel.toggleDeleteReviewConfirmDialog()
                                         mainViewModel.setSelectReviewData(it)
                                     },
                                     modifyReview = { whiskyReviewData ->

@@ -21,6 +21,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDialog
+import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.InsertWhiskyDetailDialog
 import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -117,7 +118,13 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
         tagText = mainViewModel.customWhiskyData.value.memo
     )
 
-
+    ConfirmDialog(
+        title = "위스키 제거",
+        text = "위스키를 제거하시겠습니까?",
+        confirm = { /*TODO*/ },
+        toggleOption = { mainViewModel.toggleDeleteWhiskyConfirmDialog() },
+        currentState = mainViewModel.deleteWhiskyConfirmDialogState.value
+    )
 
 //    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
 

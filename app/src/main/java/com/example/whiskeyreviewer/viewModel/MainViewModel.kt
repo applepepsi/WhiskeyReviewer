@@ -309,8 +309,11 @@ class MainViewModel @Inject constructor(
 
 
 
-    private val _confirmDialogState=mutableStateOf<Boolean>(false)
-    val confirmDialogState: State<Boolean> = _confirmDialogState
+    private val _deleteReviewConfirmDialogState=mutableStateOf<Boolean>(false)
+    val deleteReviewConfirmDialogState: State<Boolean> = _deleteReviewConfirmDialogState
+
+    private val _deleteWhiskyConfirmDialogState=mutableStateOf<Boolean>(false)
+    val deleteWhiskyConfirmDialogState: State<Boolean> = _deleteWhiskyConfirmDialogState
 
     //임시로 넣음
     private val _whiskyOptionDropDownMenuState= mutableStateListOf<Boolean>(false)
@@ -575,8 +578,10 @@ class MainViewModel @Inject constructor(
 
         Log.d("선택된 위스키",selectWhisky.toString())
         _selectWhiskyData.value=selectWhisky
-        _selectWhiskyState.value=true
+
     }
+
+
 
     fun updateOderUserSelectReview(selectReview:SingleWhiskeyData) {
 
@@ -595,6 +600,8 @@ class MainViewModel @Inject constructor(
                 if(postDetailResult.code== SUCCESS_CODE){
                     TokenManager.saveToken(applicationContext, postDetailResult.data!!)
                     _loginResult.value=true
+                    getMyWhiskeyData()
+
                 }else{
                     _loginResult.value=false
                 }
@@ -821,50 +828,6 @@ class MainViewModel @Inject constructor(
         _currentMyReviewBottleNum.value=num
     }
 
-    fun submitNewWhiskey(){
-        val info = _dialogSelectWhiskyData.value.find{ whiskyName ->
-            whiskyName.check==true
-        }
-
-        Log.d("인포", info.toString())
-
-        if (info != null) {
-//            if(!info.is_first){
-////                setWriteReviewWhiskyInfo(info.whisky_name)
-////                setCurrentBottleNum(num=0)
-//                _selectNewWhiskyData.value=info
-//                _selectNewWhiskyState.value=true
-//            }else{
-//                //기존에 있는거라면 세부 뷰로
-//
-//                setErrorToastMessage(
-//                    icon=R.drawable.fail_icon,
-//                    text="기존에 등록된 위스키 입니다."
-//                )
-//                val findOldWhisky=myWhiskyList.value.find { it.whisky_uuid == info.whisky_uuid }
-//                toggleWhiskySelectDialogState()
-//                updateSelectWhisky(findOldWhisky!!)
-//                _selectWhiskyState.value=true
-//            }
-
-//            setErrorToastMessage(
-//                icon=R.drawable.fail_icon,
-//                text="기존에 등록된 위스키 입니다."
-//            )
-            val findOldWhisky=myWhiskyList.value.find { it.whisky_uuid == info.whisky_uuid }
-            toggleWhiskySelectDialogState()
-            updateSelectWhisky(findOldWhisky!!)
-//            setWhiskyInfo()
-            _selectWhiskyState.value=true
-        } else {
-            setErrorToastMessage(
-                icon=R.drawable.fail_icon,
-                text="위스키를 선택해 주세요"
-            )
-
-        }
-    }
-
     //위스키 등록화면으로 이동하는것이 아니라 등록만 하는 기능으로 수정해야함
 //    fun submitCustomWhiskey(){
 ////        _customWhiskyData.value=_customWhiskyData.value.copy(whisky_type = currentCustomWhiskyType.value.name!!)
@@ -1044,11 +1007,15 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun toggleConfirmDialog(){
-        Log.d("상태",confirmDialogState.value.toString())
-        _confirmDialogState.value=!_confirmDialogState.value
+    fun toggleDeleteReviewConfirmDialog(){
+        Log.d("상태",deleteReviewConfirmDialogState.value.toString())
+        _deleteReviewConfirmDialogState.value=!_deleteReviewConfirmDialogState.value
     }
 
+    fun toggleDeleteWhiskyConfirmDialog(){
+        Log.d("상태",_deleteWhiskyConfirmDialogState.value.toString())
+        _deleteWhiskyConfirmDialogState.value=!_deleteWhiskyConfirmDialogState.value
+    }
 
     fun resetAddWhiskyDialog(){
         updateWhiskySearchText("")

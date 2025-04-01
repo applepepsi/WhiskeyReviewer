@@ -300,7 +300,7 @@ fun SingleWhiskeyComponent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyReviewComponent(
+fun MyWhiskyComponent(
     mainViewModel:MainViewModel,
     myReviewItems:List<SingleWhiskeyData>,
     setSelectReview:(SingleWhiskeyData)->Unit,

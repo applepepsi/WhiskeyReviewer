@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,7 +40,6 @@ import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.myReview.ReviewImageLazyRowComponent
-import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -66,8 +64,8 @@ fun ReviewDetailView(
         title = "리뷰 제거",
         text = "리뷰를 제거하시겠습니까?",
         confirm = { /*TODO*/ },
-        toggleOption = { mainViewModel.toggleConfirmDialog() },
-        currentState = mainViewModel.confirmDialogState.value
+        toggleOption = { mainViewModel.toggleDeleteReviewConfirmDialog() },
+        currentState = mainViewModel.deleteReviewConfirmDialogState.value
     )
 
     ImageViewerDialog(
@@ -135,7 +133,7 @@ fun ReviewDetailView(
                 modifier = Modifier
 
                     .clickable {
-                        mainViewModel.toggleConfirmDialog()
+                        mainViewModel.toggleDeleteReviewConfirmDialog()
                     }
             )
         }
