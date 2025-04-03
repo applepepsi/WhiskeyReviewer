@@ -182,6 +182,7 @@ class MainViewModel @Inject constructor(
     private val _currentMyReviewDayFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.New)
     val currentMyReviewDayFilter: State<MyReviewFilterItems> = _currentMyReviewDayFilter
 
+
     private val _currentMyReviewTypeFilter = mutableStateOf<MyReviewFilterItems>(MyReviewFilterItems.Review)
     val currentMyReviewTypeFilter: State<MyReviewFilterItems> = _currentMyReviewTypeFilter
 
@@ -276,8 +277,7 @@ class MainViewModel @Inject constructor(
     private val _selectedImageUri = mutableStateOf<Uri>(Uri.EMPTY)
     val selectedImageUri: State<Uri> = _selectedImageUri
 
-    private val _selectedWhiskyImageUri = mutableStateOf<Uri>(Uri.EMPTY)
-    val selectedWhiskyImageUri: State<Uri> = _selectedWhiskyImageUri
+
 
     private val _selectedWhiskyImageUriState=mutableStateOf<Boolean>(false)
     val selectedWhiskyImageUriState: State<Boolean> = _selectedWhiskyImageUriState
@@ -401,6 +401,7 @@ class MainViewModel @Inject constructor(
     private val likeStateFlow = MutableStateFlow<Map<String, LikeState>>(emptyMap())
 
     private val imageListFlow = MutableStateFlow<Map<String, ImageState>>(emptyMap())
+
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -566,6 +567,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun updateMyReviewFilter( filterKey: MyReviewFilterItems) {
+        _currentMyReviewDayFilter.value=filterKey
+
+        Log.d("내 리뷰 필터", filterKey.orderType)
+    }
+
+
     fun updateMyBottleNumFilter( filterKey: Int) {
         _currentMyReviewBottleNumFilter.intValue=filterKey
     }
@@ -592,7 +600,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun tryLogin(ssaid: String) {
-
+        _loginResult.value=false
 //        toggleProgressIndicatorState(state = true,text="로그인 중입니다.")
         mainRepository.register(device_id = ssaid){ postDetailResult->
             Log.d("로그인 결과",postDetailResult.toString())
@@ -638,8 +646,13 @@ class MainViewModel @Inject constructor(
         _backupCodeResult.value=null
     }
 
-    fun toggleWhiskySelectDialogState(){
-        _selectWhiskyDialogState.value=!_selectWhiskyDialogState.value
+    fun toggleWhiskySelectDialogState(state:Boolean?=null){
+        if(state==null){
+            _selectWhiskyDialogState.value=!_selectWhiskyDialogState.value
+        }else{
+            _selectWhiskyDialogState.value=state
+        }
+
     }
 
     fun modifyWhiskyMode( data:SingleWhiskeyData?=null){
@@ -809,14 +822,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun setSelectedImage(uri: Uri) {
-        Log.d("이미지",uri.toString())
+        Log.d("선택한 이미지",uri.toString())
         _selectedImageUri.value=uri
     }
 
-    fun setSelectedWhiskyImage(uri: Uri) {
-        Log.d("이미지",uri.toString())
-        _selectedWhiskyImageUri.value=uri
-    }
 
     fun toggleSelectedWhiskyDialogState(){
 
@@ -892,7 +901,24 @@ class MainViewModel @Inject constructor(
 
                             getMyWhiskeyData()
                             toggleInsertWhiskyState()
-                            toggleWhiskySelectDialogState()
+                            toggleWhiskySelectDialogState(state=false)
+
+                            //서버측에 수정 했을 때 리턴값으로 이미지 바이트로 줄 수 있는지 물어보기
+                            _selectWhiskyData.value=_selectWhiskyData.value.copy(
+                                image_name = _customWhiskyData.value.image_name,
+                                korea_name = _customWhiskyData.value.korea_name,
+                                english_name = _customWhiskyData.value.english_name,
+                                category = _customWhiskyData.value.category,
+                                strength = _customWhiskyData.value.strength.toDouble(),
+                                country = _customWhiskyData.value.country,
+                                bottled_year = _customWhiskyData.value.bottled_year,
+                                open_date = _customWhiskyData.value.open_date,
+                                cask_type = _customWhiskyData.value.cask_type,
+                                memo=_customWhiskyData.value.memo,
+                            )
+
+
+
 //                        _selectWhiskyState.value=true
                         }else{
 
@@ -909,6 +935,8 @@ class MainViewModel @Inject constructor(
         }
 
     }
+
+
 
 
     fun updateStrength(strength: String) {
@@ -961,6 +989,7 @@ class MainViewModel @Inject constructor(
 
         _reviewFilterData.value=updateReviewFilterData
         _currentReviewFilter.value=filterKey
+        getSearchReviewData()
 //        when(filterKey.type){
 //
 //            WhiskeyFilterItems.VOTE->{
@@ -1135,6 +1164,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getMyReviewList(){
+        Log.d("리뷰 필터",currentMyReviewDayFilter.value.orderType)
         _smallProgressIndicatorState.value=true
         mainRepository.getMyReviewList(
             whiskyUuid = _selectWhiskyData.value.whisky_uuid,
@@ -1262,7 +1292,7 @@ class MainViewModel @Inject constructor(
         val detailSearchWord=if (reviewFilterData.value.detailSearchText=="") null else reviewFilterData.value.detailSearchText
 
         Log.d("필터 내용", reviewFilterData.value.toString())
-
+        Log.d("필터 내용2", " voteAsc: ${reviewFilterData.value.vote_order?.orderType}, scoreAsc: ${reviewFilterData.value.score_order?.orderType}, createdAtAsc: ${reviewFilterData.value.date_order?.orderType}")
         viewModelScope.launch {
             _postProgressIndicatorState.value=true
             mainRepository.getReviewSearchList(
@@ -1396,6 +1426,13 @@ class MainViewModel @Inject constructor(
                 _otherUserReviewDataList.value = newReviewData
             }
         }
+    }
+
+    fun toggleCameraState(state:Boolean){
+        _cameraState.value=state
+    }
+    fun setCameraTag(tag:AddImageTag){
+        _cameraTag.value=tag
     }
 
 }

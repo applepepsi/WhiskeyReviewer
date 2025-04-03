@@ -47,6 +47,7 @@ import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 
 import com.example.whiskeyreviewer.component.myReview.MySingleReviewComponent
 import com.example.whiskeyreviewer.component.myReview.MyWhiskyDetailInfoComponent
+import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
@@ -68,7 +69,7 @@ fun WhiskeyDetailView(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             if (uri != null) {
-                mainViewModel.setSelectedWhiskyImage(uri)
+                mainViewModel.setSelectedImage(uri)
             }
         }
     )
@@ -134,7 +135,9 @@ fun WhiskeyDetailView(
                 mainViewModel.imageTypeSelectState.value.cameraSelected -> {
 //
 //                    mainViewModel.setCameraTag(AddImageTag.ChangeWhiskyImage)
-                    navController.navigate("${MainRoute.CAMERA}/changeWhiskyImage")
+//                    navController.navigate("${MainRoute.CAMERA}/changeWhiskyImage")
+                    mainViewModel.setCameraTag(tag= AddImageTag.ChangeWhiskyImage)
+                    mainViewModel.toggleCameraState(state = true)
                 }
 
                 else -> {}
@@ -242,7 +245,10 @@ fun WhiskeyDetailView(
 
                 WhiskeyDetailDropDownMenuComponent(
                     value = mainViewModel.currentMyReviewDayFilter.value,
-                    onValueChange = { mainViewModel.updateMyWhiskeyFilter(it) },
+                    onValueChange = {
+                        mainViewModel.updateMyReviewFilter(it)
+                        mainViewModel.getMyReviewList()
+                    },
                     dropDownMenuOption = mainViewModel.myReviewFilterDropDownMenuState.value.day,
                     toggleDropDownMenuOption = {
                         mainViewModel.toggleMyWhiskeyReviewDropDownMenuState(

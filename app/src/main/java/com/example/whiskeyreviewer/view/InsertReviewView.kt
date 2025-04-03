@@ -47,6 +47,7 @@ import com.example.whiskeyreviewer.component.toolBar.InsertReviewToolBarComponen
 import com.example.whiskeyreviewer.component.writeReivew.ImageLazyRowComponent
 import com.example.whiskeyreviewer.component.writeReivew.RichTextInputComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -163,7 +164,10 @@ fun InsertReviewView(
                 mainViewModel.imageTypeSelectState.value.cameraSelected -> {
 //
 //                    mainViewModel.setCameraTag(AddImageTag.InsertReview)
-                    navController.navigate("${MainRoute.CAMERA}/insertReview")
+//                    navController.navigate("${MainRoute.CAMERA}/insertReview")
+                    mainViewModel.setCameraTag(tag= AddImageTag.InsertReview)
+                    mainViewModel.toggleCameraState(state = true)
+
                 }
 
                 else -> {}

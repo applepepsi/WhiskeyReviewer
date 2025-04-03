@@ -88,6 +88,7 @@ import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIn
 import com.example.whiskeyreviewer.component.customComponent.StrengthInputComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MainRoute
@@ -1261,7 +1262,9 @@ fun InsertWhiskyDetailDialog(
                 mainViewModel.imageTypeSelectState.value.cameraSelected -> {
 
 //                    mainViewModel.setCameraTag(AddImageTag.AddWhisky)
-                    navController.navigate("${MainRoute.CAMERA}/addWhisky")
+//                    navController.navigate("${MainRoute.CAMERA}/addWhisky")
+                    mainViewModel.setCameraTag(tag= AddImageTag.ChangeWhiskyImage)
+                    mainViewModel.toggleCameraState(state = true)
                 }
 
                 else -> {}

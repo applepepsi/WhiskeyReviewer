@@ -5,12 +5,14 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,11 +22,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.whiskeyreviewer.component.camea.CameraDialog
 import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDialog
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.InsertWhiskyDetailDialog
 import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.example.whiskeyreviewer.utils.GlobalNavigationHandler
+import com.example.whiskeyreviewer.utils.GlobalNavigator
+import com.example.whiskeyreviewer.utils.TokenManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -126,23 +132,31 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
         currentState = mainViewModel.deleteWhiskyConfirmDialogState.value
     )
 
-//    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+    CameraDialog(
+       mainViewModel=mainViewModel,
+        writeReviewViewModel=writeReviewViewModel,
+        state=mainViewModel.cameraState.value,
+        tag = mainViewModel.cameraTag.value,
+    )
+
+
+    //테스트 해봐야함
+    DisposableEffect(Unit) {
+        GlobalNavigator.registerHandler(object : GlobalNavigationHandler {
+            override fun retryLogin()
+            {
+                mainViewModel.tryLogin(ssaId)
+            }
+        })
+        onDispose {
+            GlobalNavigator.unregisterHandler()
+        }
+    }
+
+
 
     MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
 
-//    when(mainViewModel.loginResult.value){
-//        true -> {
-//            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
-//        }
-//        false -> { }
-//    }
-
-
-
-
-//    InsertReviewView()
-
-//    TapLayoutComponent()
 }
 
 @Preview(showBackground = true)

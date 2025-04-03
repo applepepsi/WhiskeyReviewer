@@ -6,8 +6,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.example.whiskeyreviewer.component.camea.CameraComponent
-import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.view.HomeView
 import com.example.whiskeyreviewer.view.InsertReviewView
@@ -71,14 +69,14 @@ private fun NavGraphBuilder.homeRoute(
         composable(MainRoute.OTHER_USER_REVIEW_DETAIL) {
             OtherUserReviewDetailView(writeReviewViewModel,navController,mainViewModel)
         }
-        composable(route= "${MainRoute.CAMERA}/{tag}") {backStackEntry ->
-            CameraComponent(
-                mainViewModel,
-                writeReviewViewModel,
-                navController,
-                tag=backStackEntry.arguments?.getString("tag") ?: "",
-            )
-        }
+//        composable(route= "${MainRoute.CAMERA}/{tag}") {backStackEntry ->
+//            CameraComponent(
+//                mainViewModel,
+//                writeReviewViewModel,
+//                navController,
+//                tag=backStackEntry.arguments?.getString("tag") ?: "",
+//            )
+//        }
     }
 }
 

@@ -493,6 +493,8 @@ fun OtherUserReviewPostComponent(
                         Spacer(modifier = Modifier.height(5.dp))
                     }
 
+
+
                     RichText(
                         state = richTextState,
                         modifier = Modifier
@@ -520,6 +522,15 @@ fun OtherUserReviewPostComponent(
                             }
                         }
                     }
+                    Text(
+                        text = "베이스 위스키: ${singleReview.korea_name?:singleReview.english_name!!}",
+                        style = TextStyle.Default.copy(
+                            color = Color.Gray,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.padding(start=7.dp,end=7.dp,top=5.dp)
+                    )
                 }
             }
         }

@@ -64,6 +64,8 @@ interface MainRepository{
         singleWhiskeyData: WhiskyReviewData
     ):WhiskyReviewData
 
+    suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData
+
     fun likeReview(
         reviewUuid: String,
         callback: (ServerResponse<Any>?) -> Unit

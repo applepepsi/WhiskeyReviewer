@@ -60,6 +60,7 @@ import com.example.whiskeyreviewer.component.myReview.OtherUserReviewPostCompone
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -79,7 +80,8 @@ fun WhiskeySearchView(
 
     LaunchedEffect(Unit) {
         mainViewModel.toggleDrawerSearchBarState(state = true)
-        mainViewModel.getSearchReviewData()
+        mainViewModel.updateReviewFilter(WhiskeyFilterItems.VoteAscendingOrder)
+
 //        writeReviewViewModel.updateDrawerSearchBarText(writeReviewViewModel.drawerSearchBarText.value)
     }
 

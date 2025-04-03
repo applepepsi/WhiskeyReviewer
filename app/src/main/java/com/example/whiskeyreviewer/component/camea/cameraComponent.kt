@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.content.Context
 
 import android.graphics.Bitmap
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Environment
 
@@ -23,19 +22,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-
-import androidx.compose.material.IconButton
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Cameraswitch
 
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,37 +41,38 @@ import androidx.compose.ui.viewinterop.AndroidView
 import android.graphics.Matrix
 import android.os.Build
 import android.provider.MediaStore
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheetDefaults
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavHostController
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
-import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 
+//todo 액티비티를 이동하는것이 아닌 그냥 다이얼로그만 띄우기
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CameraComponent(
+fun CameraDialog(
     mainViewModel: MainViewModel,
     writeReviewViewModel: WriteReviewViewModel,
-    navController: NavHostController,
-    tag:String
+    state:Boolean,
+    tag: AddImageTag
 ) {
 
     val context= LocalContext.current
     val scope = rememberCoroutineScope()
     val customToast = CustomToast(LocalContext.current)
-    Log.d("태그",tag)
+    Log.d("태그", tag.toString())
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
@@ -90,96 +84,211 @@ fun CameraComponent(
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
-//    BackHandler {
-//        onDismiss()
-//    }
-
     if(mainViewModel.errorToastState.value) {
         customToast.MakeText(text = mainViewModel.errorToastMessage.value, icon = mainViewModel.errorToastIcon.value)
         mainViewModel.resetToastErrorState()
     }
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-
-    ) {
-        AndroidView(
-            factory = {
-                PreviewView(it).apply {
-                    this.controller = controller
-                    controller.bindToLifecycle(lifecycleOwner)
-                }
+    if(state){
+        Dialog(
+            onDismissRequest = {
+                mainViewModel.toggleCameraState(state = false)
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
+            properties = ModalBottomSheetDefaults.properties.let {
+                DialogProperties(
 
-        Box(
-            modifier = Modifier.background(Color.Black).fillMaxWidth().padding(top=12.dp),
+                    securePolicy = it.securePolicy,
+                    usePlatformDefaultWidth = false
+                )
+            },
+        ) {
 
-        ){
-            CustomIconComponent(
-                icon = Icons.Default.Camera,
-                onClick = {
-                    takePhoto(
-                        context=context,
-                        controller=controller,
-                        onPhotoTaken = {uri->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+
+            ) {
+                AndroidView(
+                    factory = {
+                        PreviewView(it).apply {
+                            this.controller = controller
+                            controller.bindToLifecycle(lifecycleOwner)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+
+                Box(
+                    modifier = Modifier.background(Color.Black).fillMaxWidth().padding(top=12.dp),
+
+                    ){
+                    CustomIconComponent(
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
+                        onClick = {
+                            mainViewModel.toggleCameraState(state = false)
+                        },
+                        modifier = Modifier.padding(start=10.dp,bottom=15.dp).size(45.dp).align(Alignment.CenterStart),
+                        iconSize = Modifier.size(37.dp),
+                        backGroundColor = Color.White,
+                        tint = LightBlackColor
+                    )
+
+                    CustomIconComponent(
+                        icon = Icons.Default.Camera,
+                        onClick = {
+                            takePhoto(
+                                context=context,
+                                controller=controller,
+                                onPhotoTaken = {uri->
 //
 //                            mainViewModel.addImage(uri)
-                            if(uri!=null){
-                                mainViewModel.setErrorToastMessage(
-                                    icon=R.drawable.success_icon,
-                                    text="이미지 저장에 성공했습니다."
-                                )
+                                    if(uri!=null){
+                                        mainViewModel.setErrorToastMessage(
+                                            icon=R.drawable.success_icon,
+                                            text="이미지 저장에 성공했습니다."
+                                        )
 
-                                when(tag){
-                                    "insertReview"->{
-                                        writeReviewViewModel.setSelectedImage(listOf(uri))
+                                        when(tag){
+                                            AddImageTag.InsertReview ->{
+                                                writeReviewViewModel.setSelectedImage(listOf(uri))
+                                            }
+                                            AddImageTag.AddWhisky->{
+                                                mainViewModel.setSelectedImage(uri)
+                                            }
+                                            AddImageTag.ChangeWhiskyImage->{
+                                                mainViewModel.setSelectedImage(uri)
+                                            }
+                                        }
+                                        mainViewModel.toggleCameraState(state = false)
+                                    }else{
+                                        mainViewModel.setErrorToastMessage(
+                                            icon=R.drawable.fail_icon,
+                                            text="이미지 저장에 실패했습니다."
+                                        )
                                     }
-                                    "addWhisky"->{
-                                        mainViewModel.setSelectedImage(uri)
-                                    }
-                                    "changeWhiskyImage"->{
 
-                                    }
+
                                 }
-                            }else{
-                                mainViewModel.setErrorToastMessage(
-                                    icon=R.drawable.fail_icon,
-                                    text="이미지 저장에 실패했습니다."
-                                )
-                            }
-                            navController.popBackStack()
-
-                        }
+                            )
+                        },
+                        modifier = Modifier.padding(bottom=15.dp).size(45.dp).align(Alignment.Center),
+                        iconSize = Modifier.size(37.dp),
+                        backGroundColor = Color.White,
+                        tint = LightBlackColor
                     )
-                },
-                modifier = Modifier.padding(bottom=15.dp).size(45.dp).align(Alignment.Center),
-                iconSize = Modifier.size(37.dp),
-                backGroundColor = Color.White,
-                tint = LightBlackColor
-            )
 
-            CustomIconComponent(
-                icon = Icons.Default.Cameraswitch,
-                onClick = {
-                    controller.cameraSelector =
-                        if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
-                            CameraSelector.DEFAULT_FRONT_CAMERA
-                        } else CameraSelector.DEFAULT_BACK_CAMERA
-                },
-                modifier = Modifier.padding(end=10.dp,bottom=15.dp).size(45.dp).align(Alignment.CenterEnd),
-                iconSize = Modifier.size(37.dp),
-                backGroundColor = Color.White,
-                tint = LightBlackColor
-            )
+                    CustomIconComponent(
+                        icon = Icons.Default.Cameraswitch,
+                        onClick = {
+                            controller.cameraSelector =
+                                if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                    CameraSelector.DEFAULT_FRONT_CAMERA
+                                } else CameraSelector.DEFAULT_BACK_CAMERA
+                        },
+                        modifier = Modifier.padding(end=10.dp,bottom=15.dp).size(45.dp).align(Alignment.CenterEnd),
+                        iconSize = Modifier.size(37.dp),
+                        backGroundColor = Color.White,
+                        tint = LightBlackColor
+                    )
+                }
+
+            }
         }
-
     }
+
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//
+//    ) {
+//        AndroidView(
+//            factory = {
+//                PreviewView(it).apply {
+//                    this.controller = controller
+//                    controller.bindToLifecycle(lifecycleOwner)
+//                }
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .weight(1f)
+//        )
+//
+//        Box(
+//            modifier = Modifier.background(Color.Black).fillMaxWidth().padding(top=12.dp),
+//
+//        ){
+//            CustomIconComponent(
+//                icon = Icons.AutoMirrored.Filled.ArrowBack,
+//                onClick = {
+//                    navController.popBackStack()
+//                },
+//                modifier = Modifier.padding(start=10.dp,bottom=15.dp).size(45.dp).align(Alignment.CenterStart),
+//                iconSize = Modifier.size(37.dp),
+//                backGroundColor = Color.White,
+//                tint = LightBlackColor
+//            )
+//
+//            CustomIconComponent(
+//                icon = Icons.Default.Camera,
+//                onClick = {
+//                    takePhoto(
+//                        context=context,
+//                        controller=controller,
+//                        onPhotoTaken = {uri->
+////
+////                            mainViewModel.addImage(uri)
+//                            if(uri!=null){
+//                                mainViewModel.setErrorToastMessage(
+//                                    icon=R.drawable.success_icon,
+//                                    text="이미지 저장에 성공했습니다."
+//                                )
+//
+//                                when(tag){
+//                                    "insertReview"->{
+//                                        writeReviewViewModel.setSelectedImage(listOf(uri))
+//                                    }
+//                                    "addWhisky"->{
+//                                        mainViewModel.setSelectedImage(uri)
+//                                    }
+//                                    "changeWhiskyImage"->{
+//
+//                                    }
+//                                }
+//                            }else{
+//                                mainViewModel.setErrorToastMessage(
+//                                    icon=R.drawable.fail_icon,
+//                                    text="이미지 저장에 실패했습니다."
+//                                )
+//                            }
+//                            navController.popBackStack()
+//
+//                        }
+//                    )
+//                },
+//                modifier = Modifier.padding(bottom=15.dp).size(45.dp).align(Alignment.Center),
+//                iconSize = Modifier.size(37.dp),
+//                backGroundColor = Color.White,
+//                tint = LightBlackColor
+//            )
+//
+//            CustomIconComponent(
+//                icon = Icons.Default.Cameraswitch,
+//                onClick = {
+//                    controller.cameraSelector =
+//                        if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+//                            CameraSelector.DEFAULT_FRONT_CAMERA
+//                        } else CameraSelector.DEFAULT_BACK_CAMERA
+//                },
+//                modifier = Modifier.padding(end=10.dp,bottom=15.dp).size(45.dp).align(Alignment.CenterEnd),
+//                iconSize = Modifier.size(37.dp),
+//                backGroundColor = Color.White,
+//                tint = LightBlackColor
+//            )
+//        }
+//
+//    }
 }
 
 private fun takePhoto(

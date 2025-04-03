@@ -11,8 +11,8 @@ data class MyWhiskyFilterData(
 data class ReviewFilterData(
     val searchText:String="",
     val detailSearchText: String="",
-    val vote_order:WhiskeyFilterItems?=WhiskeyFilterItems.VoteAscendingOrder,
-    val score_order:WhiskeyFilterItems?=WhiskeyFilterItems.ScoreAscendingOrder,
-    val date_order:WhiskeyFilterItems?=WhiskeyFilterItems.DayAscendingOrder,
+    val vote_order:WhiskeyFilterItems?=null,
+    val score_order:WhiskeyFilterItems?=null,
+    val date_order:WhiskeyFilterItems?=null,
 
 )

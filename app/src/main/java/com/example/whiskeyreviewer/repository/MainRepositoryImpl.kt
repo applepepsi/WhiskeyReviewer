@@ -101,7 +101,7 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData {
+    override suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData {
         if(singleWhiskeyData.image_name==null){
 
             return singleWhiskeyData
