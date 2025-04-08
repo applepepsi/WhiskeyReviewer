@@ -2,6 +2,7 @@ package com.example.whiskeyreviewer.repository
 
 
 import androidx.paging.PagingData
+import com.example.whiskeyreviewer.data.BackupCodeData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
@@ -76,5 +77,13 @@ interface MainRepository{
         callback: (ServerResponse<Any>?) -> Unit
     )
 
+    fun getBackupCode(
 
+        callback: (ServerResponse<BackupCodeData>?) -> Unit
+    )
+
+    fun submitBackupCode(
+        backupCodeData: BackupCodeData,
+        callback: (ServerResponse<Any>?) -> Unit
+    )
 }

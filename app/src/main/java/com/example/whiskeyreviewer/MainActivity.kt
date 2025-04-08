@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
@@ -139,6 +140,17 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
         tag = mainViewModel.cameraTag.value,
     )
 
+    LaunchedEffect(mainViewModel.backupCodeResult.value) {
+        if(mainViewModel.backupCodeResult.value == true){
+            val intent=context.packageManager.getLaunchIntentForPackage(context.packageName)
+            intent?.let {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                context.startActivity(intent)
+                Runtime.getRuntime().exit(0)
+            }
+
+        }
+    }
 
     //테스트 해봐야함
     DisposableEffect(Unit) {

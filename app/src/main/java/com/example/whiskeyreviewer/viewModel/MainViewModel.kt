@@ -1,6 +1,7 @@
 package com.example.whiskeyreviewer.viewModel
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
@@ -19,6 +20,7 @@ import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.data.AddImageTag
+import com.example.whiskeyreviewer.data.BackupCodeData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 
 import com.example.whiskeyreviewer.data.ToolBarItems
@@ -402,6 +404,11 @@ class MainViewModel @Inject constructor(
 
     private val imageListFlow = MutableStateFlow<Map<String, ImageState>>(emptyMap())
 
+    private val _backupCode=mutableStateOf<String?>(null)
+    val backupCode: State<String?> = _backupCode
+
+    private val _inputBackupCode=mutableStateOf<BackupCodeData>(BackupCodeData())
+    val inputBackupCode: State<BackupCodeData> = _inputBackupCode
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -637,11 +644,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun submitBackupCode(backupCode:String){
-        //백업 코드 제출 후 결과 구현예정
-        _backupCodeResult.value=false
 
-    }
     fun resetSubmitBackupCodeResultState(){
         _backupCodeResult.value=null
     }
@@ -1434,5 +1437,40 @@ class MainViewModel @Inject constructor(
     fun setCameraTag(tag:AddImageTag){
         _cameraTag.value=tag
     }
+
+    fun getBackupCode(){
+        mainRepository.getBackupCode {serverResponse->
+            if(serverResponse !=null){
+                if(serverResponse.code== SUCCESS_CODE){
+                    _backupCode.value=serverResponse.data?.code
+                }else{
+
+                }
+            }else{
+
+            }
+        }
+
+    }
+
+    fun submitBackupCode(backupCode:String){
+        _inputBackupCode.value=_inputBackupCode.value.copy(
+            code = backupCode
+        )
+        mainRepository.submitBackupCode(inputBackupCode.value) {serverResponse->
+            if(serverResponse !=null){
+                if(serverResponse.code== SUCCESS_CODE){
+
+                    _backupCodeResult.value=true
+                }else{
+                    _backupCodeResult.value=false
+                }
+            }else{
+                _backupCodeResult.value=false
+            }
+        }
+    }
+
+
 
 }

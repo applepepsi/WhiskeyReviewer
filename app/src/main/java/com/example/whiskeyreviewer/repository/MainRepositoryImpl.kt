@@ -7,6 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.nextclass.utils.SUCCESS_CODE
 import com.example.oneplusone.serverConnection.API
+import com.example.whiskeyreviewer.data.BackupCodeData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ServerResponse
@@ -203,7 +204,29 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getBackupCode(callback: (ServerResponse<BackupCodeData>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = ApiHandler.makeApiCall(tag="백업코드 발급") {
+                api.getBackupCode()
+            }
 
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
+
+    override fun submitBackupCode(backupCodeData: BackupCodeData,callback: (ServerResponse<Any>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = ApiHandler.makeApiCall(tag="백업코드 제출") {
+                api.submitBackupCode(backupCodeData)
+            }
+
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
 
 
     override fun addWhiskyNameSearch(name: String,category:String?, callback: (ServerResponse<List<WhiskyName>>?) -> Unit) {

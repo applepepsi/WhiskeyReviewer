@@ -5,6 +5,7 @@ package com.example.oneplusone.serverConnection
 import com.example.nextclass.utils.ADD_CUSTOM_WHISKY
 import com.example.nextclass.utils.ADD_WHISKY_NAME_SEARCH
 import com.example.nextclass.utils.DELETE_REVIEW
+import com.example.nextclass.utils.BACKUP_CODE
 import com.example.nextclass.utils.GET_IMAGE
 import com.example.nextclass.utils.GET_REVIEW
 import com.example.nextclass.utils.GET_REVIEW_SEARCH_LIST
@@ -15,6 +16,7 @@ import com.example.nextclass.utils.MODIFY_WHISKY
 import com.example.nextclass.utils.REGISTER
 import com.example.nextclass.utils.REVIEW_MODIFY
 import com.example.nextclass.utils.REVIEW_SAVE
+import com.example.whiskeyreviewer.data.BackupCodeData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
@@ -24,7 +26,6 @@ import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.pagingResponse.PagingResponse
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -140,4 +141,14 @@ interface API {
         @Query("page") page: Int,
         @Query("size") size: Int,
     ):Response<ServerResponse<PagingResponse>>
+
+
+    @GET(BACKUP_CODE)
+    suspend fun getBackupCode(
+    ): Response<ServerResponse<BackupCodeData>>
+
+    @POST(BACKUP_CODE)
+    suspend fun submitBackupCode(
+        @Body code: BackupCodeData
+    ): Response<ServerResponse<Any>>
 }

@@ -53,6 +53,7 @@ const val GET_IMAGE="/image/{image_name}"
 const val GET_REVIEW_SEARCH_LIST="/other/review"
 const val LIKE_REVIEW="/like/{reviewUuid}"
 const val CANCEL_LIKE_REVIEW="/like/{reviewUuid}"
+const val BACKUP_CODE="/backup"
 
 val whiskeyData = listOf(
     TapLayoutItems.AllWhiskey,

@@ -108,8 +108,8 @@ fun GetBackupCodeDialog(
     toggleOption: () -> Unit,
 
     currentState: Boolean = true,
-    backupCode:String="test",
-
+    backupCode:String?=null,
+    getBackupCode:()->Unit,
 ) {
 
     val clipboardManager = LocalClipboardManager.current
@@ -120,6 +120,12 @@ fun GetBackupCodeDialog(
         customToast.MakeText(text = "코드가 복사 되었습니다.", icon = R.drawable.success_icon)
         toastState = false
     }
+
+    LaunchedEffect(Unit) {
+        getBackupCode()
+    }
+
+    val backupCodeData=backupCode ?:"코드 발급 실패"
 
     if (currentState) {
         Dialog(
@@ -174,7 +180,7 @@ fun GetBackupCodeDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = backupCode,
+                        text = backupCodeData,
                         style = TextStyle.Default.copy(
                             color = LightBlackColor,
                             fontSize = 25.sp,
@@ -186,7 +192,7 @@ fun GetBackupCodeDialog(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
                             ) {
-                                clipboardManager.setText(AnnotatedString((backupCode)))
+                                clipboardManager.setText(AnnotatedString((backupCodeData)))
                                 toastState=!toastState
                             }
 
@@ -248,7 +254,7 @@ fun InsertBackupCodeDialog(
 
 
         if(submitResult == true) {
-
+            //todo 다시켜야함
             customToast.MakeText(text = "인증 되었습니다. 사용자 정보를 불러오는 중 입니다.", icon = R.drawable.success_icon)
             resetResult()
         }else if(submitResult == false){
