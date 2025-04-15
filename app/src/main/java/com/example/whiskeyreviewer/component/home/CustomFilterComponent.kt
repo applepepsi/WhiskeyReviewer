@@ -79,7 +79,6 @@ fun MyWhiskyCustomFilterRow(
                         WhiskeyFilterItems.ScoreDescendingOrder,
                         WhiskeyFilterItems.OpenDateAscendingOrder,
                         WhiskeyFilterItems.OpenDateDescendingOrder
-
                     ),
                 )
             }

@@ -72,10 +72,16 @@ fun HomeView(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+
         //내 위스키 불러오기
 //        mainViewModel.getMyWhiskeyData()
     }
 
+    LaunchedEffect(mainViewModel.whiskyDeleteState.value) {
+        if(mainViewModel.whiskyDeleteState.value){
+            mainViewModel.toggleWhiskyDeleteState(state = false)
+        }
+    }
 
 
 //    LaunchedEffect(mainViewModel.myReviewList.value) {

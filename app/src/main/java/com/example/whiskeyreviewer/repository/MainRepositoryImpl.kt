@@ -71,6 +71,7 @@ class MainRepositoryImpl @Inject constructor(
         date_order: String?,
 //        name_order: String,
         score_order: String?,
+        open_date_order:String?,
         callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
     ) {
 
@@ -82,8 +83,8 @@ class MainRepositoryImpl @Inject constructor(
                 name=name,
                 category=category,
                 date_order=date_order,
-                name_order="asc",
                 score_order=score_order,
+                open_date_order=open_date_order,
             ) }
 
             val updatedServerResponse=result?.let{
@@ -228,6 +229,16 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun deleteWhisky(whisky_uuid: String, callback: (ServerResponse<Any>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = ApiHandler.makeApiCall(tag="위스키 제거") { api.deleteWhisky(whisky_uuid = whisky_uuid) }
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
+
 
     override fun addWhiskyNameSearch(name: String,category:String?, callback: (ServerResponse<List<WhiskyName>>?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -246,7 +257,7 @@ class MainRepositoryImpl @Inject constructor(
         image: File?,
         data: CustomWhiskyData,
         modify: Boolean,
-        callback: (ServerResponse<Any>?) -> Unit
+        callback: (ServerResponse<SingleWhiskeyData?>?) -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -271,9 +282,19 @@ class MainRepositoryImpl @Inject constructor(
                     api.customWhiskySave(data = newData)
                 }
             }
+            //수정 했을 때는 서버에서 수정된 데이터를 보내줌 이미지를 수정했다면 수정된 이미지도 함께 보내준다.(서버에서 이미지를 다시 가져와야함)
+            val updatedServerResponse = if (modify) {
+                result?.let { serverResponse ->
+                    serverResponse.data?.let { modifyData ->
+                        serverResponse.copy(data = getImage(modifyData))
+                    } ?: serverResponse
+                }
+            } else {
+                result
+            }
 
             withContext(Dispatchers.Main) {
-                callback(result)
+                callback(updatedServerResponse)
             }
         }
     }

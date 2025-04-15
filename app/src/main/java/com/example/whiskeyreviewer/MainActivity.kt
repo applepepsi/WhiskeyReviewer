@@ -128,7 +128,7 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
     ConfirmDialog(
         title = "위스키 제거",
         text = "위스키를 제거하시겠습니까?",
-        confirm = { /*TODO*/ },
+        confirm = { mainViewModel.deleteWhisky() },
         toggleOption = { mainViewModel.toggleDeleteWhiskyConfirmDialog() },
         currentState = mainViewModel.deleteWhiskyConfirmDialogState.value
     )

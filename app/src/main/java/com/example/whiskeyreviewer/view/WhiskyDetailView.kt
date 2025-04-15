@@ -88,6 +88,12 @@ fun WhiskeyDetailView(
         mainViewModel.getMyReviewList()
     }
 
+    LaunchedEffect(mainViewModel.whiskyDeleteState.value) {
+        if(mainViewModel.whiskyDeleteState.value){
+            navController.navigateUp()
+        }
+    }
+
 //    LaunchedEffect(mainViewModel.selectedWhiskyImageUri.value) {
 //        Log.d("값", mainViewModel.selectedWhiskyImageUri.value.toString())
 //
@@ -278,7 +284,9 @@ fun WhiskeyDetailView(
             }
 
             if(mainViewModel.smallProgressIndicatorState.value){
-                SmallSizeProgressIndicator(modifier = Modifier.size(50.dp).padding(top=30.dp))
+                SmallSizeProgressIndicator(modifier = Modifier
+                    .size(50.dp)
+                    .padding(top = 30.dp))
 
             }else{
                 when (mainViewModel.currentMyReviewTypeFilter.value) {

@@ -24,6 +24,7 @@ interface MainRepository{
         date_order: String?,
 //        name_order:String,
         score_order:String?,
+        open_date_order:String?,
         callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
     )
 
@@ -44,7 +45,7 @@ interface MainRepository{
         image:File?,
         data:CustomWhiskyData,
         modify:Boolean,
-        callback: (ServerResponse<Any>?) -> Unit
+        callback: (ServerResponse<SingleWhiskeyData?>?) -> Unit
     )
 
     fun getReviewSearchList(
@@ -84,6 +85,11 @@ interface MainRepository{
 
     fun submitBackupCode(
         backupCodeData: BackupCodeData,
+        callback: (ServerResponse<Any>?) -> Unit
+    )
+
+    fun deleteWhisky(
+        whisky_uuid: String,
         callback: (ServerResponse<Any>?) -> Unit
     )
 }

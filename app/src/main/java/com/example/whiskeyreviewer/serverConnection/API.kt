@@ -6,6 +6,7 @@ import com.example.nextclass.utils.ADD_CUSTOM_WHISKY
 import com.example.nextclass.utils.ADD_WHISKY_NAME_SEARCH
 import com.example.nextclass.utils.DELETE_REVIEW
 import com.example.nextclass.utils.BACKUP_CODE
+import com.example.nextclass.utils.DELETE_WHISKY
 import com.example.nextclass.utils.GET_IMAGE
 import com.example.nextclass.utils.GET_REVIEW
 import com.example.nextclass.utils.GET_REVIEW_SEARCH_LIST
@@ -50,8 +51,9 @@ interface API {
         @Query("name") name: String?,
         @Query("category") category: String?,
         @Query("date_order") date_order: String?,
-        @Query("name_order") name_order: String?,
-        @Query("score_order") score_order: String?
+//        @Query("name_order") name_order: String?,
+        @Query("score_order") score_order: String?,
+        @Query("open_date_order") open_date_order: String?
     ): Response<ServerResponse<List<SingleWhiskeyData>>>
 
     @GET(ADD_WHISKY_NAME_SEARCH)
@@ -59,6 +61,11 @@ interface API {
         @Query("name") name: String,
         @Query("category") category: String?,
     ): Response<ServerResponse<List<WhiskyName>>>
+
+    @DELETE(DELETE_WHISKY)
+    suspend fun deleteWhisky(
+        @Path("whisky_uuid") whisky_uuid: String,
+    ): Response<ServerResponse<Any>>
 
 
     @POST(REVIEW_SAVE)
@@ -103,13 +110,13 @@ interface API {
     @POST(ADD_CUSTOM_WHISKY)
     suspend fun customWhiskySave(
         @Body data: CustomWhiskyData
-    ):Response<ServerResponse<Any>>
+    ):Response<ServerResponse<SingleWhiskeyData?>>
 
     @PUT(MODIFY_WHISKY)
     suspend fun modifyWhisky(
         @Path("myWhiskyUuid") myWhiskyUuid: String,
         @Body data: CustomWhiskyData,
-    ):Response<ServerResponse<Any>>
+    ):Response<ServerResponse<SingleWhiskeyData?>>
 
 
     @Multipart

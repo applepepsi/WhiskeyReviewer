@@ -54,6 +54,7 @@ const val GET_REVIEW_SEARCH_LIST="/other/review"
 const val LIKE_REVIEW="/like/{reviewUuid}"
 const val CANCEL_LIKE_REVIEW="/like/{reviewUuid}"
 const val BACKUP_CODE="/backup"
+const val DELETE_WHISKY="/my-whisky/{whisky_uuid}"
 
 val whiskeyData = listOf(
     TapLayoutItems.AllWhiskey,

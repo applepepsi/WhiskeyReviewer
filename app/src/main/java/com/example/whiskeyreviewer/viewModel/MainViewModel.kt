@@ -410,6 +410,9 @@ class MainViewModel @Inject constructor(
     private val _inputBackupCode=mutableStateOf<BackupCodeData>(BackupCodeData())
     val inputBackupCode: State<BackupCodeData> = _inputBackupCode
 
+    private val _whiskyDeleteState=mutableStateOf<Boolean>(false)
+    val whiskyDeleteState: State<Boolean> = _whiskyDeleteState
+
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -532,7 +535,8 @@ class MainViewModel @Inject constructor(
         val updatedFilterData = _myWhiskyFilterData.value.copy(
             date_order = if (filterKey.type == WhiskeyFilterItems.DAY) filterKey else null,
             score_order = if (filterKey.type == WhiskeyFilterItems.SCORE) filterKey else null,
-            name_order = if (filterKey.type == WhiskeyFilterItems.NAME) filterKey else null
+//            name_order = if (filterKey.type == WhiskeyFilterItems.NAME) filterKey else null,
+            open_date_order = if (filterKey.type == WhiskeyFilterItems.OPEN_DATE) filterKey else null
         )
 
         _myWhiskyFilterData.value = updatedFilterData
@@ -615,7 +619,7 @@ class MainViewModel @Inject constructor(
                 if(postDetailResult.code== SUCCESS_CODE){
                     TokenManager.saveToken(applicationContext, postDetailResult.data!!)
                     _loginResult.value=true
-                    getMyWhiskeyData()
+
 
                 }else{
                     _loginResult.value=false
@@ -792,10 +796,16 @@ class MainViewModel @Inject constructor(
         Log.d("필터 내용", _myWhiskyFilterData.value.toString())
         mainRepository.getMyWhiskyList(
             name=searchWord,
+//            category= _myWhiskyFilterData.value.category.name,
+//            date_order= _myWhiskyFilterData.value.date_order?.orderType,
+////            name_order=_myWhiskyFilterData.value.name_order.orderType,
+//            score_order=_myWhiskyFilterData.value.score_order?.orderType,
             category= _myWhiskyFilterData.value.category.name,
             date_order= _myWhiskyFilterData.value.date_order?.orderType,
 //            name_order=_myWhiskyFilterData.value.name_order.orderType,
+
             score_order=_myWhiskyFilterData.value.score_order?.orderType,
+            open_date_order=_myWhiskyFilterData.value.open_date_order?.orderType
             //개봉일 추가해야함 필터 초기값 null로 할당하기
         ){serverResponse ->
             if(serverResponse !=null ){
@@ -897,32 +907,42 @@ class MainViewModel @Inject constructor(
 
                         if(serverResponse.code== SUCCESS_CODE){
 
-                            setErrorToastMessage(
-                                icon=R.drawable.success_icon,
-                                text="위스키가 등록되었습니다."
-                            )
+                            if(_whiskyModifyState.value){
+                                setErrorToastMessage(
+                                    icon=R.drawable.success_icon,
+                                    text="정보를 수정했습니다."
+                                )
+                            }else{
+                                setErrorToastMessage(
+                                    icon=R.drawable.success_icon,
+                                    text="위스키가 등록되었습니다."
+                                )
+                            }
+
 
                             getMyWhiskeyData()
                             toggleInsertWhiskyState()
                             toggleWhiskySelectDialogState(state=false)
 
+                            if(serverResponse.data!=null){
+                                _selectWhiskyData.value=serverResponse.data
+                            }
+
+
                             //서버측에 수정 했을 때 리턴값으로 이미지 바이트로 줄 수 있는지 물어보기
-                            _selectWhiskyData.value=_selectWhiskyData.value.copy(
-                                image_name = _customWhiskyData.value.image_name,
-                                korea_name = _customWhiskyData.value.korea_name,
-                                english_name = _customWhiskyData.value.english_name,
-                                category = _customWhiskyData.value.category,
-                                strength = _customWhiskyData.value.strength.toDouble(),
-                                country = _customWhiskyData.value.country,
-                                bottled_year = _customWhiskyData.value.bottled_year,
-                                open_date = _customWhiskyData.value.open_date,
-                                cask_type = _customWhiskyData.value.cask_type,
-                                memo=_customWhiskyData.value.memo,
-                            )
+//                            _selectWhiskyData.value=_selectWhiskyData.value.copy(
+//                                image_name = _customWhiskyData.value.image_name,
+//                                korea_name = _customWhiskyData.value.korea_name,
+//                                english_name = _customWhiskyData.value.english_name,
+//                                category = _customWhiskyData.value.category,
+//                                strength = _customWhiskyData.value.strength.toDouble(),
+//                                country = _customWhiskyData.value.country,
+//                                bottled_year = _customWhiskyData.value.bottled_year,
+//                                open_date = _customWhiskyData.value.open_date,
+//                                cask_type = _customWhiskyData.value.cask_type,
+//                                memo=_customWhiskyData.value.memo,
+//                            )
 
-
-
-//                        _selectWhiskyState.value=true
                         }else{
 
                         }
@@ -1471,6 +1491,33 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun deleteWhisky(){
+        toggleProgressIndicatorState(state = true,text="")
+        toggleDeleteWhiskyConfirmDialog()
+        mainRepository.deleteWhisky(
+            whisky_uuid = selectWhiskyData.value.whisky_uuid
+        ){serverResponse ->
+            if(serverResponse !=null){
+                if(serverResponse.code== SUCCESS_CODE){
+                    findAndDeleteWhiskyList()
+                    toggleWhiskyDeleteState(state = true)
 
+                }else{
 
+                }
+            }else{
+
+            }
+            toggleProgressIndicatorState(state = false,text="")
+        }
+    }
+
+    private fun findAndDeleteWhiskyList(){
+        _myWhiskyList.value = _myWhiskyList.value.filter { it.whisky_uuid != selectWhiskyData.value.whisky_uuid }
+    }
+
+    fun toggleWhiskyDeleteState(state:Boolean){
+        Log.d("제거 상태", state.toString())
+        _whiskyDeleteState.value=state
+    }
 }
