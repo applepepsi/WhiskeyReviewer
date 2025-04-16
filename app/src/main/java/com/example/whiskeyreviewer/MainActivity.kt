@@ -6,15 +6,17 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,25 +24,28 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.whiskeyreviewer.component.Ad.AdMobBannerAd
 import com.example.whiskeyreviewer.component.camea.CameraDialog
 import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDialog
 import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.InsertWhiskyDetailDialog
+import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.nav.MainNavGraph
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.GlobalNavigationHandler
 import com.example.whiskeyreviewer.utils.GlobalNavigator
-import com.example.whiskeyreviewer.utils.TokenManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @SuppressLint("HardwareIds")
+    @SuppressLint("HardwareIds", "UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        MobileAds.initialize(this)
         val ssaId=Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
 
         if (!hasRequiredPermissions()) {
@@ -63,17 +68,13 @@ class MainActivity : ComponentActivity() {
             }
             WhiskeyReviewerTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-//                    FullSizeProgressIndicator()
 
                     Greeting(ssaId,mainViewModel)
                 }
+
             }
         }
-    }
+
 
     private fun hasRequiredPermissions(): Boolean {
         return CAMERAX_PERMISSIONS.all {
@@ -89,6 +90,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
     val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
@@ -166,8 +168,28 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
     }
 
 
+    val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+    LaunchedEffect(currentRoute) {
+        Log.d("CurrentRoute", currentRoute ?: "Unknown")
+    }
+
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            if(currentRoute!=MainRoute.WHISKY_DETAIL && currentRoute!="${MainRoute.INSERT_REVIEW}/{tag}"){
+                AdMobBannerAd()
+            }
+        }
+    ) { paddingValues->
+        Column(
+            Modifier.padding(paddingValues)
+        ) {
+            MainNavGraph(mainNavController,writeReviewViewModel,mainViewModel)
+        }
+    }
 
 }
 

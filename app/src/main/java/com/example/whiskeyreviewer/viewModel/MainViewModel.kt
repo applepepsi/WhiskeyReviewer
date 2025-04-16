@@ -1474,6 +1474,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun submitBackupCode(backupCode:String){
+        Log.d("입력 백업 코드",backupCode)
         _inputBackupCode.value=_inputBackupCode.value.copy(
             code = backupCode
         )

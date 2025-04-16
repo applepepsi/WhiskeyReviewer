@@ -12,6 +12,7 @@ object ApiHandler {
                 Log.d("$tag API 호출 성공", response.body().toString())
                 response.body()
             } else {
+
                 Log.d("$tag API 호출 실패", "$tag 실패")
                 null
             }

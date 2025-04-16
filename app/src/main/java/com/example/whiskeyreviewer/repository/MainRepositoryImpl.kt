@@ -218,7 +218,9 @@ class MainRepositoryImpl @Inject constructor(
     }
 
     override fun submitBackupCode(backupCodeData: BackupCodeData,callback: (ServerResponse<Any>?) -> Unit) {
+
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d("백업코드", backupCodeData.toString())
             val result = ApiHandler.makeApiCall(tag="백업코드 제출") {
                 api.submitBackupCode(backupCodeData)
             }
