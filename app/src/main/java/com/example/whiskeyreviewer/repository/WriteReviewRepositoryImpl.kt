@@ -30,7 +30,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
 
 
         CoroutineScope(Dispatchers.IO).launch {
-
+            Log.d("이미지 데이터들", imageFiles.toString())
             val imageLinks = imageFiles?.map { singleImage ->
                 postImage(singleImage)
             }
@@ -85,6 +85,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
         callback: (ServerResponse<Any>?) -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d("이미지 데이터들", imageFiles.toString())
             val result = ApiHandler.makeApiCall(tag="리뷰 수정") {
                 Log.d("수정 데이터", reviewData.toString())
                 val imageLinks = imageFiles?.map { singleImage ->

@@ -13,7 +13,7 @@ object ApiHandler {
                 response.body()
             } else {
 
-                Log.d("$tag API 호출 실패", "$tag 실패")
+                Log.d("$tag API 호출 실패", "$tag 실패: $response")
                 null
             }
         } catch (e: IOException) {

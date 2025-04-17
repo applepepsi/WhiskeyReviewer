@@ -338,18 +338,24 @@ class MainRepositoryImpl @Inject constructor(
         val requestFile = image?.asRequestBody("image/*".toMediaTypeOrNull())
         val convertImage = requestFile?.let { MultipartBody.Part.createFormData("image", image.name, it) }
 
-
-        val result = withContext(Dispatchers.IO) {
-            ApiHandler.makeApiCall(tag = "이미지 전송") {
-                api.imageUpload(image = convertImage)
+        Log.d("컨버트 이미지", convertImage.toString())
+        Log.d("컨버트 이미지", image?.name ?:"null")
+        return if(convertImage!=null){
+            val result = withContext(Dispatchers.IO) {
+                ApiHandler.makeApiCall(tag = "이미지 전송") {
+                    api.imageUpload(image = convertImage)
+                }
             }
-        }
 
-        return if (result != null && result.code == SUCCESS_CODE) {
-            result.data
-        } else {
+            if (result != null && result.code == SUCCESS_CODE) {
+                result.data
+            } else {
+                null
+            }
+        }else{
             null
         }
+
     }
 
 

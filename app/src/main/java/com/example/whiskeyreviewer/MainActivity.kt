@@ -171,11 +171,6 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel) {
     val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    LaunchedEffect(currentRoute) {
-        Log.d("CurrentRoute", currentRoute ?: "Unknown")
-    }
-
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {

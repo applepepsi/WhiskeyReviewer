@@ -48,7 +48,7 @@ fun EmptyMyWhiskyReviewComponent(
                 .size(150.dp),
             imageVector = ImageVector.vectorResource(R.drawable.empty_bottle),
             contentDescription = "",
-            tint = LightBlackColor,
+            tint = LightBlackColor.copy(alpha = 0.3f),
         )
 
         Spacer(modifier = Modifier.height(15.dp))

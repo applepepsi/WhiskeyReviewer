@@ -815,9 +815,22 @@ class MainViewModel @Inject constructor(
 
                     initializeListSize()
 
+                }else{
+                    _myWhiskyList.value= emptyList()
+                    setErrorToastMessage(
+                        text = "데이터를 가져오는데 실패했습니다. 다시 시도해 주세요",
+                        icon=R.drawable.fail_icon,
+                    )
                 }
 
+            }else{
+                _myWhiskyList.value= emptyList()
+                setErrorToastMessage(
+                    text = "데이터를 가져오는데 실패했습니다. 다시 시도해 주세요",
+                    icon=R.drawable.fail_icon,
+                )
             }
+
 //            _postProgressIndicatorState.value=false
             if(refresh) _whiskyListRefreshState.value=false else _postProgressIndicatorState.value=false
 
@@ -1314,7 +1327,7 @@ class MainViewModel @Inject constructor(
         val searchWord=if (reviewFilterData.value.searchText=="" || !_searchButtonState.value) null else reviewFilterData.value.searchText
         val detailSearchWord=if (reviewFilterData.value.detailSearchText=="") null else reviewFilterData.value.detailSearchText
 
-        Log.d("필터 내용", reviewFilterData.value.toString())
+        Log.d("필터 내용", detailSearchWord.toString())
         Log.d("필터 내용2", " voteAsc: ${reviewFilterData.value.vote_order?.orderType}, scoreAsc: ${reviewFilterData.value.score_order?.orderType}, createdAtAsc: ${reviewFilterData.value.date_order?.orderType}")
         viewModelScope.launch {
             _postProgressIndicatorState.value=true
