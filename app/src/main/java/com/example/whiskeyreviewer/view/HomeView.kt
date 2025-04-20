@@ -46,10 +46,9 @@ import com.example.whiskeyreviewer.component.customComponent.PostProgressIndicat
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
-import com.example.whiskeyreviewer.component.home.ConfirmDialog
 import com.example.whiskeyreviewer.component.home.MyWhiskyComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
-import com.example.whiskeyreviewer.component.home.SelectWhiskeyDialog
+import com.example.whiskeyreviewer.component.dialog.SelectWhiskeyDialog
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
@@ -71,11 +70,6 @@ fun HomeView(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-
-        //내 위스키 불러오기
-//        mainViewModel.getMyWhiskeyData()
-    }
 
     LaunchedEffect(mainViewModel.whiskyDeleteState.value) {
         if(mainViewModel.whiskyDeleteState.value){
@@ -84,11 +78,6 @@ fun HomeView(
     }
 
 
-//    LaunchedEffect(mainViewModel.myReviewList.value) {
-//        mainViewModel.initializeDropDownStates(mainViewModel.myReviewList.value.size)
-//    }
-//    mainViewModel.initializeDropDownStates(mainViewModel.myReviewList.value.size)
-
 
     LaunchedEffect(Unit) {
         mainViewModel.setRecentSearchTextList(
@@ -96,22 +85,6 @@ fun HomeView(
             type = RECENT_SEARCH_REVIEW_TEXT
         )
     }
-
-//    LaunchedEffect(mainViewModel.selectNewWhiskyState.value) {
-//        Log.d("상태", mainViewModel.selectNewWhiskyState.value.toString())
-//        if(mainViewModel.selectNewWhiskyState.value){
-//            writeReviewViewModel.synchronizationWhiskyData(
-//                WhiskyReviewData(
-//                    review_uuid = mainViewModel.selectNewWhiskyData.value.whisky_uuid
-//                ),
-//                mainViewModel.selectNewWhiskyData.value.korea_name ?:
-//                mainViewModel.selectNewWhiskyData.value.english_name,
-//
-//            )
-//            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
-//
-//        }
-//    }
 
     LaunchedEffect(mainViewModel.selectWhiskyState.value) {
         if(mainViewModel.selectWhiskyState.value){

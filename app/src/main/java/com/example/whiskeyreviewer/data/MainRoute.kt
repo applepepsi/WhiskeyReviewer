@@ -7,5 +7,6 @@ object MainRoute {
     const val WHISKEY_SEARCH = "whiskeySearchView"
     const val REVIEW_DETAIL = "reviewDetail"
     const val OTHER_USER_REVIEW_DETAIL="otherUserReviewDetail"
+    const val SETTING_VIEW="settingView"
     const val CAMERA="cameraView"
 }

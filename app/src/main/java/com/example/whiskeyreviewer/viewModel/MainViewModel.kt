@@ -324,8 +324,11 @@ class MainViewModel @Inject constructor(
     private val _imageTypeSelectState = mutableStateOf(ImageSelectState())
     val imageTypeSelectState: State<ImageSelectState> = _imageTypeSelectState
 
-    private val _imageTypeSelectDialogState=mutableStateOf<Boolean>(false)
-    val imageTypeSelectDialogState: State<Boolean> = _imageTypeSelectDialogState
+    private val _singleImageTypeSelectDialogState=mutableStateOf<Boolean>(false)
+    val singleImageTypeSelectDialogState: State<Boolean> = _singleImageTypeSelectDialogState
+
+    private val _multiImageTypeSelectDialogState=mutableStateOf<Boolean>(false)
+    val multiImageTypeSelectDialogState: State<Boolean> = _multiImageTypeSelectDialogState
 
     private val _cameraState=mutableStateOf<Boolean>(false)
     val cameraState: State<Boolean> = _cameraState
@@ -412,6 +415,9 @@ class MainViewModel @Inject constructor(
 
     private val _whiskyDeleteState=mutableStateOf<Boolean>(false)
     val whiskyDeleteState: State<Boolean> = _whiskyDeleteState
+
+    private val _firstRunTest=mutableStateOf<Boolean>(true)
+    val firstRunTest: State<Boolean> = _firstRunTest
 
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
@@ -1121,8 +1127,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun toggleImageTypeSelectDialogState(){
-        _imageTypeSelectDialogState.value=!_imageTypeSelectDialogState.value
+    fun toggleMultiImageTypeSelectDialogState(){
+        _multiImageTypeSelectDialogState.value=!_multiImageTypeSelectDialogState.value
+    }
+
+    fun toggleSingleImageTypeSelectDialogState(){
+        _singleImageTypeSelectDialogState.value=!_singleImageTypeSelectDialogState.value
     }
 
 //    fun addImage(uri: Uri?) {

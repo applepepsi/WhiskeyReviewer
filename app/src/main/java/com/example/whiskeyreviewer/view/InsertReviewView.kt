@@ -39,7 +39,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customComponent.PrivateCheckboxComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
-import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
+
 import com.example.whiskeyreviewer.component.myReview.RatingScoreDialog
 import com.example.whiskeyreviewer.component.myReview.RatingStarComponent
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -71,14 +71,7 @@ fun InsertReviewView(
 
     val navBackStackEntry = navController.currentBackStackEntry
 
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(
-            maxItems = 3
-        ),
-        onResult = { uris ->
-            writeReviewViewModel.setSelectedImage(uris)
-        }
-    )
+
 
     LaunchedEffect(writeReviewViewModel.reviewSaveResultState.value) {
         if(writeReviewViewModel.reviewSaveResultState.value){
@@ -153,32 +146,7 @@ fun InsertReviewView(
         }
     }
 
-    ImageTypeSelectDialog(
-        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
-        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
-        confirm = {
-            when {
-                mainViewModel.imageTypeSelectState.value.albumSelected -> {
-                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }
-                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
-//
-//                    mainViewModel.setCameraTag(AddImageTag.InsertReview)
-//                    navController.navigate("${MainRoute.CAMERA}/insertReview")
-                    mainViewModel.setCameraTag(tag= AddImageTag.InsertReview)
-                    mainViewModel.toggleCameraState(state = true)
 
-                }
-
-                else -> {}
-            }.also {
-                mainViewModel.toggleImageTypeSelectDialogState()
-            }
-        },
-        onSelect = { mainViewModel.updateSelectImageType(it) },
-        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
-        currentState = mainViewModel.imageTypeSelectDialogState.value
-    )
 
     Column(modifier = Modifier
         .fillMaxSize()) {
@@ -220,7 +188,7 @@ fun InsertReviewView(
                     writeReviewViewModel.deleteImage(it)
                 },
                 onImageAddButtonClick={
-                    mainViewModel.toggleImageTypeSelectDialogState()
+                    mainViewModel.toggleMultiImageTypeSelectDialogState()
                 },
                 currentState=writeReviewViewModel.imageSelectorState.value,
             )

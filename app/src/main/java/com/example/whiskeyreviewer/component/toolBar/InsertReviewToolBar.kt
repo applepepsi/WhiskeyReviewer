@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.whiskeyreviewer.R
-import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
+
+
 import com.example.whiskeyreviewer.component.writeReivew.InsertTagComponent
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.ui.theme.MainColor

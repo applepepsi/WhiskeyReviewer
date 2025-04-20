@@ -1,11 +1,7 @@
-package com.example.whiskeyreviewer.component.home
+package com.example.whiskeyreviewer.component.dialog
 
 import android.annotation.SuppressLint
-import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,10 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
@@ -87,17 +81,14 @@ import com.example.whiskeyreviewer.component.customComponent.ShortTextInputCompo
 import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.StrengthInputComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
+import com.example.whiskeyreviewer.component.home.SelectWhiskyComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
-import com.example.whiskeyreviewer.data.AddImageTag
-import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectType
-import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.TapLayoutItems
 
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
-import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage
 import my.nanihadesuka.compose.LazyColumnScrollbar
@@ -1203,25 +1194,6 @@ fun InsertWhiskyDetailDialog(
 
     val customToast = CustomToast(LocalContext.current)
 
-//    val whiskeyData = listOf(
-//        TapLayoutItems.AllWhiskey,
-//        TapLayoutItems.AmericanWhiskey,
-//        TapLayoutItems.Blend,
-//        TapLayoutItems.BlendedGrain,
-//        TapLayoutItems.BlendedMalt,
-//        TapLayoutItems.Bourbon,
-//        TapLayoutItems.CanadianWhiskey,
-//        TapLayoutItems.Corn,
-//        TapLayoutItems.Rice,
-//        TapLayoutItems.Rye,
-//        TapLayoutItems.SingleGrain,
-//        TapLayoutItems.SingleMalt,
-//        TapLayoutItems.SinglePotStill,
-//        TapLayoutItems.Spirit,
-//        TapLayoutItems.Tennessee,
-//        TapLayoutItems.Wheat
-//    )
-
 
     val listState = rememberLazyListState()
     val customScrollbarSettings = ScrollbarSettings(
@@ -1239,14 +1211,7 @@ fun InsertWhiskyDetailDialog(
     }
 
 
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            if (uri != null) {
-                mainViewModel.setSelectedImage(uri)
-            }
-        }
-    )
+
 
     if (mainViewModel.openDateBottomSheetState.value) {
         Log.d("바텀시트", mainViewModel.openDateBottomSheetState.value.toString())
@@ -1256,32 +1221,7 @@ fun InsertWhiskyDetailDialog(
         )
     }
 
-    ImageTypeSelectDialog(
-        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
-        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
-        confirm = {
-            when {
-                mainViewModel.imageTypeSelectState.value.albumSelected -> {
-                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
 
-                }
-                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
-
-//                    mainViewModel.setCameraTag(AddImageTag.AddWhisky)
-//                    navController.navigate("${MainRoute.CAMERA}/addWhisky")
-                    mainViewModel.setCameraTag(tag= AddImageTag.ChangeWhiskyImage)
-                    mainViewModel.toggleCameraState(state = true)
-                }
-
-                else -> {}
-            }.also {
-                mainViewModel.toggleImageTypeSelectDialogState()
-            }
-        },
-        onSelect = { mainViewModel.updateSelectImageType(it) },
-        toggleOption = {mainViewModel.toggleImageTypeSelectDialogState()},
-        currentState = mainViewModel.imageTypeSelectDialogState.value
-    )
 
     if (currentState) {
         Dialog(
@@ -1335,7 +1275,7 @@ fun InsertWhiskyDetailDialog(
                             ) {
                                 ImageComponent(
                                     imageClick = {
-                                        mainViewModel.toggleImageTypeSelectDialogState()
+                                        mainViewModel.toggleSingleImageTypeSelectDialogState()
                                     },
                                     image = mainViewModel.selectedImageUri.value,
                                     modifier = Modifier.padding(top = 10.dp)
@@ -1755,7 +1695,7 @@ fun ConfirmDialog(
 }
 
 @Composable
-fun ImageTypeSelectDialog(
+fun SingleImageTypeSelectDialog(
     albumSelectState: Boolean,
     cameraSelectState: Boolean,
     onSelect: (ImageSelectType) -> Unit,
@@ -1763,6 +1703,133 @@ fun ImageTypeSelectDialog(
     toggleOption: () -> Unit,
     currentState: Boolean = true,
     ) {
+
+
+
+    if (currentState) {
+        Dialog(
+            onDismissRequest = { toggleOption() }
+        ) {
+            Column(
+                modifier = Modifier
+                    .height(260.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.White)
+                    .padding(top = 20.dp),
+            ) {
+
+                Text(
+                    text = "이미지 추가 방식",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp)
+                )
+
+
+                Text(
+                    text = "이미지 추가 방식을 선택해 주세요.",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    modifier = Modifier
+                        .padding(start = 17.dp,top=3.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp, bottom = 5.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    MethodSelectComponent(
+                        icon=Icons.Default.PhotoLibrary,
+                        onSelect = {
+                            onSelect(ImageSelectType.ALBUM)
+                        },
+                        selectState = albumSelectState,
+                        text="앨범"
+                    )
+
+                    MethodSelectComponent(
+                        icon=Icons.Default.CameraAlt,
+                        onSelect = {
+                            onSelect(ImageSelectType.CAMERA)
+                        },
+                        selectState = cameraSelectState,
+                        text="카메라"
+                    )
+                }
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(end = 20.dp, bottom = 13.dp, top = 12.dp),
+
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+
+                    Text(
+                        text = "확인",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+
+                            .clickable {
+                                confirm()
+                            }
+
+                    )
+
+                    Spacer(modifier = Modifier.width(15.dp))
+
+                    Text(
+                        text = "취소",
+                        style = TextStyle.Default.copy(
+                            color = LightBlackColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        modifier = Modifier
+                            .clip(
+                                RoundedCornerShape(8.dp)
+                            )
+                            .clickable {
+                                toggleOption()
+                            }
+                    )
+                }
+
+            }
+        }
+    }
+}
+
+@Composable
+fun MultiImageTypeSelectDialog(
+    albumSelectState: Boolean,
+    cameraSelectState: Boolean,
+    onSelect: (ImageSelectType) -> Unit,
+    confirm: ()->Unit,
+    toggleOption: () -> Unit,
+    currentState: Boolean = true,
+) {
 
 
 

@@ -268,7 +268,7 @@ fun MyReviewGraphComponent2(
 
                     )
                 ),
-                pointSpacing = 90.dp,
+                pointSpacing = 30.dp,
                 //힘들게 찾은 값 강제 지정
                 rangeProvider = CartesianLayerRangeProvider.fixed(minY=0.0,maxY = 5.0),
 
@@ -277,12 +277,13 @@ fun MyReviewGraphComponent2(
             startAxis = VerticalAxis.rememberStart(
                 label= rememberTextComponent(
                     color= LightBlackColor,
-                    textSize =14.sp,
+                    textSize =12.sp,
                     lineCount = 1,
                     typeface = Typeface.DEFAULT
                 ),
                 //구분선
-                guideline = rememberAxisGuidelineComponent(),
+//                guideline = rememberAxisGuidelineComponent(),
+                guideline = null,
                 valueFormatter = verticalAxisValueFormatter,
                 //플레이서로 y축 간격 조정 가능
                 itemPlacer = remember { VerticalAxis.ItemPlacer.step({ 1.0 }) },
@@ -300,7 +301,7 @@ fun MyReviewGraphComponent2(
                 itemPlacer = remember { HorizontalAxis.ItemPlacer.segmented() }
             ),
             marker = rememberMarker(sortedReviewDataList = sortedReviewDataList),
-            layerPadding = cartesianLayerPadding(scalableStart = 40.dp, scalableEnd = 40.dp),
+            layerPadding = cartesianLayerPadding(scalableStart = 10.dp, scalableEnd = 10.dp),
 
         ),
         modelProducer = modelProducer,
@@ -347,7 +348,7 @@ internal fun rememberMarker(
     val markerValueFormatter = CartesianMarkerValueFormatter{ _, target->
         val currentX = sortedReviewDataList[target.first().x.toInt()]
 
-        val dateText = TimeFormatter.formatDate(currentX.open_date)
+        val dateText = TimeFormatter.formatDateToKorea(currentX.open_date)
         val scoreText = "${currentX.score.toInt()} 점"
 
         val spanText = SpannableString("$scoreText\n$dateText")

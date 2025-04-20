@@ -1,7 +1,6 @@
 package com.example.whiskeyreviewer.view
 
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,15 +38,13 @@ import com.example.whiskeyreviewer.component.customComponent.EmptyReviewDataComp
 import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
-import com.example.whiskeyreviewer.component.home.ConfirmDialog
-import com.example.whiskeyreviewer.component.home.ImageTypeSelectDialog
-import com.example.whiskeyreviewer.component.home.ImageViewerDialog
+import com.example.whiskeyreviewer.component.dialog.ConfirmDialog
+
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.MyReviewGraphComponent2
 
 import com.example.whiskeyreviewer.component.myReview.MySingleReviewComponent
 import com.example.whiskeyreviewer.component.myReview.MyWhiskyDetailInfoComponent
-import com.example.whiskeyreviewer.data.AddImageTag
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.MainRoute.REVIEW_DETAIL
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
@@ -122,45 +119,12 @@ fun WhiskeyDetailView(
         text = "대표 이미지를 변경 하시겠습니까?",
         confirm = {
             mainViewModel.toggleSelectedWhiskyDialogState()
-            mainViewModel.toggleImageTypeSelectDialogState()
+            mainViewModel.toggleSingleImageTypeSelectDialogState()
         },
         toggleOption = { mainViewModel.toggleSelectedWhiskyDialogState() },
         currentState = mainViewModel.selectedWhiskyImageUriState.value
     )
 
-    ImageTypeSelectDialog(
-        albumSelectState = mainViewModel.imageTypeSelectState.value.albumSelected,
-        cameraSelectState = mainViewModel.imageTypeSelectState.value.cameraSelected,
-        confirm = {
-            when {
-                mainViewModel.imageTypeSelectState.value.albumSelected -> {
-                    photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-
-                }
-
-                mainViewModel.imageTypeSelectState.value.cameraSelected -> {
-//
-//                    mainViewModel.setCameraTag(AddImageTag.ChangeWhiskyImage)
-//                    navController.navigate("${MainRoute.CAMERA}/changeWhiskyImage")
-                    mainViewModel.setCameraTag(tag= AddImageTag.ChangeWhiskyImage)
-                    mainViewModel.toggleCameraState(state = true)
-                }
-
-                else -> {}
-            }.also {
-                mainViewModel.toggleImageTypeSelectDialogState()
-            }
-        },
-        onSelect = { mainViewModel.updateSelectImageType(it) },
-        toggleOption = { mainViewModel.toggleImageTypeSelectDialogState() },
-        currentState = mainViewModel.imageTypeSelectDialogState.value
-    )
-
-    ImageViewerDialog(
-        currentImage = mainViewModel.selectImageUrl.value,
-        toggleOption = { mainViewModel.toggleImageDialogState() },
-        currentState = mainViewModel.imageDialogState.value
-    )
 
     ConfirmDialog(
         title = "리뷰 제거",
@@ -225,7 +189,7 @@ fun WhiskeyDetailView(
                 reviewClick = {},
                 showOption = true,
                 deleteWhisky = {
-                    //제거는 아직
+
                     mainViewModel.updateSelectWhisky(it)
                     mainViewModel.toggleDeleteWhiskyConfirmDialog()
                 },
@@ -301,7 +265,7 @@ fun WhiskeyDetailView(
                                 )
                             } else {
                                 Column(
-                                    modifier = Modifier.height(330.dp)
+                                    modifier = Modifier.height(330.dp).padding(start=5.dp,end=5.dp)
                                 ) {
                                     MyReviewGraphComponent2(mainViewModel.myReviewDataList.value)
                                 }

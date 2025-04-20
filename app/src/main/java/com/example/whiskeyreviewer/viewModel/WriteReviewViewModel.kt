@@ -297,7 +297,7 @@ class WriteReviewViewModel @Inject constructor(
         _writeReviewData.value=_writeReviewData.value.copy(
             content = richTextEditorState.toHtml()
         )
-
+        Log.d("수정 이미지1", selectedImageUri.value.toString())
         val imageFiles=if(selectedImageUri.value.isNotEmpty()){
             ImageConverter.convertUrisToFiles(applicationContext,selectedImageUri.value)
         }else{
@@ -330,6 +330,7 @@ class WriteReviewViewModel @Inject constructor(
             _loadingState.value=true
             if(tag=="modify"){
                 //수정 태그가 들어왔다면 수정으로 전송
+                Log.d("수정 이미지2", imageFiles.toString())
                 writeReviewRepository.reviewModify(
                     imageFiles =imageFiles,
                     reviewData = submitWhiskyData
@@ -376,9 +377,9 @@ class WriteReviewViewModel @Inject constructor(
                             text="서버와의 연결 상태가 좋지 않습니다."
                         )
                     }
-
+                    _loadingState.value=false
                 }
-                _loadingState.value=false
+
             }
 
             Log.d("작성이미지", imageFiles.toString())
@@ -448,7 +449,7 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun synchronizationWhiskyData(reviewData: WhiskyReviewData, whiskyName: String,uriList:List<Uri>?) {
-        Log.d("싱크", reviewData.toString())
+        Log.d("uriList", uriList.toString())
         //todo 수정 기능 구현해야함
         _writeReviewData.value=_writeReviewData.value.copy(
             whiskey_uuid =reviewData.review_uuid,

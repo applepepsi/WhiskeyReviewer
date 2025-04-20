@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,9 +38,10 @@ import com.example.whiskeyreviewer.component.customComponent.CustomAppBarCompone
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
-import com.example.whiskeyreviewer.component.home.ConfirmDialog
-import com.example.whiskeyreviewer.component.home.ImageViewerDialog
+import com.example.whiskeyreviewer.component.dialog.ConfirmDialog
 import com.example.whiskeyreviewer.component.myReview.ReviewImageLazyRowComponent
+import com.example.whiskeyreviewer.data.MainRoute
+import com.example.whiskeyreviewer.utils.ImageConverter
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -54,7 +56,7 @@ fun ReviewDetailView(
 
     val scrollState= rememberScrollState()
     val richTextState = rememberRichTextState()
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         richTextState.setHtml(mainViewModel.selectWhiskyReviewData.value.content)
         Log.d("텍스트", richTextState.toText())
@@ -68,11 +70,11 @@ fun ReviewDetailView(
         currentState = mainViewModel.deleteReviewConfirmDialogState.value
     )
 
-    ImageViewerDialog(
-        currentImage = mainViewModel.selectImageUrl.value,
-        toggleOption = { mainViewModel.toggleImageDialogState() },
-        currentState = mainViewModel.imageDialogState.value
-    )
+//    ImageViewerDialog(
+//        currentImage = mainViewModel.selectImageUrl.value,
+//        toggleOption = { mainViewModel.toggleImageDialogState() },
+//        currentState = mainViewModel.imageDialogState.value
+//    )
 
     Column(
         modifier = Modifier
@@ -117,7 +119,16 @@ fun ReviewDetailView(
                 modifier = Modifier
 
                     .clickable {
-
+                        writeReviewViewModel.synchronizationWhiskyData(
+                            mainViewModel.selectWhiskyReviewData.value,
+                            mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
+                            uriList = ImageConverter.byteArrayListToCacheUriList(
+                                context=context,
+                                byteArrayList = mainViewModel.selectWhiskyReviewData.value.imageList,
+                                fileNameList = mainViewModel.selectWhiskyReviewData.value.image_names
+                            )
+                        )
+                        navController.navigate("${MainRoute.INSERT_REVIEW}/modify")
                     }
             )
 
@@ -134,23 +145,26 @@ fun ReviewDetailView(
 
                     .clickable {
                         mainViewModel.toggleDeleteReviewConfirmDialog()
+
                     }
             )
         }
 
         Spacer(modifier = Modifier.height(7.dp))
 
-        ReviewImageLazyRowComponent(
-            imageList = emptyList(),
-            deleteImage = {
+        mainViewModel.selectWhiskyReviewData.value.imageList?.let {
+            ReviewImageLazyRowComponent(
+                imageList = it,
+                deleteImage = {
 
-            },
-            deleteImageAllow = false,
-            onImageSelect = {
-                mainViewModel.setSelectImage(it)
-                mainViewModel.toggleImageDialogState()
-            },
-        )
+                },
+                deleteImageAllow = false,
+                onImageSelect = {
+                    mainViewModel.setSelectImage(it)
+                    mainViewModel.toggleImageDialogState()
+                },
+            )
+        }
 
         Spacer(modifier = Modifier.height(7.dp))
 

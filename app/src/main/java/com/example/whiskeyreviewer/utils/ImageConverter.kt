@@ -183,6 +183,8 @@ object ImageConverter {
 
         // 크기
         return try {
+            //todo 산넘어 산 리뷰 수정중 새로운 사진만 제대로 전송되는 문제가 있음 에러 이유 찾아야함
+            //java.lang.IllegalStateException: Can't compress a recycled bitmap
             Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true).apply {
                 bitmap.recycle()
             }

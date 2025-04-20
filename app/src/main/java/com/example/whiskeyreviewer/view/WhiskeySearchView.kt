@@ -53,7 +53,6 @@ import com.example.whiskeyreviewer.component.customComponent.PostProgressIndicat
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
-import com.example.whiskeyreviewer.component.home.ImageViewerDialog
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
 import com.example.whiskeyreviewer.component.myReview.OtherUserReviewPostComponent
@@ -296,11 +295,11 @@ fun OtherUserReviewDetailView(
 ) {
     val scrollState= rememberScrollState()
 
-    ImageViewerDialog(
-        currentImage = mainViewModel.selectImageUrl.value,
-        toggleOption = { mainViewModel.toggleImageDialogState() },
-        currentState = mainViewModel.imageDialogState.value
-    )
+//    ImageViewerDialog(
+//        currentImage = mainViewModel.selectImageUrl.value,
+//        toggleOption = { mainViewModel.toggleImageDialogState() },
+//        currentState = mainViewModel.imageDialogState.value
+//    )
 
 
     Scaffold(

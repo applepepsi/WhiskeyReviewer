@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -52,6 +51,9 @@ import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.dialog.DetailSearchDialog
+import com.example.whiskeyreviewer.component.dialog.GetBackupCodeDialog
+import com.example.whiskeyreviewer.component.dialog.InsertBackupCodeDialog
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
@@ -70,7 +72,7 @@ fun NavigationDrawerComponent(
     navController: NavHostController
 ) {
     val context = LocalContext.current
-    val mainNavController= rememberNavController()
+
 
 
     LaunchedEffect(Unit) {
@@ -253,9 +255,10 @@ fun NavigationDrawerComponent(
         Spacer(Modifier.height(20.dp))
 
         NavigationDrawerItemsComponent(
-            navController = mainNavController,
-            navigationDrawerController = mainNavController,
-            toggleDialogState = {mainViewModel.toggleDrawerDialogState(it)}
+            navController = navController,
+
+            toggleDialogState = {mainViewModel.toggleDrawerDialogState(it)},
+
         )
 
     }
@@ -265,8 +268,9 @@ fun NavigationDrawerComponent(
 @Composable
 fun NavigationDrawerItemsComponent(
     navController: NavHostController,
-    navigationDrawerController: NavHostController,
-    toggleDialogState:(NavigationDrawerItems)->Unit
+
+    toggleDialogState:(NavigationDrawerItems)->Unit,
+
     ) {
     val screens = listOf(
         NavigationDrawerItems.Setting,
@@ -274,7 +278,7 @@ fun NavigationDrawerItemsComponent(
         NavigationDrawerItems.InsertBackupCode
     )
 
-    val currentDestination = navigationDrawerController.currentBackStackEntryAsState().value?.destination
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination
 
     Column {
         Spacer(modifier = Modifier.height(15.dp))
@@ -285,7 +289,7 @@ fun NavigationDrawerItemsComponent(
                     NavigationDrawerItem(
                         screen = singleItem,
                         currentDestination = currentDestination,
-                        modalNavController = navigationDrawerController,
+                        navController=navController,
                         toggleDialogState = {toggleDialogState(it)}
                     )
                 }
@@ -298,7 +302,7 @@ fun NavigationDrawerItemsComponent(
 fun NavigationDrawerItem(
     screen: NavigationDrawerItems,
     currentDestination: NavDestination?,
-    modalNavController: NavHostController,
+    navController: NavHostController,
     toggleDialogState:(NavigationDrawerItems)->Unit
 ) {
     val selected = currentDestination?.hierarchy?.any { it.route == screen.screenRoute } == true
@@ -321,10 +325,7 @@ fun NavigationDrawerItem(
                         }
 
                         NavigationDrawerItems.SETTING -> {
-                            modalNavController.navigate(screen.screenRoute) {
-                                popUpTo(modalNavController.graph.findStartDestination().id)
-                                launchSingleTop = true
-                            }
+                            navController.navigate(MainRoute.SETTING_VIEW)
                         }
                     }
                 },
@@ -407,6 +408,6 @@ fun NavigationDrawerItemsPreview() {
     val mainNavController= rememberNavController()
 
     WhiskeyReviewerTheme {
-        NavigationDrawerItemsComponent(mainNavController,mainNavController, toggleDialogState = {})
+
     }
 }

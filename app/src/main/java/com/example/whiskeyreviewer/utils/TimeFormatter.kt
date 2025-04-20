@@ -36,13 +36,20 @@ object TimeFormatter {
         return date.format(formatter)
     }
 
-    fun formatDate(date: String): String {
+
+    fun formatDate(date: String):String{
+        val dateTime = LocalDate.parse(date)
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy/M/d")
+        return dateTime.format(formatter)
+    }
+
+    fun formatDateToKorea(date: String): String {
         val dateTime = LocalDate.parse(date)
 
         val formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
         return dateTime.format(formatter)
     }
-
     fun formatTime(time: LocalTime): String {
         val outputFormatter = DateTimeFormatterBuilder()
             // 오전/오후

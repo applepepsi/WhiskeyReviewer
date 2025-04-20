@@ -1,4 +1,4 @@
-package com.example.whiskeyreviewer.component.camea
+package com.example.whiskeyreviewer.component.camera
 
 
 import android.content.ContentValues

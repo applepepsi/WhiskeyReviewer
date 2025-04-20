@@ -15,6 +15,7 @@ import com.example.whiskeyreviewer.view.HomeView
 import com.example.whiskeyreviewer.view.InsertReviewView
 import com.example.whiskeyreviewer.view.OtherUserReviewDetailView
 import com.example.whiskeyreviewer.view.ReviewDetailView
+import com.example.whiskeyreviewer.view.SettingView
 import com.example.whiskeyreviewer.view.WhiskeyDetailView
 import com.example.whiskeyreviewer.view.WhiskeySearchView
 import com.example.whiskeyreviewer.viewModel.MainViewModel
@@ -73,14 +74,9 @@ private fun NavGraphBuilder.homeRoute(
         composable(MainRoute.OTHER_USER_REVIEW_DETAIL) {
             OtherUserReviewDetailView(writeReviewViewModel,navController,mainViewModel)
         }
-//        composable(route= "${MainRoute.CAMERA}/{tag}") {backStackEntry ->
-//            CameraComponent(
-//                mainViewModel,
-//                writeReviewViewModel,
-//                navController,
-//                tag=backStackEntry.arguments?.getString("tag") ?: "",
-//            )
-//        }
+        composable(MainRoute.SETTING_VIEW) {
+            SettingView(mainViewModel,navController)
+        }
     }
 }
 
