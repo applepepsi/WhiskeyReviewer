@@ -80,6 +80,7 @@ import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.textColorList
 import com.example.whiskeyreviewer.component.wheelPicker.HorizontalWheelPicker
 import com.example.whiskeyreviewer.data.ImageSelectState
+import com.example.whiskeyreviewer.data.UriData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
 import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
@@ -592,7 +593,7 @@ fun ControlWrapper(
 
 @Composable
 fun ImageLazyRowComponent(
-    imageList: List<Any>,
+    imageList: List<UriData>,
     deleteImageUri: (Int) -> Unit,
     onImageAddButtonClick:()->Unit,
     currentState: Boolean,
@@ -621,7 +622,7 @@ fun ImageLazyRowComponent(
                         contentAlignment = Alignment.TopEnd
                     ) {
                         GlideImage(
-                            imageModel = image,
+                            imageModel = image.uri,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(8.dp))

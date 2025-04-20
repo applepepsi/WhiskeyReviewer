@@ -25,6 +25,7 @@ import com.example.whiskeyreviewer.data.CustomWhiskyData
 
 import com.example.whiskeyreviewer.data.ToolBarItems
 import com.example.whiskeyreviewer.data.FilterDropDownMenuState
+import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectState
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
@@ -38,6 +39,7 @@ import com.example.whiskeyreviewer.data.WhiskeyFilterItems
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.MyWhiskyFilterData
 import com.example.whiskeyreviewer.data.ReviewFilterData
+import com.example.whiskeyreviewer.data.UriData
 import com.example.whiskeyreviewer.data.WhiskyName
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.data.pagingResponse.ImageState
@@ -276,8 +278,8 @@ class MainViewModel @Inject constructor(
     val dialogSelectWhiskyData: State<List<WhiskyName>> = _dialogSelectWhiskyData
 
 
-    private val _selectedImageUri = mutableStateOf<Uri>(Uri.EMPTY)
-    val selectedImageUri: State<Uri> = _selectedImageUri
+    private val _selectedImageUri = mutableStateOf<UriData>(UriData(uri=Uri.EMPTY,isOldImage = false))
+    val selectedImageUri: State<UriData> = _selectedImageUri
 
 
 
@@ -339,8 +341,8 @@ class MainViewModel @Inject constructor(
     private val _imageDialogState=mutableStateOf<Boolean>(false)
     val imageDialogState: State<Boolean> = _imageDialogState
 
-    private val _selectImageUrl=mutableStateOf<ByteArray?>(null)
-    val selectImageUrl: State<ByteArray?> = _selectImageUrl
+    private val _selectImageUrl=mutableStateOf<ImageData?>(null)
+    val selectImageUrl: State<ImageData?> = _selectImageUrl
 
     private val _selectWhiskyData=mutableStateOf<SingleWhiskeyData>(SingleWhiskeyData())
     val selectWhiskyData: State<SingleWhiskeyData> = _selectWhiskyData
@@ -686,7 +688,7 @@ class MainViewModel @Inject constructor(
         )
         data.image?.let{
             ImageConverter.byteArrayToCacheUri(context = applicationContext,byteArray = data.image,fileName=data.image_name!!)?.let{
-                _selectedImageUri.value=it
+                _selectedImageUri.value=_selectedImageUri.value.copy(uri = it.uri,isOldImage = it.isOldImage)
             }
         }
         _currentCustomWhiskyType.value=WhiskyLanguageTransfer.fineWhiskyCategory(data.category)
@@ -853,9 +855,9 @@ class MainViewModel @Inject constructor(
 
     }
 
-    fun setSelectedImage(uri: Uri) {
+    fun setSelectedImage(uri: Uri,isOldImage:Boolean=false) {
         Log.d("선택한 이미지",uri.toString())
-        _selectedImageUri.value=uri
+        _selectedImageUri.value=_selectedImageUri.value.copy(uri=uri,isOldImage=isOldImage)
     }
 
 
@@ -1096,7 +1098,7 @@ class MainViewModel @Inject constructor(
 
     fun resetAddCustomWhiskyDialog(){
         _tinyProgressIndicatorState.value=false
-        _selectedImageUri.value= Uri.EMPTY
+        _selectedImageUri.value= UriData(uri=Uri.EMPTY,isOldImage = false)
         _currentCustomWhiskyType.value=TapLayoutItems.AmericanWhiskey
         _customWhiskyData.value=CustomWhiskyData()
     }
@@ -1173,8 +1175,8 @@ class MainViewModel @Inject constructor(
         _imageDialogState.value=!_imageDialogState.value
     }
 
-    fun setSelectImage(url: ByteArray){
-        _selectImageUrl.value=url
+    fun setSelectImage(imageData: ImageData){
+        _selectImageUrl.value=imageData
     }
 
     fun toggleProgressIndicatorState(state:Boolean,text:String){

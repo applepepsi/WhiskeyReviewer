@@ -13,6 +13,7 @@ import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDi
 import com.example.whiskeyreviewer.component.permission.PermissionRationale
 import com.example.whiskeyreviewer.component.permission.rememberPermissionList
 import com.example.whiskeyreviewer.data.AddImageTag
+import com.example.whiskeyreviewer.data.UriData
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -91,7 +92,10 @@ fun AllDialogs(
             maxItems = 3
         ),
         onResult = { uris ->
-            writeReviewViewModel.setSelectedImage(uris)
+            val uriDataList = uris.map { uri ->
+                UriData(uri = uri, isOldImage = false)
+            }
+            writeReviewViewModel.setSelectedImage(uriDataList)
         }
     )
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)

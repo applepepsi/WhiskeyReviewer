@@ -149,7 +149,7 @@ fun SingleWhiskeyComponent(
 
 
             GlideImage(
-                imageModel = singleWhiskeyData.image ?: R.drawable.empty_image_icon,
+                imageModel = singleWhiskeyData.image?.image ?: R.drawable.empty_image_icon,
 
                 modifier = Modifier
                     .size(200.dp)

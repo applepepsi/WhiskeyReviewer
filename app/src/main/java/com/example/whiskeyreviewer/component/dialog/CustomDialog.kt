@@ -83,6 +83,7 @@ import com.example.whiskeyreviewer.component.customComponent.StrengthInputCompon
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyFilterDropDownMenuComponent
 import com.example.whiskeyreviewer.component.home.SelectWhiskyComponent
 import com.example.whiskeyreviewer.component.writeReivew.SelectDateBottomSheet
+import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectType
 import com.example.whiskeyreviewer.data.TapLayoutItems
 
@@ -2006,7 +2007,7 @@ fun MethodSelectComponent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageViewerDialog(
-    currentImage: ByteArray?=null,
+    currentImage: ImageData?=null,
     toggleOption: () -> Unit,
     currentState: Boolean = true,
 ){
@@ -2050,7 +2051,7 @@ fun ImageViewerDialog(
                 currentImage?.let { imageData ->
 
                     GlideImage(
-                        imageModel = imageData,
+                        imageModel = imageData.image,
                         modifier = Modifier
                             .size(350.dp)
                             .align(Alignment.Center)

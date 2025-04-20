@@ -117,7 +117,6 @@ fun ReviewDetailView(
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
-
                     .clickable {
                         writeReviewViewModel.synchronizationWhiskyData(
                             mainViewModel.selectWhiskyReviewData.value,

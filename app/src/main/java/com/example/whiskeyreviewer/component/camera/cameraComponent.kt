@@ -52,6 +52,7 @@ import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomToast
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.data.AddImageTag
+import com.example.whiskeyreviewer.data.UriData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -152,7 +153,7 @@ fun CameraDialog(
 
                                         when(tag){
                                             AddImageTag.InsertReview ->{
-                                                writeReviewViewModel.setSelectedImage(listOf(uri))
+                                                writeReviewViewModel.setSelectedImage(listOf(UriData(uri,isOldImage = false)))
                                             }
                                             AddImageTag.AddWhisky->{
                                                 mainViewModel.setSelectedImage(uri)

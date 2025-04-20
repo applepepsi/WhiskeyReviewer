@@ -62,14 +62,7 @@ fun WhiskeyDetailView(
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            if (uri != null) {
-                mainViewModel.setSelectedImage(uri)
-            }
-        }
-    )
+
 
     ConfirmDialog(
         title = "위스키 제거",

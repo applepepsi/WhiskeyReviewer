@@ -22,16 +22,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
+import com.example.whiskeyreviewer.data.UriData
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun ImageComponent(
     imageClick:()->Unit,
-    image: Uri,
+    image: UriData,
     modifier: Modifier
 ) {
 
-    val selectImage= if(image== Uri.EMPTY) R.drawable.empty_image_icon else image
+    val selectImage= if(image.uri == Uri.EMPTY) R.drawable.empty_image_icon else image.uri
 
     Column(
         modifier = modifier
@@ -63,9 +64,5 @@ fun ImageComponent(
 @Preview
 @Composable
 fun SelectImagePreview(){
-    ImageComponent(
-        image = Uri.EMPTY,
-        imageClick = {},
-        modifier = Modifier
-    )
+
 }

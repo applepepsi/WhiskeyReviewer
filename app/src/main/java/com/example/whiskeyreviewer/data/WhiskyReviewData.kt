@@ -15,19 +15,13 @@ data class WhiskyReviewData(
     val tags:List<String> = listOf(),
     val image_names:List<String>?=null,
     val last_update_date:String="",
-    val imageList:List<ByteArray>? = emptyList(),
+    val imageList:List<ImageData>? = emptyList(),
     val like_state:Boolean=false,
     val like_count:Int=0,
     val isOpened:Boolean=false,
     val expendedState:Boolean=false,
 )
 
-sealed class ImageData {
-    data class StringData(val name: String) : ImageData()
-    data class ByteArrayData(val byteArray: ByteArray) : ImageData()
-
-    data class UriData(val uri: Uri) :ImageData()
-}
 
 
 data class WhiskyReviewData2(

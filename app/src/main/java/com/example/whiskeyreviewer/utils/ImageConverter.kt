@@ -10,6 +10,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import com.example.whiskeyreviewer.data.ImageData
+import com.example.whiskeyreviewer.data.UriData
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
@@ -42,72 +43,91 @@ object ImageConverter {
 
 
     // URI -> File 변환
-    fun toFile(context: Context, uri: Uri,resize:Int=1080,quality:Int=DEFAULT_IMAGE_QUALITY): File? {
-        val fileName = getFileName(context, uri)
-        val tempFile = createTempFile(context, fileName) ?:return null
-        val resizedBitmap=resizeBitmap(context,uri, resize = resize) ?:return null
+    fun toFile(context: Context, uriData: UriData,resize:Int=1080,quality:Int=DEFAULT_IMAGE_QUALITY): File? {
 
-        return try {
-            saveBitmapToFile(resizedBitmap, tempFile, quality)
-            tempFile
-        } catch (e: Exception) {
-            Log.e("에러", "파일 변환 중 오류 발생: ${e.message}", e)
-            tempFile.delete()
-            null
+        val fileName = getFileName(context, uriData.uri)
+        val tempFile = createTempFile(context, fileName) ?:return null
+        val bitmap = convertUriToBitmap(context,uriData.uri) ?:return null
+
+        if(uriData.isOldImage){
+            copyToFile(context,uriData.uri,tempFile)
+            return tempFile
+        }else{
+            val rotateBitmap = rotateBitmap(context, uriData.uri, bitmap) ?: return null
+            val resizedBitmap=resizeBitmap(rotateBitmap, resize = resize) ?:return null
+
+            return try {
+                saveBitmapToFile(resizedBitmap, tempFile, quality)
+                tempFile
+            } catch (e: Exception) {
+                Log.e("에러", "파일 변환 중 오류 발생: ${e.message}", e)
+                tempFile.delete()
+                null
+            }
         }
     }
 
+    @SuppressLint("Recycle")
+    private fun copyToFile(context: Context, uri: Uri, file: File) {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val outputStream = FileOutputStream(file)
+
+        val buffer = ByteArray(4 * 1024)
+        while (true) {
+            val byteCount = inputStream!!.read(buffer)
+            if (byteCount < 0) break
+            outputStream.write(buffer, 0, byteCount)
+        }
+
+        outputStream.flush()
+    }
 
 
     // URI 리스트를 파일 리스트로 변환
-    fun convertUrisToFiles(context: Context, uriList: List<Uri>): List<File> {
+    fun convertUrisToFiles(context: Context, uriDataList: List<UriData>): List<File> {
         val fileList = mutableListOf<File>()
-        Log.d("이미지 가공 전", uriList.toString())
-        for (uri in uriList) {
+        Log.d("이미지 가공 전", uriDataList.toString())
+        for (uriData in uriDataList) {
             try {
-                val file = toFile(context, uri)
+                val file = toFile(context, uriData)
                 if(file!=null){
                     fileList.add(file)
                 }
 
             } catch (e: Exception) {
-                Log.e("변환 실패", "파일 변환 실패: $uri", e)
+                Log.e("변환 실패", "파일 변환 실패: $uriData", e)
             }
         }
 
         return fileList
     }
 
-    fun convertUrisToFiles(context: Context, uri: Uri): File? {
+    fun isCacheFile(context: Context, filePath: String): Boolean {
+        val cacheDir = context.cacheDir
+        val file = File(filePath)
+        val absolutePath = file.absolutePath
+
+        return absolutePath.startsWith(cacheDir.absolutePath)
+    }
+
+    fun convertUrisToFiles(context: Context, uriData: UriData): File? {
 
         val file=try {
 
-                toFile(context, uri)
+                toFile(context, uriData)
             } catch (e: Exception) {
-                Log.e("변환 실패", "파일 변환 실패: $uri", e)
+                Log.e("변환 실패", "파일 변환 실패: $uriData", e)
                 null
             }
         return file
     }
 
-    fun castImageFile(imageData: ImageData): Any {
-        return when (imageData) {
-            is ImageData.StringData -> imageData.name
-            is ImageData.ByteArrayData -> BitmapFactory.decodeByteArray(
-                imageData.byteArray,
-                0,
-                imageData.byteArray.size
-            )
 
-            is ImageData.UriData -> TODO()
-        }
-    }
-
-    fun byteArrayListToCacheUriList(context: Context, byteArrayList: List<ByteArray>?, fileNameList: List<String>?): List<Uri>? {
+    fun byteArrayListToCacheUriList(context: Context, byteArrayList: List<ImageData>?, fileNameList: List<String>?): List<UriData>? {
 
         if (byteArrayList.isNullOrEmpty()) return null
 
-        val imageUrlList = mutableListOf<Uri>()
+        val imageUrlList = mutableListOf<UriData>()
 
         for (i in byteArrayList.indices) {
             val byteArray = byteArrayList[i]
@@ -117,11 +137,11 @@ object ImageConverter {
 
                 val file = File(context.cacheDir, fileName)
                 FileOutputStream(file).use { fos ->
-                    fos.write(byteArray)
+                    fos.write(byteArray.image)
                 }
 
                 val uri = Uri.fromFile(file)
-                imageUrlList.add(uri)
+                imageUrlList.add(UriData(uri=uri,isOldImage = byteArray.isOldImage))
             } catch (e: Exception) {
                 Log.d("Uri 가져오기 실패", e.toString())
             }
@@ -130,7 +150,7 @@ object ImageConverter {
         return if (imageUrlList.isEmpty()) null else imageUrlList
     }
 
-    fun byteArrayToCacheUri(context: Context, byteArray: ByteArray?, fileName: String?): Uri? {
+    fun byteArrayToCacheUri(context: Context, byteArray: ImageData?, fileName: String?): UriData? {
 
         if (byteArray==null) return null
 
@@ -138,11 +158,10 @@ object ImageConverter {
 
             val file = File(context.cacheDir, fileName ?: "image_temp.jpg")
             FileOutputStream(file).use { fos ->
-                fos.write(byteArray)
+                fos.write(byteArray.image)
             }
 
-            Uri.fromFile(file)
-
+            UriData(uri=Uri.fromFile(file),isOldImage = byteArray.isOldImage)
         } catch (e: Exception) {
             Log.d("Uri 가져오기 실패", e.toString())
             null
@@ -160,9 +179,8 @@ object ImageConverter {
         }
     }
 
-    private fun resizeBitmap(context: Context, uri: Uri, resize: Int,): Bitmap? {
-
-        var bitmap=try {
+    fun convertUriToBitmap(context: Context,uri:Uri): Bitmap? {
+        return try {
             val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
             BitmapFactory.decodeStream(inputStream).also {
                 inputStream?.close()
@@ -171,10 +189,14 @@ object ImageConverter {
             Log.e("비트맵 생성", "생성 실패: ${e.message}", e)
             return null
         }
-        bitmap = rotateBitmap(context, uri, bitmap) ?: return null
+    }
+    private fun resizeBitmap(bitmap: Bitmap,resize: Int,): Bitmap? {
 
-        val width = bitmap.width
-        val height = bitmap.height
+        var resizedBitmap=bitmap
+
+
+        val width = resizedBitmap.width
+        val height = resizedBitmap.height
 
         // 비율
         val ratio = Math.min(resize.toFloat() / width, resize.toFloat() / height)
@@ -185,12 +207,12 @@ object ImageConverter {
         return try {
             //todo 산넘어 산 리뷰 수정중 새로운 사진만 제대로 전송되는 문제가 있음 에러 이유 찾아야함
             //java.lang.IllegalStateException: Can't compress a recycled bitmap
-            Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true).apply {
-                bitmap.recycle()
+            Bitmap.createScaledBitmap(resizedBitmap, newWidth, newHeight, true).apply {
+                resizedBitmap.recycle()
             }
         } catch (e: Exception) {
             Log.e("크기조절 실패", "비트맵 크기 조정 실패: ${e.message}", e)
-            bitmap.recycle()
+            resizedBitmap.recycle()
             null
         }
     }

@@ -18,6 +18,6 @@ data class SingleWhiskeyData(
     val reg_date:String?=null,
 //    val reg_date:LocalDateTime= LocalDateTime.MIN,
     val mod_date:String?=null,
-    val image:ByteArray?=null,
+    val image:ImageData?=null,
 
 )

@@ -61,6 +61,7 @@ import com.example.whiskeyreviewer.component.customComponent.CustomTrailingIcon
 import com.example.whiskeyreviewer.component.customIcon.TagComponent
 import com.example.whiskeyreviewer.component.customIcon.WhiskeyScoreComponent
 import com.example.whiskeyreviewer.component.home.WhiskyCustomFilterRow
+import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
@@ -233,7 +234,7 @@ fun MySingleReviewComponent(
     reviewDataList: List<WhiskyReviewData>,
     singleReviewClick: (WhiskyReviewData) -> Unit,
 
-    onImageSelect: (ByteArray) -> Unit = {},
+    onImageSelect: (ImageData) -> Unit = {},
     deleteReview: (WhiskyReviewData) -> Unit = {},
     modifyReview: (WhiskyReviewData) -> Unit = {},
 ) {
@@ -354,7 +355,7 @@ fun OtherUserReviewPostComponent(
     reviewDataList: LazyPagingItems<WhiskyReviewData>,
     singleReviewClick: (WhiskyReviewData) -> Unit,
 
-    onImageSelect: (ByteArray) -> Unit = {},
+    onImageSelect: (ImageData) -> Unit = {},
 
     onLikeClick: (WhiskyReviewData) -> Unit = {},
     getImageList: (WhiskyReviewData) -> Unit = {}
@@ -540,10 +541,10 @@ fun OtherUserReviewPostComponent(
 
 @Composable
 fun ReviewImageLazyRowComponent(
-    imageList:List<ByteArray>,
+    imageList:List<ImageData>,
     deleteImage:(Int)->Unit,
     deleteImageAllow:Boolean=true,
-    onImageSelect:(ByteArray)->Unit={},
+    onImageSelect:(ImageData)->Unit={},
 ) {
     val scrollState = rememberLazyListState()
 
@@ -570,8 +571,7 @@ fun ReviewImageLazyRowComponent(
 //                )
 
                 GlideImage(
-                    imageModel = image,
-
+                    imageModel = image.image,
 
                     modifier = Modifier
                         .fillMaxSize()

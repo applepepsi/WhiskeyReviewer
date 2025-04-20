@@ -19,6 +19,7 @@ import com.example.whiskeyreviewer.component.toolBar.TextStyleState
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.SubmitWhiskyData
 import com.example.whiskeyreviewer.data.ToolBarItems
+import com.example.whiskeyreviewer.data.UriData
 import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.data.WriteReviewData
 import com.example.whiskeyreviewer.repository.WriteReviewRepository
@@ -48,8 +49,8 @@ class WriteReviewViewModel @Inject constructor(
     private val _selectedTextStyleItem = mutableStateOf<TextStyleItems?>(null)
     val selectedTextStyleItem: State<TextStyleItems?> = _selectedTextStyleItem
 
-    private val _selectedImageUri = mutableStateOf<List<Uri>>(emptyList())
-    val selectedImageUri: State<List<Uri>> = _selectedImageUri
+    private val _selectedImageUri = mutableStateOf<List<UriData>>(emptyList())
+    val selectedImageUri: State<List<UriData>> = _selectedImageUri
 
     private val _textStyleState = mutableStateOf(TextStyleState())
     val textStyleState: State<TextStyleState> = _textStyleState
@@ -152,7 +153,7 @@ class WriteReviewViewModel @Inject constructor(
         _textStyleState.value = _textStyleState.value.copy(textSize = false, textColor = false, textBackgroundColor = false)
     }
 
-    fun setSelectedImage(uris: List<Uri>) {
+    fun setSelectedImage(uris: List<UriData>) {
 
 
         val currentSize = _selectedImageUri.value.size
@@ -448,7 +449,7 @@ class WriteReviewViewModel @Inject constructor(
         _errorToastIcon.value=icon
     }
 
-    fun synchronizationWhiskyData(reviewData: WhiskyReviewData, whiskyName: String,uriList:List<Uri>?) {
+    fun synchronizationWhiskyData(reviewData: WhiskyReviewData, whiskyName: String,uriList:List<UriData>?) {
         Log.d("uriList", uriList.toString())
         //todo 수정 기능 구현해야함
         _writeReviewData.value=_writeReviewData.value.copy(

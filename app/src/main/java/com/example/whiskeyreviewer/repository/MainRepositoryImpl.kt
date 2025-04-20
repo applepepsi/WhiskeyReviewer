@@ -112,7 +112,14 @@ class MainRepositoryImpl @Inject constructor(
             val result = ApiHandler.makeApiCall(tag = "이미지 가져오기") {
                 api.getImage(image_name = singleWhiskeyData.image_name)
             }
-            singleWhiskeyData.copy(image = result?.bytes())
+            if(result!=null){
+                singleWhiskeyData.copy(
+                    image = ImageData(image=result.bytes(),isOldImage = true)
+                )
+            }else{
+                singleWhiskeyData
+            }
+
         }
     }
 
@@ -156,7 +163,7 @@ class MainRepositoryImpl @Inject constructor(
             return singleWhiskeyData
         }
         return withContext(Dispatchers.IO) {
-            val imageList = mutableListOf<ByteArray>()
+            val imageList = mutableListOf<ImageData>()
 
             singleWhiskeyData.image_names.forEach{ singleImageUrl->
 
@@ -165,9 +172,9 @@ class MainRepositoryImpl @Inject constructor(
                 }
 
                 if (result != null) {
-                    imageList.add(result.bytes())
+                    imageList.add(ImageData(result.bytes(),isOldImage = true))
                 } else {
-                    imageList.add(ByteArray(0))
+                    imageList.add(ImageData(ByteArray(0),isOldImage = true))
                 }
 
             }
