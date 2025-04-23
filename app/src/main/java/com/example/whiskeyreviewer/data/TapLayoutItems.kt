@@ -26,6 +26,8 @@ sealed class TapLayoutItems(
     data object Spirit : TapLayoutItems("스피릿", "Spirit")
     data object Tennessee : TapLayoutItems("테네시", "Tennessee")
     data object Wheat : TapLayoutItems("밀", "Wheat")
+
+    data object Other : TapLayoutItems("기타", "Other")
     companion object {
 //        val allWhiskyType = listOf(
 //            AllWhiskey,

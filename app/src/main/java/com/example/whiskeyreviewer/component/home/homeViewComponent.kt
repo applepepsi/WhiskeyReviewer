@@ -377,7 +377,7 @@ fun MyWhiskyComponent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     item{
-                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
+//                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     }
 
                     itemsIndexed(items = myReviewItems) { index, singleWhiskeyData ->

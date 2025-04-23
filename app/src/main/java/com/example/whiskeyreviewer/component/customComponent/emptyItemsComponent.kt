@@ -45,7 +45,7 @@ fun EmptyMyWhiskyReviewComponent(
     ) {
         Icon(
             modifier = Modifier
-                .size(150.dp),
+                .size(80.dp),
             imageVector = ImageVector.vectorResource(R.drawable.empty_bottle),
             contentDescription = "",
             tint = LightBlackColor.copy(alpha = 0.3f),

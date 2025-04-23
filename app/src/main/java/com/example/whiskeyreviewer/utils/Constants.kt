@@ -72,7 +72,8 @@ val whiskeyData = listOf(
     TapLayoutItems.SinglePotStill,
     TapLayoutItems.Spirit,
     TapLayoutItems.Tennessee,
-    TapLayoutItems.Wheat
+    TapLayoutItems.Wheat,
+    TapLayoutItems.Other
 )
 
 val countryData = listOf(

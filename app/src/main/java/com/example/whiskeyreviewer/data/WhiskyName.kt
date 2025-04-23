@@ -6,5 +6,7 @@ data class WhiskyName(
     val strength:String?=null,
     val country:String="",
     val whisky_uuid:String="",
-    val check:Boolean?=null
+    val check:Boolean?=null,
+    val category: String?= null,
+//    val category: TapLayoutItems=TapLayoutItems.AmericanWhiskey,
 )

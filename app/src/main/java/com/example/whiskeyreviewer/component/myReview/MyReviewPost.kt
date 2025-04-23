@@ -385,8 +385,9 @@ fun OtherUserReviewPostComponent(
 
             Log.d("카운트", reviewDataList.itemCount.toString())
             items(reviewDataList.itemCount) { index ->
+
                 val singleReview = reviewDataList[index] ?: WhiskyReviewData()
-                Log.d("이미지 확인", singleReview.image_names.toString())
+                Log.d("리뷰", singleReview.toString())
                 val richTextState = rememberRichTextState()
 
                 val imageStateText = if (!singleReview.expendedState) "이미지 숨기기" else "이미지 표시"

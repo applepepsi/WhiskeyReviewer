@@ -1193,6 +1193,13 @@ fun InsertWhiskyDetailDialog(
 //        mainViewModel.resetAddCustomWhiskyDialog()
 //    }
 
+    LaunchedEffect(Unit) {
+        Log.d("mainViewModel.selectWhiskyData.value",
+            mainViewModel.customWhiskyData.value.toString()
+        )
+        mainViewModel.selectWhiskyData.value
+    }
+
     val customToast = CustomToast(LocalContext.current)
 
 

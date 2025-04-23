@@ -1,7 +1,6 @@
 package com.example.whiskeyreviewer.viewModel
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
@@ -691,7 +690,7 @@ class MainViewModel @Inject constructor(
                 _selectedImageUri.value=_selectedImageUri.value.copy(uri = it.uri,isOldImage = it.isOldImage)
             }
         }
-        _currentCustomWhiskyType.value=WhiskyLanguageTransfer.fineWhiskyCategory(data.category)
+        _currentCustomWhiskyType.value=WhiskyLanguageTransfer.finedWhiskyCategory(data.category)
         _whiskyModifyState.value=true
         toggleInsertWhiskyState()
     }
@@ -700,6 +699,7 @@ class MainViewModel @Inject constructor(
 
         _insertWhiskyDetailDialogState.value=!_insertWhiskyDetailDialogState.value
     }
+
 
     fun selectNewWhiskyInfoMode(){
         resetAddCustomWhiskyDialog()
@@ -727,6 +727,7 @@ class MainViewModel @Inject constructor(
 
     fun whiskySearch(){
         if(selectWhiskyText.value !=""){
+            Log.d("위스키 찾기", "${selectWhiskyText.value} / ${currentWhiskyFilterType.value.name}")
             _searchButtonState.value=true
             _smallProgressIndicatorState.value=true
             mainRepository.addWhiskyNameSearch(name = selectWhiskyText.value,category=currentWhiskyFilterType.value.name) { whiskyNameList ->
@@ -738,7 +739,7 @@ class MainViewModel @Inject constructor(
                         oldName.copy(check = false)
                     }
                     _dialogSelectWhiskyData.value = updatedList
-                    Log.d("이름들", updatedList.size.toString())
+                    Log.d("이름들", _dialogSelectWhiskyData.toString())
                 }
                 _smallProgressIndicatorState.value=false
             }
@@ -1281,6 +1282,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun setWhiskyInfo():Boolean {
+        //todo 카테고리도 동기화해야함
         val info = _dialogSelectWhiskyData.value.find{ whiskyName ->
             whiskyName.check==true
         }
@@ -1288,14 +1290,20 @@ class MainViewModel @Inject constructor(
 
         Log.d("인포", info.toString())
 
+
         return if (info != null) {
+
+            val category=WhiskyLanguageTransfer.finedWhiskyCategory(info.category ?:TapLayoutItems.AmericanWhiskey.name!!)
+
             _customWhiskyData.value=_customWhiskyData.value.copy(
                 whisky_uuid = info.whisky_uuid,
                 korea_name = info.korea_name ?: "",
                 english_name = info.english_name,
                 strength = info.strength ?:"",
                 country = info.country,
+                category = category.name!!
             )
+            _currentCustomWhiskyType.value=category
             true
         } else {
             setErrorToastMessage(

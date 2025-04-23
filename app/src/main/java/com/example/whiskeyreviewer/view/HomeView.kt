@@ -49,6 +49,7 @@ import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.home.MyWhiskyComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerComponent
 import com.example.whiskeyreviewer.component.dialog.SelectWhiskeyDialog
+import com.example.whiskeyreviewer.component.home.MyWhiskyCustomFilterRow
 import com.example.whiskeyreviewer.component.home.TapLayoutComponent
 import com.example.whiskeyreviewer.data.FloatingActionButtonItems
 import com.example.whiskeyreviewer.data.MainRoute
@@ -268,7 +269,7 @@ fun HomeView(
                 TapLayoutComponent(
                     customFilter = {
                                    //필터를 리뷰와 하나로 통합시켜서 스크롤 했을 때 같이 내려가도록 수정
-//                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
+                        MyWhiskyCustomFilterRow(mainViewModel = mainViewModel)
                     },
                     myReview = {
 

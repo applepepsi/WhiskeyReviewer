@@ -376,7 +376,7 @@ fun WhiskeyFilterDropDownMenuComponent(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text=value.title,
+                    text=value.title ?:"test",
                     style = TextStyle.Default.copy(
                         color = textAndIconColor,
                         fontSize = 12.sp,
@@ -406,7 +406,7 @@ fun WhiskeyFilterDropDownMenuComponent(
 
                         text = {
                             Text(
-                                text = item.title,
+                                text = item.title ?:"test",
                                 style = TextStyle.Default.copy(
                                     color = Color.Gray,
                                     fontSize = 11.sp,
