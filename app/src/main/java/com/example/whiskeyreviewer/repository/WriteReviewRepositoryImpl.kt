@@ -78,7 +78,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
     }
 
 
-    //todo 이미지 어떻게 보내야 하는지 물어보기
+    //todo 리뷰 수정할때 포스트 이미지는 추가된 이미지만 전송, 수정된 리뷰를 보낼 때는 기존 이미지 주소 까지 같이 전송
     override fun reviewModify(
         imageFiles:List<File>?,
         reviewData: SubmitWhiskyData,
@@ -92,9 +92,20 @@ class WriteReviewRepositoryImpl @Inject constructor(
                     postImage(singleImage)
                 }
 
-                Log.d("수정 이미지 결과", imageLinks.toString())
-                val newData = reviewData.copy(image_names = imageLinks)
 
+                val oldImageList=reviewData.image_names
+
+                var newImageLinks: List<String?>?=null
+
+                if(imageLinks!=null){
+                    newImageLinks = if(oldImageList!=null){
+                        oldImageList+imageLinks
+                    }else{
+                        imageLinks
+                    }
+                }
+                val newData = reviewData.copy(image_names = newImageLinks)
+                Log.d("수정 이미지 결과", newImageLinks.toString())
 
                 api.reviewModify(reviewUuid = newData.my_whisky_uuid, writeReviewData = newData) }
             withContext(Dispatchers.Main) {
@@ -119,7 +130,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
         val requestFile = image?.asRequestBody("image/*".toMediaTypeOrNull())
         val convertImage = requestFile?.let { MultipartBody.Part.createFormData("image", image.name, it) }
 
-
+        Log.d("변환 이미지 이름", image.toString())
         val result = withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag = "이미지 전송") {
                 api.imageUpload(image = convertImage)

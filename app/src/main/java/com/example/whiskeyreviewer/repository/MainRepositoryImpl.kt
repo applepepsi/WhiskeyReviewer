@@ -113,6 +113,7 @@ class MainRepositoryImpl @Inject constructor(
                 api.getImage(image_name = singleWhiskeyData.image_name)
             }
             if(result!=null){
+                Log.d("이미지 가져오기 결과",result.toString())
                 singleWhiskeyData.copy(
                     image = ImageData(image=result.bytes(),isOldImage = true)
                 )
@@ -276,9 +277,8 @@ class MainRepositoryImpl @Inject constructor(
                 }
             }
 
-
             val newData = data.copy(image_name = imageLink ?: data.image_name)
-
+            Log.d("위스키 수정 이미지", newData.image_name.toString())
             val result = if (modify) {
                 // 수정
                 Log.d("수정 데이터", newData.toString())

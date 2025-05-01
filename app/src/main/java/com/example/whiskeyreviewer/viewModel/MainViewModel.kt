@@ -740,6 +740,11 @@ class MainViewModel @Inject constructor(
                     }
                     _dialogSelectWhiskyData.value = updatedList
                     Log.d("이름들", _dialogSelectWhiskyData.toString())
+                }else{
+                    setErrorToastMessage(
+                        icon=R.drawable.fail_icon,
+                        text="서버와 연결 상태가 좋지 않습니다."
+                    )
                 }
                 _smallProgressIndicatorState.value=false
             }
@@ -966,10 +971,16 @@ class MainViewModel @Inject constructor(
 //                            )
 
                         }else{
-
+                            setErrorToastMessage(
+                                icon=R.drawable.fail_icon,
+                                text="정보를 저장하는데 실패했습니다."
+                            )
                         }
                     }else{
-
+                        setErrorToastMessage(
+                            icon=R.drawable.fail_icon,
+                            text="서버와 연결 상태가 좋지 않습니다."
+                        )
                     }
                     ImageConverter.clearCache(context = applicationContext)
                     _tinyProgressIndicatorState.value=false
@@ -1225,7 +1236,17 @@ class MainViewModel @Inject constructor(
 
                     _myReviewDataList.value=serverResponse.data ?: emptyList()
                     Log.d("리뷰 데이터", _myReviewDataList.value.toString())
+                }else{
+                    setErrorToastMessage(
+                        icon=R.drawable.fail_icon,
+                        text = "리뷰 데이터를 가져오는데 실패했습니다."
+                    )
                 }
+            }else{
+                setErrorToastMessage(
+                    icon=R.drawable.fail_icon,
+                    text = "리뷰 데이터를 가져오는데 실패했습니다."
+                )
             }
             _smallProgressIndicatorState.value=false
         }
@@ -1432,23 +1453,45 @@ class MainViewModel @Inject constructor(
 
     private fun cancelLike(reviewUuid: String, whiskyReviewData: WhiskyReviewData, currentLikeStates: MutableMap<String, LikeState>) {
         mainRepository.cancelLikeReview(reviewUuid) { serverResponse ->
-            serverResponse?.let {
-                if (it.code == SUCCESS_CODE) {
-                    setErrorToastMessage(icon = R.drawable.fail_icon, text = "추천 취소")
+            if(serverResponse!=null){
+                if (serverResponse.code == SUCCESS_CODE) {
+//                    setErrorToastMessage(icon = R.drawable.fail_icon, text = "추천 취소")
                     updateLikeState(currentLikeStates, whiskyReviewData, -1, false)
+                }else{
+                    setErrorToastMessage(
+                        icon=R.drawable.fail_icon,
+                        text="추천 취소에 실패했습니다."
+                    )
                 }
+            }else{
+                setErrorToastMessage(
+                    icon=R.drawable.fail_icon,
+                    text="추천 취소에 실패했습니다."
+                )
             }
+
         }
     }
 
     private fun likeReview(reviewUuid: String, whiskyReviewData: WhiskyReviewData, currentLikeStates: MutableMap<String, LikeState>) {
         mainRepository.likeReview(reviewUuid) { serverResponse ->
-            serverResponse?.let {
-                if (it.code == SUCCESS_CODE) {
-                    setErrorToastMessage(icon = R.drawable.success_icon, text = "추천 성공")
+            if(serverResponse!=null){
+                if (serverResponse.code == SUCCESS_CODE) {
+//                    setErrorToastMessage(icon = R.drawable.success_icon, text = "추천 성공")
                     updateLikeState(currentLikeStates, whiskyReviewData, 1, true)
+                }else{
+                    setErrorToastMessage(
+                        icon=R.drawable.fail_icon,
+                        text="추천에 실패했습니다."
+                    )
                 }
+            }else{
+                setErrorToastMessage(
+                    icon=R.drawable.fail_icon,
+                    text="추천에 실패했습니다."
+                )
             }
+
         }
     }
 

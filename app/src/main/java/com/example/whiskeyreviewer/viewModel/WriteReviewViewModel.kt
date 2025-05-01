@@ -189,11 +189,15 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun deleteImage(index: Int){
+        val oldWriteReviewImageList=_writeReviewData.value.imageList.toMutableList()
         val oldList=_selectedImageUri.value.toMutableList()
         if (index in oldList.indices) {
             oldList.removeAt(index)
+            oldWriteReviewImageList.removeAt(index)
+            _writeReviewData.value=_writeReviewData.value.copy(imageList = oldWriteReviewImageList)
             _selectedImageUri.value = oldList
         }
+        Log.d("제거된 이미지", _writeReviewData.value.imageList.toString())
     }
 
     fun updateTextSize(textSize: Int) {
@@ -298,7 +302,7 @@ class WriteReviewViewModel @Inject constructor(
         _writeReviewData.value=_writeReviewData.value.copy(
             content = richTextEditorState.toHtml()
         )
-        Log.d("수정 이미지1", selectedImageUri.value.toString())
+        Log.d("_writeReviewData", _writeReviewData.value.toString())
         val imageFiles=if(selectedImageUri.value.isNotEmpty()){
             ImageConverter.convertUrisToFiles(applicationContext,selectedImageUri.value)
         }else{
@@ -324,7 +328,7 @@ class WriteReviewViewModel @Inject constructor(
                 _writeReviewData.value.tags,
                 _writeReviewData.value.score.toInt(),
                 _writeReviewData.value.whiskey_uuid,
-
+                _writeReviewData.value.imageList
             )
 
             Log.d("submitWhiskyData", submitWhiskyData.toString())
@@ -460,7 +464,8 @@ class WriteReviewViewModel @Inject constructor(
             tags= reviewData.tags,
             score=reviewData.score,
 //            imageList = whiskyData.imageList,
-            whiskyName=whiskyName
+            whiskyName=whiskyName,
+            imageList = reviewData.image_names ?: emptyList()
         )
         _selectedImageUri.value=uriList ?: emptyList()
 

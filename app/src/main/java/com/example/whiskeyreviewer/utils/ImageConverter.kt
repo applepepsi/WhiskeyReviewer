@@ -88,14 +88,16 @@ object ImageConverter {
         val fileList = mutableListOf<File>()
         Log.d("이미지 가공 전", uriDataList.toString())
         for (uriData in uriDataList) {
-            try {
-                val file = toFile(context, uriData)
-                if(file!=null){
-                    fileList.add(file)
-                }
+            if(!uriData.isOldImage){
+                try {
+                    val file = toFile(context, uriData)
+                    if(file!=null){
+                        fileList.add(file)
+                    }
 
-            } catch (e: Exception) {
-                Log.e("변환 실패", "파일 변환 실패: $uriData", e)
+                } catch (e: Exception) {
+                    Log.e("변환 실패", "파일 변환 실패: $uriData", e)
+                }
             }
         }
 
@@ -111,15 +113,18 @@ object ImageConverter {
     }
 
     fun convertUrisToFiles(context: Context, uriData: UriData): File? {
-
-        val file=try {
-
+        return if(!uriData.isOldImage){
+            val file=try {
                 toFile(context, uriData)
             } catch (e: Exception) {
                 Log.e("변환 실패", "파일 변환 실패: $uriData", e)
                 null
             }
-        return file
+            file
+        }else{
+            null
+        }
+
     }
 
 

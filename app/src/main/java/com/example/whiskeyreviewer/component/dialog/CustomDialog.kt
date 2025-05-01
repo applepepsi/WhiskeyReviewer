@@ -251,7 +251,7 @@ fun InsertBackupCodeDialog(
             resetResult()
         }else if(submitResult == false){
 
-            customToast.MakeText(text = "올바르지 않은 코드입니다. 다시 시도해 주세요", icon = R.drawable.fail_icon)
+            customToast.MakeText(text = "유효하지 않은 코드입니다. 다시 시도해 주세요", icon = R.drawable.fail_icon)
             resetResult()
         }
 
