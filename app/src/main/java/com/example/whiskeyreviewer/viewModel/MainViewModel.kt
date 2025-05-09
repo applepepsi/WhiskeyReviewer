@@ -2,6 +2,7 @@ package com.example.whiskeyreviewer.viewModel
 
 import android.content.Context
 import android.net.Uri
+import android.os.CountDownTimer
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
@@ -420,6 +421,13 @@ class MainViewModel @Inject constructor(
     private val _firstRunTest=mutableStateOf<Boolean>(true)
     val firstRunTest: State<Boolean> = _firstRunTest
 
+    private val _getBackupCodeIndicatorState = mutableStateOf<Boolean>(false)
+    val getBackupCodeIndicatorState: State<Boolean> = _getBackupCodeIndicatorState
+
+    private val _remainingTime = mutableStateOf<Int>(0)
+    val remainingTime: State<Int> = _remainingTime
+
+    private var countDownTimer: CountDownTimer? = null
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -1535,18 +1543,24 @@ class MainViewModel @Inject constructor(
     }
 
     fun getBackupCode(){
-        mainRepository.getBackupCode {serverResponse->
-            if(serverResponse !=null){
-                if(serverResponse.code== SUCCESS_CODE){
-                    _backupCode.value=serverResponse.data?.code
+        Log.d("남은 시간",((remainingTime.value).toString()))
+        if((remainingTime.value) <= 0){
+            _getBackupCodeIndicatorState.value=true
+            mainRepository.getBackupCode {serverResponse->
+                if(serverResponse !=null){
+                    if(serverResponse.code== SUCCESS_CODE){
+                        _backupCode.value=serverResponse.data?.code
+
+                        startCountDown()
+                    }else{
+
+                    }
                 }else{
 
                 }
-            }else{
-
+                _getBackupCodeIndicatorState.value=false
             }
         }
-
     }
 
     fun submitBackupCode(backupCode:String){
@@ -1566,6 +1580,37 @@ class MainViewModel @Inject constructor(
                 _backupCodeResult.value=false
             }
         }
+    }
+
+    fun startCountDown() {
+        val durationMinutes = 5
+        val durationSeconds = durationMinutes * 60
+        val durationMillis = durationSeconds * 1000L
+
+        _remainingTime.value = durationSeconds
+
+        countDownTimer?.cancel()
+
+        countDownTimer = object : CountDownTimer(durationMillis, 1000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                _remainingTime.value = (millisUntilFinished / 1000).toInt()
+            }
+
+            override fun onFinish() {
+                _remainingTime.value = 0
+
+            }
+        }.start()
+    }
+
+    fun stopCountDown() {
+        countDownTimer?.cancel()
+        _remainingTime.value = 0
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopCountDown()
     }
 
     fun deleteWhisky(){

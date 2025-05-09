@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.component.customIcon.CustomTagComponent
 import com.example.whiskeyreviewer.component.home.NavigationDrawerLabel
-import com.example.whiskeyreviewer.data.WhiskyDrinkingType
+
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

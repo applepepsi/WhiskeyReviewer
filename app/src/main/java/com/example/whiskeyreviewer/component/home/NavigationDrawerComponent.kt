@@ -82,14 +82,8 @@ fun NavigationDrawerComponent(
         )
     }
 
-    GetBackupCodeDialog(
-        toggleOption = { mainViewModel.toggleDrawerDialogState(NavigationDrawerItems.Backup) },
-        currentState = mainViewModel.getBackupCodeDialogState.value,
-        getBackupCode = {
-            mainViewModel.getBackupCode()
-        },
-        backupCode = mainViewModel.backupCode.value
-    )
+
+
     InsertBackupCodeDialog(
         toggleOption = { mainViewModel.toggleDrawerDialogState(NavigationDrawerItems.InsertBackupCode) },
         currentState = mainViewModel.insertBackupCodeDialogState.value,

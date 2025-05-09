@@ -13,6 +13,7 @@ import com.example.whiskeyreviewer.component.customComponent.ProgressIndicatorDi
 import com.example.whiskeyreviewer.component.permission.PermissionRationale
 import com.example.whiskeyreviewer.component.permission.rememberPermissionList
 import com.example.whiskeyreviewer.data.AddImageTag
+import com.example.whiskeyreviewer.data.NavigationDrawerItems
 import com.example.whiskeyreviewer.data.UriData
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
@@ -180,6 +181,18 @@ fun AllDialogs(
         onSelect = { mainViewModel.updateSelectImageType(it) },
         toggleOption = {mainViewModel.toggleMultiImageTypeSelectDialogState()},
         currentState = mainViewModel.multiImageTypeSelectDialogState.value
+    )
+
+    GetBackupCodeDialog(
+        toggleOption = { mainViewModel.toggleDrawerDialogState(NavigationDrawerItems.Backup) },
+        currentState = mainViewModel.getBackupCodeDialogState.value,
+        getBackupCode = {
+            mainViewModel.getBackupCode()
+        },
+        backupCode = mainViewModel.backupCode.value,
+        getBackupCodeState = mainViewModel.getBackupCodeIndicatorState.value,
+//        remainingTime = (mainViewModel.remainingTime.value % 60),
+
     )
 
 }

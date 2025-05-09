@@ -6,8 +6,8 @@ data class MyWhiskyFilterData(
     val category: TapLayoutItems=TapLayoutItems.AllWhiskey,
     val date_order:WhiskeyFilterItems?=WhiskeyFilterItems.DayAscendingOrder,
 //    val name_order:WhiskeyFilterItems?=null,
-    val score_order:WhiskeyFilterItems?=WhiskeyFilterItems.DayAscendingOrder,
-    val open_date_order:WhiskeyFilterItems?=WhiskeyFilterItems.DayAscendingOrder
+    val score_order:WhiskeyFilterItems?=null,
+    val open_date_order:WhiskeyFilterItems?=null
 )
 
 data class ReviewFilterData(

@@ -102,6 +102,8 @@ fun GetBackupCodeDialog(
     currentState: Boolean = true,
     backupCode:String?=null,
     getBackupCode:()->Unit,
+    getBackupCodeState:Boolean,
+//    remainingTime:Int,
 ) {
 
     val clipboardManager = LocalClipboardManager.current
@@ -113,20 +115,22 @@ fun GetBackupCodeDialog(
         toastState = false
     }
 
-    LaunchedEffect(Unit) {
-        getBackupCode()
-    }
+
 
     val backupCodeData=backupCode ?:"코드 발급 실패"
 
     if (currentState) {
+        LaunchedEffect(Unit) {
+            getBackupCode()
+        }
+
         Dialog(
             onDismissRequest = { toggleOption() }
         ) {
 
             Box(
                 modifier = Modifier
-                    .height(160.dp)
+                    .height(190.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.White),
 
@@ -171,24 +175,47 @@ fun GetBackupCodeDialog(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = backupCodeData,
-                        style = TextStyle.Default.copy(
-                            color = LightBlackColor,
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        modifier = Modifier
+                    if(getBackupCodeState){
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(35.dp),
+                            color = MainColor,
+                            strokeWidth = 3.dp,
+                            trackColor = ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+                        )
+                    }else{
+                        Text(
+                            text = backupCodeData,
+                            style = TextStyle.Default.copy(
+                                color = LightBlackColor,
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
 
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) {
-                                clipboardManager.setText(AnnotatedString((backupCodeData)))
-                                toastState=!toastState
-                            }
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    clipboardManager.setText(AnnotatedString((backupCodeData)))
+                                    toastState=!toastState
+                                }
 
-                    )
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "5분 이내에 코드를 입력해 주세요.",
+                            style = TextStyle.Default.copy(
+                                color = LightBlackColor,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            modifier = Modifier
+
+                        )
+                    }
 
                 }
 
@@ -196,7 +223,7 @@ fun GetBackupCodeDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(end = 20.dp, bottom = 8.dp)
+                            .padding(end = 20.dp, bottom = 12.dp)
                             .align(Alignment.BottomEnd)
                             ,
                         horizontalArrangement = Arrangement.End,

@@ -103,6 +103,7 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel, context: Context) {
         if(firstRunCheckResult){
             permissionsState.launchMultiplePermissionRequest()
         }
+
     }
 
 
