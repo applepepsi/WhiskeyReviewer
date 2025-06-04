@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
+import com.example.whiskeyreviewer.component.customComponent.LiveSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.dialog.DetailSearchDialog
@@ -152,7 +153,7 @@ fun NavigationDrawerComponent(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text="리뷰 검색",
+                    text="전체 리뷰 검색",
                     style = TextStyle.Default.copy(
                         color = Color.Gray,
                         fontSize = 16.sp,
@@ -187,13 +188,41 @@ fun NavigationDrawerComponent(
 
             }
 
-
+//
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth(),
+//                horizontalArrangement = Arrangement.Center
+//            ){
+//                CustomSearchBoxComponent(
+//                    text=mainViewModel.reviewFilterData.value.searchText,
+//                    onValueChange = {
+//                        mainViewModel.updateDrawerSearchBarText(it)
+//                    },
+//                    search = {
+//                        mainViewModel.setRecentSearchTextList(
+//                            RecentSearchWordManager.saveSearchText(
+//                                context = context,
+//                                searchText=mainViewModel.reviewFilterData.value.searchText,
+//                                type = RECENT_SEARCH_WHISKEY_TEXT
+//                            ),
+//                            type = RECENT_SEARCH_WHISKEY_TEXT
+//                        )
+//                        //검색
+//
+//                        navController.navigate(MainRoute.WHISKEY_SEARCH)
+//                    },
+//                    deleteInputText = {mainViewModel.updateDrawerSearchBarText("") },
+//                    liveSearch = true,
+//                    liveSearchDataList = mainViewModel.liveSearchDataList.value
+//                )
+//            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ){
-                CustomSearchBoxComponent(
+                LiveSearchBoxComponent(
                     text=mainViewModel.reviewFilterData.value.searchText,
                     onValueChange = {
                         mainViewModel.updateDrawerSearchBarText(it)
@@ -207,13 +236,13 @@ fun NavigationDrawerComponent(
                             ),
                             type = RECENT_SEARCH_WHISKEY_TEXT
                         )
-                        //검색
-
-                        navController.navigate(MainRoute.WHISKEY_SEARCH)
+                        mainViewModel.getSearchReviewData()
                     },
-                    deleteInputText = {mainViewModel.updateDrawerSearchBarText("") }
+                    deleteInputText = {mainViewModel.updateDrawerSearchBarText("")},
+                    liveSearchDataList = mainViewModel.liveSearchDataList.value
                 )
             }
+
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(top=5.dp,bottom=12.dp,end=5.dp,start=7.dp),

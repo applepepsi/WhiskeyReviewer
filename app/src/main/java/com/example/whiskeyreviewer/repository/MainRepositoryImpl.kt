@@ -10,6 +10,7 @@ import com.example.oneplusone.serverConnection.API
 import com.example.whiskeyreviewer.data.BackupCodeData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
 import com.example.whiskeyreviewer.data.ImageData
+import com.example.whiskeyreviewer.data.LiveSearchData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
@@ -243,6 +244,16 @@ class MainRepositoryImpl @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
 
             val result = ApiHandler.makeApiCall(tag="위스키 제거") { api.deleteWhisky(whisky_uuid = whisky_uuid) }
+            withContext(Dispatchers.Main) {
+                callback(result)
+            }
+        }
+    }
+
+    override fun getLiveSearchData(searchText: String, callback: (ServerResponse<List<LiveSearchData>>?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val result = ApiHandler.makeApiCall(tag="라이브 서치 데이터 가져오기") { api.whiskyLiveSearch(searchText) }
             withContext(Dispatchers.Main) {
                 callback(result)
             }

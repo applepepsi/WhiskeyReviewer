@@ -28,6 +28,7 @@ import com.example.whiskeyreviewer.data.FilterDropDownMenuState
 import com.example.whiskeyreviewer.data.ImageData
 import com.example.whiskeyreviewer.data.ImageSelectState
 import com.example.whiskeyreviewer.data.ImageSelectType
+import com.example.whiskeyreviewer.data.LiveSearchData
 import com.example.whiskeyreviewer.data.MyReviewFilterDropDownMenuState
 import com.example.whiskeyreviewer.data.MyReviewFilterItems
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
@@ -428,6 +429,10 @@ class MainViewModel @Inject constructor(
     val remainingTime: State<Int> = _remainingTime
 
     private var countDownTimer: CountDownTimer? = null
+
+    private val _liveSearchDataList=mutableStateOf<List<LiveSearchData>>(emptyList())
+    val liveSearchDataList: State<List<LiveSearchData>> = _liveSearchDataList
+
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -475,7 +480,23 @@ class MainViewModel @Inject constructor(
         _reviewFilterData.value=_reviewFilterData.value.copy(
             searchText =newSearchText
         )
+        if(newSearchText!=""){
+            mainRepository.getLiveSearchData(searchText = newSearchText){ liveSearchResult->
+                Log.d("라이브 서치 결과",liveSearchResult.toString())
+                if (liveSearchResult != null) {
+                    if(liveSearchResult.code== SUCCESS_CODE){
+                        Log.d("라이브 서치 리스트", liveSearchResult.data.toString())
+                        _liveSearchDataList.value=liveSearchResult.data ?: emptyList()
+                    }else{
 
+                    }
+                }else{
+
+                }
+            }
+        }else{
+            _liveSearchDataList.value= emptyList()
+        }
     }
 
     fun toggleDrawerSearchBarState(state:Boolean?=null){

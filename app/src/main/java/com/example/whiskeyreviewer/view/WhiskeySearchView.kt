@@ -49,6 +49,7 @@ import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.CustomAppBarComponent
 import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.EmptyMyWhiskyReviewComponent
+import com.example.whiskeyreviewer.component.customComponent.LiveSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.PostProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
@@ -119,7 +120,7 @@ fun WhiskeySearchView(
             ) {
 
                 CustomAppBarComponent(
-                    titleTextValue = "리뷰 검색",
+                    titleTextValue = "전체 리뷰 검색",
                     leftButton = {
                         CustomIconComponent(
                             icon = ImageVector.vectorResource(R.drawable.back_button_icon),
@@ -185,7 +186,28 @@ fun WhiskeySearchView(
 
                     }
 
-                    CustomSearchBoxComponent(
+//                    CustomSearchBoxComponent(
+//                        text=mainViewModel.reviewFilterData.value.searchText,
+//                        onValueChange = {
+//                            mainViewModel.updateDrawerSearchBarText(it)
+//                        },
+//                        search = {
+//                            mainViewModel.setRecentSearchTextList(
+//                                RecentSearchWordManager.saveSearchText(
+//                                    context = context,
+//                                    searchText=mainViewModel.reviewFilterData.value.searchText,
+//                                    type = RECENT_SEARCH_WHISKEY_TEXT
+//                                ),
+//                                type = RECENT_SEARCH_WHISKEY_TEXT
+//                            )
+//                            mainViewModel.getSearchReviewData()
+//                        },
+//                        deleteInputText = {mainViewModel.updateDrawerSearchBarText("")},
+//                        liveSearch = true,
+//                        liveSearchDataList = mainViewModel.liveSearchDataList.value
+//                    )
+
+                    LiveSearchBoxComponent(
                         text=mainViewModel.reviewFilterData.value.searchText,
                         onValueChange = {
                             mainViewModel.updateDrawerSearchBarText(it)
@@ -201,8 +223,10 @@ fun WhiskeySearchView(
                             )
                             mainViewModel.getSearchReviewData()
                         },
-                        deleteInputText = {mainViewModel.updateDrawerSearchBarText("")}
+                        deleteInputText = {mainViewModel.updateDrawerSearchBarText("")},
+                        liveSearchDataList = mainViewModel.liveSearchDataList.value
                     )
+
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(top=5.dp,bottom=12.dp,end=5.dp,start=7.dp),

@@ -15,10 +15,12 @@ import com.example.nextclass.utils.IMAGE_UPLOAD
 import com.example.nextclass.utils.LIKE_REVIEW
 import com.example.nextclass.utils.MODIFY_WHISKY
 import com.example.nextclass.utils.REGISTER
+import com.example.nextclass.utils.REVIEW_LIVE_SEARCH
 import com.example.nextclass.utils.REVIEW_MODIFY
 import com.example.nextclass.utils.REVIEW_SAVE
 import com.example.whiskeyreviewer.data.BackupCodeData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
+import com.example.whiskeyreviewer.data.LiveSearchData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.SubmitWhiskyData
@@ -61,6 +63,11 @@ interface API {
         @Query("name") name: String,
         @Query("category") category: String?,
     ): Response<ServerResponse<List<WhiskyName>>>
+
+    @GET(REVIEW_LIVE_SEARCH)
+    suspend fun whiskyLiveSearch(
+        @Query("keyword") keyword: String,
+    ): Response<ServerResponse<List<LiveSearchData>>>
 
     @DELETE(DELETE_WHISKY)
     suspend fun deleteWhisky(
@@ -158,4 +165,7 @@ interface API {
     suspend fun submitBackupCode(
         @Body code: BackupCodeData
     ): Response<ServerResponse<Any>>
+
+
+
 }

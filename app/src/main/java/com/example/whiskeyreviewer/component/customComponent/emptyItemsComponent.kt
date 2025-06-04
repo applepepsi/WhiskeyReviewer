@@ -76,7 +76,7 @@ fun EmptyWhiskySearchComponent(
     ) {
 
         Text(
-            text = "해당 위스키가 존재하지 않습니다.",
+            text = "해당 리뷰가 존재하지 않습니다.",
             style = TextStyle.Default.copy(
                 color = LightBlackColor,
                 fontSize = 15.sp,

@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
             splashScreen.setKeepOnScreenCondition{
                 !mainViewModel.loginResult.value
             }
-            WhiskeyReviewerTheme {
+            WhiskeyReviewerTheme(darkTheme = false) {
                 // A surface container using the 'background' color from the theme
 
                     Greeting(ssaId,mainViewModel,context)

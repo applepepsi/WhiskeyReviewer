@@ -4,6 +4,7 @@ package com.example.whiskeyreviewer.repository
 import androidx.paging.PagingData
 import com.example.whiskeyreviewer.data.BackupCodeData
 import com.example.whiskeyreviewer.data.CustomWhiskyData
+import com.example.whiskeyreviewer.data.LiveSearchData
 import com.example.whiskeyreviewer.data.ServerResponse
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.TokenData
@@ -91,5 +92,10 @@ interface MainRepository{
     fun deleteWhisky(
         whisky_uuid: String,
         callback: (ServerResponse<Any>?) -> Unit
+    )
+
+    fun getLiveSearchData(
+        searchText:String,
+        callback: (ServerResponse<List<LiveSearchData>>?) -> Unit
     )
 }

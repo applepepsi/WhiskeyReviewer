@@ -3,13 +3,10 @@ package com.example.whiskeyreviewer.component.Ad
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.whiskeyreviewer.R
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -30,5 +27,4 @@ fun AdMobBannerAd() {
             adView.loadAd(AdRequest.Builder().build())
         }
     )
-
 }
