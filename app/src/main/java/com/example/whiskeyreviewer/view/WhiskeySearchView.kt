@@ -211,6 +211,7 @@ fun WhiskeySearchView(
                         text=mainViewModel.reviewFilterData.value.searchText,
                         onValueChange = {
                             mainViewModel.updateDrawerSearchBarText(it)
+                            mainViewModel.getLiveSearchData(it)
                         },
                         search = {
                             mainViewModel.setRecentSearchTextList(
@@ -224,7 +225,14 @@ fun WhiskeySearchView(
                             mainViewModel.getSearchReviewData()
                         },
                         deleteInputText = {mainViewModel.updateDrawerSearchBarText("")},
-                        liveSearchDataList = mainViewModel.liveSearchDataList.value
+                        liveSearchDataList = mainViewModel.liveSearchDataList.value,
+                        onLiveSearchDataClick = {
+                            mainViewModel.updateDrawerSearchBarText(it)
+                        },
+                        liveSearchDropDownState=mainViewModel.liveSearchDropDownOpenState.value,
+                        toggleLiveSearchDropDownMenuState={state->
+                            mainViewModel.toggleLiveSearchOpenState(state)
+                        },
                     )
 
                     LazyRow(

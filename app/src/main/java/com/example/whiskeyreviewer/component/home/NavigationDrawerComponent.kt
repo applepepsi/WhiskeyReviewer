@@ -48,12 +48,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
-import com.example.whiskeyreviewer.component.customComponent.CustomSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.LiveSearchBoxComponent
 import com.example.whiskeyreviewer.component.customComponent.RecentSearchWordComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
 import com.example.whiskeyreviewer.component.dialog.DetailSearchDialog
-import com.example.whiskeyreviewer.component.dialog.GetBackupCodeDialog
 import com.example.whiskeyreviewer.component.dialog.InsertBackupCodeDialog
 import com.example.whiskeyreviewer.data.MainRoute
 import com.example.whiskeyreviewer.data.NavigationDrawerItems
@@ -226,6 +224,7 @@ fun NavigationDrawerComponent(
                     text=mainViewModel.reviewFilterData.value.searchText,
                     onValueChange = {
                         mainViewModel.updateDrawerSearchBarText(it)
+                        mainViewModel.getLiveSearchData(it)
                     },
                     search = {
                         mainViewModel.setRecentSearchTextList(
@@ -237,9 +236,18 @@ fun NavigationDrawerComponent(
                             type = RECENT_SEARCH_WHISKEY_TEXT
                         )
                         mainViewModel.getSearchReviewData()
+                        navController.navigate(MainRoute.WHISKEY_SEARCH)
                     },
                     deleteInputText = {mainViewModel.updateDrawerSearchBarText("")},
-                    liveSearchDataList = mainViewModel.liveSearchDataList.value
+                    liveSearchDataList = mainViewModel.liveSearchDataList.value,
+                    onLiveSearchDataClick = {
+                        mainViewModel.updateDrawerSearchBarText(it)
+
+                    },
+                    liveSearchDropDownState=mainViewModel.liveSearchDropDownOpenState.value,
+                    toggleLiveSearchDropDownMenuState={state->
+                        mainViewModel.toggleLiveSearchOpenState(state)
+                    },
                 )
             }
 

@@ -433,6 +433,10 @@ class MainViewModel @Inject constructor(
     private val _liveSearchDataList=mutableStateOf<List<LiveSearchData>>(emptyList())
     val liveSearchDataList: State<List<LiveSearchData>> = _liveSearchDataList
 
+
+    private val _liveSearchDropDownOpenState=mutableStateOf<Boolean>(false)
+    val liveSearchDropDownOpenState: State<Boolean> = _liveSearchDropDownOpenState
+
     fun setRecentSearchTextList(recentSearchWordList: MutableList<String>,type:String) {
         Log.d("최근검색어", recentSearchWordList.toString())
         when(type){
@@ -480,13 +484,21 @@ class MainViewModel @Inject constructor(
         _reviewFilterData.value=_reviewFilterData.value.copy(
             searchText =newSearchText
         )
-        if(newSearchText!=""){
-            mainRepository.getLiveSearchData(searchText = newSearchText){ liveSearchResult->
+
+
+    }
+
+    fun getLiveSearchData(searchText: String) {
+
+
+        if(searchText!=""){
+            mainRepository.getLiveSearchData(searchText = searchText){ liveSearchResult->
                 Log.d("라이브 서치 결과",liveSearchResult.toString())
                 if (liveSearchResult != null) {
                     if(liveSearchResult.code== SUCCESS_CODE){
                         Log.d("라이브 서치 리스트", liveSearchResult.data.toString())
                         _liveSearchDataList.value=liveSearchResult.data ?: emptyList()
+                        toggleLiveSearchOpenState(true)
                     }else{
 
                     }
@@ -1397,7 +1409,7 @@ class MainViewModel @Inject constructor(
         val searchWord=if (reviewFilterData.value.searchText=="" || !_searchButtonState.value) null else reviewFilterData.value.searchText
         val detailSearchWord=if (reviewFilterData.value.detailSearchText=="") null else reviewFilterData.value.detailSearchText
 
-        Log.d("필터 내용", detailSearchWord.toString())
+        Log.d("검색어", reviewFilterData.value.searchText)
         Log.d("필터 내용2", " voteAsc: ${reviewFilterData.value.vote_order?.orderType}, scoreAsc: ${reviewFilterData.value.score_order?.orderType}, createdAtAsc: ${reviewFilterData.value.date_order?.orderType}")
         viewModelScope.launch {
             _postProgressIndicatorState.value=true
@@ -1415,7 +1427,7 @@ class MainViewModel @Inject constructor(
                 //todo 다시 알아보기
 
                 _postProgressIndicatorState.value=false
-                Log.d("로딩2", _postProgressIndicatorState.value.toString())
+                Log.d("로딩2", pagingData.toString())
             }
 
         }
@@ -1662,5 +1674,9 @@ class MainViewModel @Inject constructor(
     fun toggleWhiskyDeleteState(state:Boolean){
         Log.d("제거 상태", state.toString())
         _whiskyDeleteState.value=state
+    }
+
+    fun toggleLiveSearchOpenState(state: Boolean) {
+        _liveSearchDropDownOpenState.value=state
     }
 }
