@@ -44,6 +44,7 @@ object TokenManager {
     fun getRefreshToken(context: Context): String? {
         val tokenInfo = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return tokenInfo.getString(REFRESH_TOKEN_KEY,null)
+
     }
 
     fun getFcmToken(context: Context): String? {

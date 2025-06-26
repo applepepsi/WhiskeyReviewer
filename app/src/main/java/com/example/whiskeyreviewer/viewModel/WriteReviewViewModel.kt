@@ -189,12 +189,15 @@ class WriteReviewViewModel @Inject constructor(
     }
 
     fun deleteImage(index: Int){
-        val oldWriteReviewImageList=_writeReviewData.value.imageList.toMutableList()
+//        val oldWriteReviewImageList=_writeReviewData.value.imageList.toMutableList()
         val oldList=_selectedImageUri.value.toMutableList()
+        Log.d("제거된 이미지", oldList.toString())
+//        Log.d("제거된 이미지", oldWriteReviewImageList.toString())
+        Log.d("제거된 이미지", index.toString())
         if (index in oldList.indices) {
             oldList.removeAt(index)
-            oldWriteReviewImageList.removeAt(index)
-            _writeReviewData.value=_writeReviewData.value.copy(imageList = oldWriteReviewImageList)
+//            oldWriteReviewImageList.removeAt(index)
+//            _writeReviewData.value=_writeReviewData.value.copy(imageList = oldWriteReviewImageList)
             _selectedImageUri.value = oldList
         }
         Log.d("제거된 이미지", _writeReviewData.value.imageList.toString())

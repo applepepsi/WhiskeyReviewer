@@ -75,6 +75,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bumptech.glide.request.RequestOptions
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.example.whiskeyreviewer.component.toolBar.textColorList
@@ -625,7 +626,8 @@ fun ImageLazyRowComponent(
                             imageModel = image.uri,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .clip(RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(8.dp)),
+                            requestOptions = { RequestOptions().encodeQuality(80).override(1080,1920) }
                         )
 
                         Icon(

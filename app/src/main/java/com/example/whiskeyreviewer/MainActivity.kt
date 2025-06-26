@@ -71,7 +71,10 @@ class MainActivity : ComponentActivity() {
             WhiskeyReviewerTheme(darkTheme = false) {
                 // A surface container using the 'background' color from the theme
 
-                    Greeting(ssaId,mainViewModel,context)
+                    if(mainViewModel.loginResult.value){
+                        Log.d("뷰 가져오기 시작","로그인 시작3")
+                        Greeting(ssaId,mainViewModel,context)
+                    }
                 }
 
             }

@@ -2,6 +2,7 @@ package com.example.whiskeyreviewer.component.customComponent
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,20 +34,21 @@ fun CustomAppBarComponent(
     leftButton:@Composable () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).padding(top=15.dp,bottom=15.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp, vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+            leftButton()
+        }
 
-    ){
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            MainTitleComponent(value = titleTextValue)
+        }
 
-
-        leftButton()
-
-        MainTitleComponent(
-            value = titleTextValue,
-
-        )
-
-        rightButton()
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+            rightButton()
+        }
     }
 }

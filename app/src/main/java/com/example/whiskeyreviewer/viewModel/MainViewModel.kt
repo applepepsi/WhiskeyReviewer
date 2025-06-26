@@ -661,8 +661,9 @@ class MainViewModel @Inject constructor(
     fun tryLogin(ssaid: String) {
         _loginResult.value=false
 //        toggleProgressIndicatorState(state = true,text="로그인 중입니다.")
+        Log.d("로그인 결과","로그인 시도 1" )
         mainRepository.register(device_id = ssaid){ postDetailResult->
-            Log.d("로그인 결과",postDetailResult.toString())
+            Log.d("로그인 결과",postDetailResult.toString()+"2")
             if (postDetailResult != null) {
                 if(postDetailResult.code== SUCCESS_CODE){
                     TokenManager.saveToken(applicationContext, postDetailResult.data!!)

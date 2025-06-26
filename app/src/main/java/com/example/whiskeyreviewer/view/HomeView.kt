@@ -107,8 +107,13 @@ fun HomeView(
 //            mainViewModel.submitNewWhiskey()
 
         },
-        updateText = { mainViewModel.updateWhiskySearchText(it) },
-        searchWhisky={mainViewModel.whiskySearch()},
+        updateText = {
+            mainViewModel.updateWhiskySearchText(it)
+            mainViewModel.whiskySearch()
+            },
+        searchWhisky={
+            mainViewModel.whiskySearch()
+                     },
         mainViewModel = mainViewModel,
         toggleInsertDetailDialog = {
 

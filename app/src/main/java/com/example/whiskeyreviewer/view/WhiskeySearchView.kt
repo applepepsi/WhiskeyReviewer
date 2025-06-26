@@ -285,7 +285,7 @@ fun WhiskeySearchView(
                         if(otherUserReviewList.itemCount==0){
                             Log.d("리스트", mainViewModel.reviewList.value.toString())
                             EmptyMyWhiskyReviewComponent(
-                                text="해당 위스키가 존재하지 않습니다."
+                                text="해당 리뷰가 존재하지 않습니다."
                             )
                         }else {
 
