@@ -110,19 +110,7 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel, context: Context) {
     }
 
 
-    Log.d("ssaid",ssaId)
 
-    LaunchedEffect(mainViewModel.backupCodeResult.value) {
-        if(mainViewModel.backupCodeResult.value == true){
-            val intent=context.packageManager.getLaunchIntentForPackage(context.packageName)
-            intent?.let {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                context.startActivity(intent)
-                Runtime.getRuntime().exit(0)
-            }
-
-        }
-    }
 
     AllDialogs(
         mainViewModel=mainViewModel,

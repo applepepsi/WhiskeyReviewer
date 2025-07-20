@@ -43,6 +43,7 @@ import com.example.whiskeyreviewer.component.customComponent.EmptyReviewDataComp
 import com.example.whiskeyreviewer.component.customComponent.SmallSizeProgressIndicator
 import com.example.whiskeyreviewer.component.customComponent.WhiskeyDetailDropDownMenuComponent
 import com.example.whiskeyreviewer.component.customIcon.CustomIconComponent
+import com.example.whiskeyreviewer.component.customIcon.CustomTextBoxComponent
 import com.example.whiskeyreviewer.component.dialog.ConfirmDialog
 
 import com.example.whiskeyreviewer.component.home.SingleWhiskeyComponent
@@ -180,16 +181,9 @@ fun WhiskeyDetailView(
 //                        },
 //                        modifier = Modifier
 //                    )
-
-                    Text(
+                    CustomTextBoxComponent(
                         text = "작성",
-                        style = TextStyle.Default.copy(
-                            color = LightBlackColor,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        modifier = Modifier
-                            .clickable {
+                        onClick = {
                             writeReviewViewModel.synchronizationWhiskyData(
                                 WhiskyReviewData(
                                     review_uuid = mainViewModel.selectWhiskyData.value.whisky_uuid
@@ -198,9 +192,34 @@ fun WhiskeyDetailView(
                                 uriList = emptyList()
                             )
                             navController.navigate("${MainRoute.INSERT_REVIEW}/new")
-                        }
-                            .padding(end=7.dp)
+                        },
+                        icon = ImageVector.vectorResource(R.drawable.write_complete_button),
+                        iconSize = Modifier.size(18.dp),
+
+                        modifier = Modifier
                     )
+//                    Text(
+//                        text = "작성",
+//                        style = TextStyle.Default.copy(
+//                            color = LightBlackColor,
+//                            fontSize = 16.sp,
+//                            fontWeight = FontWeight.Normal
+//                        ),
+//                        modifier = Modifier
+//                            .clickable {
+//                            writeReviewViewModel.synchronizationWhiskyData(
+//                                WhiskyReviewData(
+//                                    review_uuid = mainViewModel.selectWhiskyData.value.whisky_uuid
+//                                ),
+//                                mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
+//                                uriList = emptyList()
+//                            )
+//                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
+//                        }
+//                            .padding(end=7.dp)
+//                    )
+
+
                 }
             )
 

@@ -109,7 +109,7 @@ fun WhiskeySearchView(
                 },
             drawerState=drawerState,
             drawerContent = {
-                NavigationDrawerComponent(drawerState=drawerState,scope=scope,mainViewModel=mainViewModel,navController=navController)
+
             })
         {
 
@@ -228,11 +228,34 @@ fun WhiskeySearchView(
                         liveSearchDataList = mainViewModel.liveSearchDataList.value,
                         onLiveSearchDataClick = {
                             mainViewModel.updateDrawerSearchBarText(it)
+                            mainViewModel.setRecentSearchTextList(
+                                RecentSearchWordManager.saveSearchText(
+                                    context = context,
+                                    searchText=it,
+                                    type = RECENT_SEARCH_WHISKEY_TEXT
+                                ),
+                                type = RECENT_SEARCH_WHISKEY_TEXT
+                            )
+                            mainViewModel.getSearchReviewData()
+                            navController.navigate(MainRoute.WHISKEY_SEARCH)
                         },
                         liveSearchDropDownState=mainViewModel.liveSearchDropDownOpenState.value,
                         toggleLiveSearchDropDownMenuState={state->
                             mainViewModel.toggleLiveSearchOpenState(state)
                         },
+                        onLiveSearchEmptyLick = {
+                            mainViewModel.updateDrawerSearchBarText(it)
+                            mainViewModel.setRecentSearchTextList(
+                                RecentSearchWordManager.saveSearchText(
+                                    context = context,
+                                    searchText=it,
+                                    type = RECENT_SEARCH_WHISKEY_TEXT
+                                ),
+                                type = RECENT_SEARCH_WHISKEY_TEXT
+                            )
+                            mainViewModel.getPassivitySearchReviewData()
+                            navController.navigate(MainRoute.WHISKEY_SEARCH)
+                        }
                     )
 
                     LazyRow(

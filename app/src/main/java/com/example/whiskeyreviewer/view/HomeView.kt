@@ -1,5 +1,7 @@
 package com.example.whiskeyreviewer.view
 
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -94,7 +96,19 @@ fun HomeView(
         }
     }
 
+    LaunchedEffect(mainViewModel.backupCodeResult.value) {
+        Log.d("백업 결과", mainViewModel.backupCodeResult.value.toString())
+        if(mainViewModel.backupCodeResult.value == true){
 
+            val intent=context.packageManager.getLaunchIntentForPackage(context.packageName)
+            intent?.let {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                context.startActivity(intent)
+                Runtime.getRuntime().exit(0)
+            }
+
+        }
+    }
 
 
     SelectWhiskeyDialog(
@@ -263,7 +277,8 @@ fun HomeView(
 
                                     },
                                     search = {
-                                        mainViewModel.myWhiskySearch()
+                                        mainViewModel.updateHomeSearchBarText(searchWord)
+                                        mainViewModel.getMyWhiskeyData()
                                     }
                                 )
                             }

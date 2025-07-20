@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,11 +31,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,6 +50,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.request.RequestOptions
 import com.example.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.component.customComponent.LiveSearchBoxComponent
@@ -60,6 +65,7 @@ import com.example.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.example.whiskeyreviewer.utils.RecentSearchWordManager
 import com.example.whiskeyreviewer.viewModel.MainViewModel
 import com.example.whiskeyreviewer.viewModel.WriteReviewViewModel
+import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -89,7 +95,7 @@ fun NavigationDrawerComponent(
         submitBackupCode = { mainViewModel.submitBackupCode(it) },
         submitResult = mainViewModel.backupCodeResult.value,
         resetResult= {
-            mainViewModel.resetSubmitBackupCodeResultState()
+//            mainViewModel.resetSubmitBackupCodeResultState()
         }
     )
 
@@ -115,15 +121,32 @@ fun NavigationDrawerComponent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            Text(
-                text="위스키 리뷰어",
-                style = TextStyle.Default.copy(
-                    color = LightBlackColor,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(start=8.dp)
-            )
+
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                GlideImage(
+                    imageModel = R.drawable.app_icon,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(shape = RoundedCornerShape(8.dp)),
+                    requestOptions = {
+                        RequestOptions().encodeQuality(80).override(1080, 1920).fitCenter()
+                    }
+
+                )
+
+                Text(
+                    text = "위스키 리뷰어",
+                    style = TextStyle.Default.copy(
+                        color = LightBlackColor,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
 
             CustomIconComponent(
                 icon = ImageVector.vectorResource(R.drawable.menu_icon),
@@ -242,12 +265,33 @@ fun NavigationDrawerComponent(
                     liveSearchDataList = mainViewModel.liveSearchDataList.value,
                     onLiveSearchDataClick = {
                         mainViewModel.updateDrawerSearchBarText(it)
-
+                        mainViewModel.setRecentSearchTextList(
+                            RecentSearchWordManager.saveSearchText(
+                                context = context,
+                                searchText=it,
+                                type = RECENT_SEARCH_WHISKEY_TEXT
+                            ),
+                            type = RECENT_SEARCH_WHISKEY_TEXT
+                        )
+                        mainViewModel.getSearchReviewData()
+                        navController.navigate(MainRoute.WHISKEY_SEARCH)
                     },
                     liveSearchDropDownState=mainViewModel.liveSearchDropDownOpenState.value,
                     toggleLiveSearchDropDownMenuState={state->
                         mainViewModel.toggleLiveSearchOpenState(state)
                     },
+                    onLiveSearchEmptyLick = {
+                        mainViewModel.setRecentSearchTextList(
+                            RecentSearchWordManager.saveSearchText(
+                                context = context,
+                                searchText=mainViewModel.reviewFilterData.value.searchText,
+                                type = RECENT_SEARCH_WHISKEY_TEXT
+                            ),
+                            type = RECENT_SEARCH_WHISKEY_TEXT
+                        )
+                        mainViewModel.getPassivitySearchReviewData()
+                        navController.navigate(MainRoute.WHISKEY_SEARCH)
+                    }
                 )
             }
 

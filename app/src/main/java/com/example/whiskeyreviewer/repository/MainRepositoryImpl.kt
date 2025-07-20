@@ -328,7 +328,8 @@ class MainRepositoryImpl @Inject constructor(
         scoreAsc: String?,
         createdAtAsc: String?,
     ): Flow<PagingData<WhiskyReviewData>> {
-        Log.d("플로우",searchWord ?: "null")
+        Log.d("searchWord",searchWord ?: "null")
+        Log.d("detailSearchWord",detailSearchWord ?: "null")
         return Pager(PagingConfig(pageSize = 10)) {
             PagingSource(
                 apiService = api,

@@ -264,7 +264,7 @@ class MainViewModel @Inject constructor(
     val insertWhiskyDetailDialogState: State<Boolean> = _insertWhiskyDetailDialogState
 
 
-    private val _currentCustomWhiskyType=mutableStateOf<TapLayoutItems>(TapLayoutItems.AmericanWhiskey)
+    private val _currentCustomWhiskyType=mutableStateOf<TapLayoutItems>(TapLayoutItems.SingleMalt)
     val currentCustomWhiskyType: State<TapLayoutItems> = _currentCustomWhiskyType
 
     private val _customWhiskyData=mutableStateOf<CustomWhiskyData>(CustomWhiskyData())
@@ -484,8 +484,6 @@ class MainViewModel @Inject constructor(
         _reviewFilterData.value=_reviewFilterData.value.copy(
             searchText =newSearchText
         )
-
-
     }
 
     fun getLiveSearchData(searchText: String) {
@@ -1153,7 +1151,7 @@ class MainViewModel @Inject constructor(
     fun resetAddCustomWhiskyDialog(){
         _tinyProgressIndicatorState.value=false
         _selectedImageUri.value= UriData(uri=Uri.EMPTY,isOldImage = false)
-        _currentCustomWhiskyType.value=TapLayoutItems.AmericanWhiskey
+        _currentCustomWhiskyType.value=TapLayoutItems.SingleMalt
         _customWhiskyData.value=CustomWhiskyData()
     }
 
@@ -1259,10 +1257,10 @@ class MainViewModel @Inject constructor(
 
     fun myWhiskySearch(){
         _homeSearchBarSText.value
-        toggleProgressIndicatorState(
-            state = true,
-            text=_homeSearchBarSText.value
-        )
+//        toggleProgressIndicatorState(
+//            state = true,
+//            text=_homeSearchBarSText.value
+//        )
     }
 
     fun getMyReviewList(){
@@ -1356,7 +1354,7 @@ class MainViewModel @Inject constructor(
 
         return if (info != null) {
 
-            val category=WhiskyLanguageTransfer.finedWhiskyCategory(info.category ?:TapLayoutItems.AmericanWhiskey.name!!)
+            val category=WhiskyLanguageTransfer.finedWhiskyCategory(info.category ?:TapLayoutItems.SingleMalt.name!!)
 
             _customWhiskyData.value=_customWhiskyData.value.copy(
                 whisky_uuid = info.whisky_uuid,
@@ -1364,7 +1362,7 @@ class MainViewModel @Inject constructor(
                 english_name = info.english_name,
                 strength = info.strength ?:"",
                 country = info.country,
-                category = category.name!!
+                category = category.name ?:TapLayoutItems.SingleMalt.name!!
             )
             _currentCustomWhiskyType.value=category
             true
@@ -1410,8 +1408,9 @@ class MainViewModel @Inject constructor(
         val searchWord=if (reviewFilterData.value.searchText=="" || !_searchButtonState.value) null else reviewFilterData.value.searchText
         val detailSearchWord=if (reviewFilterData.value.detailSearchText=="") null else reviewFilterData.value.detailSearchText
 
-        Log.d("검색어", reviewFilterData.value.searchText)
+
         Log.d("필터 내용2", " voteAsc: ${reviewFilterData.value.vote_order?.orderType}, scoreAsc: ${reviewFilterData.value.score_order?.orderType}, createdAtAsc: ${reviewFilterData.value.date_order?.orderType}")
+        Log.d("자동 검색",reviewFilterData.value.searchText)
         viewModelScope.launch {
             _postProgressIndicatorState.value=true
             mainRepository.getReviewSearchList(
@@ -1427,6 +1426,31 @@ class MainViewModel @Inject constructor(
 
                 //todo 다시 알아보기
 
+                _postProgressIndicatorState.value=false
+                Log.d("로딩2", pagingData.toString())
+            }
+
+        }
+    }
+
+    fun getPassivitySearchReviewData(refresh:Boolean=false){
+
+//        val detailSearchWord=if (reviewFilterData.value.detailSearchText=="") null else reviewFilterData.value.detailSearchText
+
+        val detailSearchWord=reviewFilterData.value.searchText
+        Log.d("직접 검색",detailSearchWord)
+        viewModelScope.launch {
+            _postProgressIndicatorState.value=true
+            mainRepository.getReviewSearchList(
+                searchWord="",
+                detailSearchWord = detailSearchWord,
+                likeAsc = reviewFilterData.value.vote_order?.orderType,
+                scoreAsc = reviewFilterData.value.score_order?.orderType,
+                createdAtAsc = reviewFilterData.value.date_order?.orderType
+            ).cachedIn(viewModelScope).collect { pagingData ->
+
+                _otherUserReviewDataList.value=pagingData
+                //todo 다시 알아보기
                 _postProgressIndicatorState.value=false
                 Log.d("로딩2", pagingData.toString())
             }
@@ -1598,14 +1622,14 @@ class MainViewModel @Inject constructor(
     }
 
     fun submitBackupCode(backupCode:String){
-        Log.d("입력 백업 코드",backupCode)
+
         _inputBackupCode.value=_inputBackupCode.value.copy(
             code = backupCode
         )
         mainRepository.submitBackupCode(inputBackupCode.value) {serverResponse->
             if(serverResponse !=null){
                 if(serverResponse.code== SUCCESS_CODE){
-
+                    Log.d("입력 백업 코드", serverResponse.toString())
                     _backupCodeResult.value=true
                 }else{
                     _backupCodeResult.value=false

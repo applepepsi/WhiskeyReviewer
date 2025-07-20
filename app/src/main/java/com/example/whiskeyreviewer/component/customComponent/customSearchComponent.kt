@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -59,8 +62,12 @@ fun CustomSearchBoxComponent(
     deleteInputText:()->Unit,
     liveSearch:Boolean= true,
     liveSearchDataList:List<LiveSearchData> = emptyList(),
-    modifier:Modifier=Modifier
+    modifier:Modifier=Modifier,
+    focusState:(Boolean)->Unit={},
+    searchEnable:Boolean=true
 ) {
+
+
 
         Box(
             modifier = modifier
@@ -84,8 +91,12 @@ fun CustomSearchBoxComponent(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 4.dp),
+                    .padding(end = 4.dp)
+                    .onFocusChanged { focusState ->
+                        focusState(focusState.isFocused)
+                    },
                 value = text,
+
                 onValueChange = {
                     onValueChange(it)
                 },
@@ -98,9 +109,12 @@ fun CustomSearchBoxComponent(
                     )
                 },
                 leadingIcon = {
-                    IconButton(onClick = {
-                        search()
-                    }) {
+                    IconButton(
+                        onClick = {
+                            search()
+                        },
+                        enabled = searchEnable
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = null,
@@ -195,14 +209,15 @@ fun LiveSearchBoxComponent(
     search:()->Unit,
     deleteInputText:()->Unit,
     onLiveSearchDataClick:(String)->Unit,
-    liveSearchDataList:List<LiveSearchData> = emptyList(),
+    onLiveSearchEmptyLick:(String)->Unit,
+    liveSearchDataList:List<LiveSearchData>? = null,
     liveSearchDropDownState:Boolean=false,
     toggleLiveSearchDropDownMenuState:(Boolean)->Unit={},
 ) {
 
 
     var searchBarSize by remember { mutableStateOf(IntSize.Zero) }
-
+    var isFocused by remember { mutableStateOf(false) }
 
     Column(
         modifier= Modifier
@@ -216,20 +231,63 @@ fun LiveSearchBoxComponent(
                 onValueChange(it)
 
             },
+            searchEnable = false,
             search = {
-                toggleLiveSearchDropDownMenuState(false)
-                search()
+//                toggleLiveSearchDropDownMenuState(false)
+//                if(liveSearchDataList.isNullOrEmpty()){
+//                    onLiveSearchEmptyLick(text)
+//                }else{
+//                    onLiveSearchDataClick(text)
+//                }
+
             },
             deleteInputText = { deleteInputText() },
             modifier = Modifier
                 .onGloballyPositioned { coordinates ->
                     searchBarSize = coordinates.size
+                },
+            focusState = {state->
+                isFocused=state
+                if (state && text.isNotBlank()) {
+                    toggleLiveSearchDropDownMenuState(true)
+                } else {
+                    toggleLiveSearchDropDownMenuState(false)
                 }
+            }
 
         )
         //todo 터치 시 검색, 다른뷰로 이동시 onDismissRequest, 드롭다운 디자인 변경
-        if (liveSearchDataList.isNotEmpty()) {
 
+        if (liveSearchDataList.isNullOrEmpty()) {
+
+            Row(Modifier.padding(start = 15.dp, top = 5.dp, end = 20.dp)) {
+                MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
+                    DropdownMenu(
+                        expanded = liveSearchDropDownState,
+                        onDismissRequest = { toggleLiveSearchDropDownMenuState(false) },
+                        modifier = Modifier
+                            .width(with(LocalDensity.current) { searchBarSize.width.toDp() })
+                            .heightIn(max = 150.dp),
+                        properties = PopupProperties(
+                            focusable = false,
+                            dismissOnBackPress = true,
+                            dismissOnClickOutside = true
+                        ),
+
+                        ) {
+                        DropdownMenuItem(
+                            modifier = Modifier,
+                            content = {
+                                LiveSearchItem("$text 에 대해 검색 하기")
+                            },
+                            onClick = {
+                                toggleLiveSearchDropDownMenuState(false)
+                                onLiveSearchEmptyLick(text)
+                            },)
+                    }
+                }
+            }
+        }else{
 
             Row(Modifier.padding(start = 15.dp, top = 5.dp, end = 20.dp)) {
                 MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
@@ -268,8 +326,6 @@ fun LiveSearchBoxComponent(
                 }
             }
         }
-
-
     }
 }
 
@@ -313,5 +369,7 @@ fun SearchBarDivider(
 fun SearchBarPreview(
     modifier: Modifier = Modifier
 ){
-    LiveSearchBoxComponent(onValueChange = {}, search = { /*TODO*/ }, deleteInputText = {}, onLiveSearchDataClick = {})
+    LiveSearchBoxComponent(onValueChange = {}, search = { /*TODO*/ }, deleteInputText = {}, onLiveSearchDataClick = {},onLiveSearchEmptyLick = {
+
+    })
 }

@@ -59,22 +59,21 @@ const val DELETE_WHISKY="/my-whisky/{whisky_uuid}"
 
 val whiskeyData = listOf(
     TapLayoutItems.AllWhiskey,
-    TapLayoutItems.AmericanWhiskey,
-    TapLayoutItems.Blend,
-    TapLayoutItems.BlendedGrain,
-    TapLayoutItems.BlendedMalt,
-    TapLayoutItems.Bourbon,
-    TapLayoutItems.CanadianWhiskey,
-    TapLayoutItems.Corn,
-    TapLayoutItems.Rice,
-    TapLayoutItems.Rye,
-    TapLayoutItems.SingleGrain,
     TapLayoutItems.SingleMalt,
-    TapLayoutItems.SinglePotStill,
-    TapLayoutItems.Spirit,
-    TapLayoutItems.Tennessee,
+    TapLayoutItems.BlendedMalt,
+    TapLayoutItems.Blended,
+    TapLayoutItems.BlendedGrain,
+    TapLayoutItems.Grain,
+    TapLayoutItems.Bourbon,
+    TapLayoutItems.Rye,
+    TapLayoutItems.Corn,
+    TapLayoutItems.American,
     TapLayoutItems.Wheat,
-    TapLayoutItems.Other
+    TapLayoutItems.CanadianWhiskey,
+    TapLayoutItems.SinglePotStill,
+    TapLayoutItems.Tennessee,
+    TapLayoutItems.Spirit,
+    TapLayoutItems.Other,
 )
 
 val countryData = listOf(

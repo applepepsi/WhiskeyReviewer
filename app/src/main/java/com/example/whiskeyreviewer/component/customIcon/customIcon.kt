@@ -3,10 +3,12 @@ package com.example.whiskeyreviewer.component.customIcon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -34,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whiskeyreviewer.R
+import com.example.whiskeyreviewer.data.MainRoute
+import com.example.whiskeyreviewer.data.WhiskyReviewData
 import com.example.whiskeyreviewer.ui.theme.LightBlackColor
 import com.example.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.example.whiskeyreviewer.ui.theme.MainColor
@@ -65,6 +69,58 @@ fun CustomIconComponent(
             ),
         contentAlignment = Alignment.Center
     ){
+        Icon(
+            modifier = iconSize
+                .size(25.dp),
+            imageVector = icon,
+            contentDescription = "",
+            tint = tint,
+        )
+    }
+}
+
+@Composable
+fun CustomTextBoxComponent(
+    text:String,
+    icon:ImageVector,
+    iconSize: Modifier=Modifier.size(25.dp),
+    onClick: () -> Unit,
+    modifier: Modifier=Modifier.size(35.dp),
+    onClickAllow:Boolean=true,
+    backGroundColor:Color= MainColor,
+    tint:Color=Color.White
+) {
+
+    Row(
+        modifier = modifier
+
+            .clip(shape = RoundedCornerShape(7.dp))
+            .background(backGroundColor)
+            .height(35.dp)
+            .widthIn(min = 50.dp)
+            .padding(horizontal = 8.dp)
+            .then(
+                if (onClickAllow) {
+                    Modifier.clickable { onClick() }
+                } else {
+                    Modifier
+                }
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ){
+        Text(
+            text = text,
+            style = TextStyle.Default.copy(
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier
+        )
+
+        Spacer(modifier = Modifier.width(5.dp))
+
         Icon(
             modifier = iconSize
                 .size(25.dp),
@@ -130,8 +186,8 @@ fun TagComponent(
         modifier = Modifier
             .clip(shape = RoundedCornerShape(7.dp))
             .background(OrangeColor)
-            .padding(start = 8.dp,end=8.dp,top=5.dp,bottom=5.dp)
-            .heightIn(min=15.dp)
+            .padding(start = 8.dp, end = 8.dp, top = 5.dp, bottom = 5.dp)
+            .heightIn(min = 15.dp)
             .widthIn(30.dp),
 
         contentAlignment = Alignment.Center
@@ -184,7 +240,7 @@ fun CustomTagComponent(
                 .align(Alignment.TopEnd)
                 .offset(x = -2.dp, y = (-7).dp)
                 .clickable(
-                    interactionSource = remember{ MutableInteractionSource() },
+                    interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
                     deleteClick()
@@ -201,9 +257,11 @@ fun CustomIconPreview() {
 
 
     WhiskeyReviewerTheme {
-        CustomTagComponent(
-            text="테스트",
-            {}
+        CustomTextBoxComponent(
+            text="작성",
+            icon = ImageVector.vectorResource(R.drawable.write_complete_button),
+            iconSize = Modifier.size(18.dp),
+            onClick = {}
         )
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.request.RequestOptions
 import com.example.whiskeyreviewer.R
 import com.example.whiskeyreviewer.data.SingleWhiskeyData
 import com.example.whiskeyreviewer.data.UriData
@@ -55,7 +56,9 @@ fun ImageComponent(
         GlideImage(
             imageModel = selectImage,
             modifier = Modifier
-                .size(200.dp)
+                .size(200.dp),
+            requestOptions = { RequestOptions().encodeQuality(80).override(1080,1920) }
+
         )
     }
 }

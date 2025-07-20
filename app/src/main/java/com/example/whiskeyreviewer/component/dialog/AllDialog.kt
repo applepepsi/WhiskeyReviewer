@@ -47,7 +47,9 @@ fun AllDialogs(
             mainViewModel.updateWhiskyEngName(it)
         },
         submitWhiskey = {
-            mainViewModel.submitWhiskyDetail()
+            if(!mainViewModel.tinyProgressIndicatorState.value){
+                mainViewModel.submitWhiskyDetail()
+            }
         },
         updateText = { mainViewModel.updateCustomWhiskyName(it) },
         resetResult = {},

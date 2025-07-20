@@ -272,6 +272,11 @@ fun InsertBackupCodeDialog(
     val customToast = CustomToast(LocalContext.current)
 
 
+
+
+
+    if (currentState) {
+
         if(submitResult == true) {
             //todo 다시켜야함
             customToast.MakeText(text = "인증 되었습니다. 사용자 정보를 불러오는 중 입니다.", icon = R.drawable.success_icon)
@@ -283,8 +288,6 @@ fun InsertBackupCodeDialog(
         }
 
 
-
-    if (currentState) {
         Dialog(
             onDismissRequest = { toggleOption() }
         ) {
