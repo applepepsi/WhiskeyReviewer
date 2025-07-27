@@ -65,7 +65,11 @@ fun ReviewDetailView(
     ConfirmDialog(
         title = "리뷰 제거",
         text = "리뷰를 제거하시겠습니까?",
-        confirm = { /*TODO*/ },
+        confirm = {
+            mainViewModel.toggleDeleteReviewConfirmDialog()
+            mainViewModel.deleteReviewData()
+            navController.navigateUp()
+        },
         toggleOption = { mainViewModel.toggleDeleteReviewConfirmDialog() },
         currentState = mainViewModel.deleteReviewConfirmDialogState.value
     )

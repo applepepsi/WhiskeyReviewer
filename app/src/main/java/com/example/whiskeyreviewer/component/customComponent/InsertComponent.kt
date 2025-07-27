@@ -1,5 +1,6 @@
 package com.example.whiskeyreviewer.component.customComponent
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +18,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,13 +43,21 @@ fun LongTextInputComponent(
     helpText:String,
 
 ){
+    var isFocused by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .padding(start = 10.dp, end = 10.dp, top = 2.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(Color.White)
-            .border(BorderStroke(0.5.dp, Color.LightGray), RoundedCornerShape(8.dp)),
+            .border(
+                BorderStroke(
+                    width = if (isFocused) 3.dp else 1.dp,
+                    color = if (isFocused) MainColor else Color.LightGray
+                ),
+                RoundedCornerShape(8.dp)
+            )
 
         ) {
 
@@ -63,8 +76,9 @@ fun LongTextInputComponent(
                 .height(45.dp)
                 .padding(start = 1.dp, end = 12.dp)
                 .align(Alignment.BottomStart)
-
-            ,
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                },
             singleLine = true,
             decorationBox = { innerTextField ->
                 Row(
@@ -107,11 +121,15 @@ fun LongTextInputComponent(
 fun StrengthInputComponent(
     mainViewModel:MainViewModel
 ){
+
+    var isFocused by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
-
             .border(
-                BorderStroke(0.5.dp, Color.LightGray),
+                BorderStroke(
+                    width = if (isFocused) 3.dp else 1.dp,
+                    color = if (isFocused) MainColor else Color.LightGray
+                ),
                 RoundedCornerShape(8.dp)
             )
             .widthIn(max=140.dp)
@@ -148,7 +166,11 @@ fun StrengthInputComponent(
             ),
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(end = 24.dp),
+                .padding(end = 24.dp)
+                .onFocusChanged {state->
+                    isFocused = state.isFocused
+                }
+            ,
 
 
             decorationBox = { innerTextField ->
@@ -199,11 +221,15 @@ fun StrengthInputComponent(
 fun BottlingDateInputComponent(
     mainViewModel:MainViewModel
 ){
+    var isFocused by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
-
             .border(
-                BorderStroke(0.5.dp, Color.LightGray),
+                BorderStroke(
+                    width = if (isFocused) 3.dp else 1.dp,
+                    color = if (isFocused) MainColor else Color.LightGray
+                ),
                 RoundedCornerShape(8.dp)
             )
             .widthIn(max=140.dp)
@@ -242,7 +268,10 @@ fun BottlingDateInputComponent(
             ),
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(end = 24.dp),
+                .padding(end = 24.dp)
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                },
 
 
             decorationBox = { innerTextField ->
@@ -298,13 +327,19 @@ fun ShortTextInputComponent(
     isModify:Boolean,
     clickable:()->Unit={}
 ){
+
+    var isFocused by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
-
             .border(
-                BorderStroke(0.5.dp, Color.LightGray),
+                BorderStroke(
+                    width = if (isFocused) 3.dp else 1.dp,
+                    color = if (isFocused) MainColor else Color.LightGray
+                ),
                 RoundedCornerShape(8.dp)
             )
+
             .widthIn(max=140.dp)
             .height(42.dp)
             .then(
@@ -340,7 +375,10 @@ fun ShortTextInputComponent(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(end = 24.dp)
-
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                    Log.d("포커스", isFocused.toString())
+                }
             ,
 
 

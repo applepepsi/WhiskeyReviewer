@@ -160,29 +160,29 @@ fun WhiskeySearchView(
                             modifier = Modifier.padding(start=20.dp,)
                         )
 
-                        Text(
-                            text="세부 검색",
-                            style = TextStyle.Default.copy(
-                                color = LightBlackColor,
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Normal
-                            ),
-                            modifier = Modifier
-                                .padding(end = 20.dp)
-                                .drawBehind {
-                                    val strokeWidthPx = 2.dp.toPx()
-                                    val verticalOffset = size.height - 1.sp.toPx()
-                                    drawLine(
-                                        color = Color.LightGray,
-                                        strokeWidth = strokeWidthPx,
-                                        start = Offset(0f, verticalOffset),
-                                        end = Offset(size.width, verticalOffset)
-                                    )
-                                }
-                                .clickable {
-                                    mainViewModel.toggleDetailSearchDialogState()
-                                }
-                        )
+//                        Text(
+//                            text="세부 검색",
+//                            style = TextStyle.Default.copy(
+//                                color = LightBlackColor,
+//                                fontSize = 15.sp,
+//                                fontWeight = FontWeight.Normal
+//                            ),
+//                            modifier = Modifier
+//                                .padding(end = 20.dp)
+//                                .drawBehind {
+//                                    val strokeWidthPx = 2.dp.toPx()
+//                                    val verticalOffset = size.height - 1.sp.toPx()
+//                                    drawLine(
+//                                        color = Color.LightGray,
+//                                        strokeWidth = strokeWidthPx,
+//                                        start = Offset(0f, verticalOffset),
+//                                        end = Offset(size.width, verticalOffset)
+//                                    )
+//                                }
+//                                .clickable {
+//                                    mainViewModel.toggleDetailSearchDialogState()
+//                                }
+//                        )
 
                     }
 

@@ -1384,16 +1384,20 @@ class MainViewModel @Inject constructor(
 
                 if(serverResponse.code== SUCCESS_CODE){
                     getMyReviewList()
+                    setErrorToastMessage(
+                        icon=R.drawable.success_icon,
+                        text="리뷰를 제거하였습니다."
+                    )
                 }else{
                     setErrorToastMessage(
                         icon=R.drawable.fail_icon,
-                        text="리뷰를 제거하지 못했습니다.."
+                        text="리뷰를 제거하지 못했습니다."
                     )
                 }
             }else{
                 setErrorToastMessage(
                     icon=R.drawable.fail_icon,
-                    text="리뷰를 제거하지 못했습니다.."
+                    text="리뷰를 제거하지 못했습니다."
                 )
             }
 
