@@ -59,9 +59,9 @@ fun ReviewDetailView(
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         richTextState.setHtml(mainViewModel.selectWhiskyReviewData.value.content)
-        Log.d("텍스트", richTextState.toText())
-    }
 
+    }
+    Log.d("텍스트", mainViewModel.selectWhiskyReviewData.value.toString())
     ConfirmDialog(
         title = "리뷰 제거",
         text = "리뷰를 제거하시겠습니까?",
@@ -207,17 +207,17 @@ fun ReviewDetailView(
 
         }
 
-        Text(
-            text = "작성일: 2024-05-07",
-            style = TextStyle.Default.copy(
-                color = Color.Gray,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Normal
-            ),
-            modifier = Modifier
-                .padding(horizontal = 15.dp)
-                .padding(top = 5.dp)
-        )
+//        Text(
+//            text = "마지막 업데이트: ${mainViewModel.selectWhiskyReviewData.value.last_update_date}",
+//            style = TextStyle.Default.copy(
+//                color = Color.Gray,
+//                fontSize = 10.sp,
+//                fontWeight = FontWeight.Normal
+//            ),
+//            modifier = Modifier
+//                .padding(horizontal = 15.dp)
+//                .padding(top = 5.dp)
+//        )
     }
 
 

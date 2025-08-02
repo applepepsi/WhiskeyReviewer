@@ -1,6 +1,8 @@
 package com.example.whiskeyreviewer.component.customComponent
 
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,7 +69,16 @@ fun CustomSearchBoxComponent(
     searchEnable:Boolean=true
 ) {
 
+    var isFocused by remember { mutableStateOf(false) }
 
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isFocused) MainColor else Color.LightGray,
+        animationSpec = tween(durationMillis = 300),
+        label = "border"
+    )
+
+    val strokeSize=if(isFocused) 1.5.dp else 0.5.dp
 
         Box(
             modifier = modifier
@@ -78,8 +89,8 @@ fun CustomSearchBoxComponent(
                 .background(Color.White)
                 .border(
                     BorderStroke(
-                        0.5.dp,
-                        Color.LightGray
+                        strokeSize,
+                        borderColor
                     ),
                     RoundedCornerShape(8.dp)
                 )
@@ -94,6 +105,8 @@ fun CustomSearchBoxComponent(
                     .padding(end = 4.dp)
                     .onFocusChanged { focusState ->
                         focusState(focusState.isFocused)
+                        isFocused=focusState.isFocused
+                        Log.d("포커스", isFocused.toString())
                     },
                 value = text,
 
