@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">WhiskeyReviewer</string>
+
+    <string name="privacyPolicy">
+
+    </string>
+    <string name="termsOfService">
+
+    </string>
 </resources>

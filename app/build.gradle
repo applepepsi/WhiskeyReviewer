@@ -11,11 +11,11 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
-    namespace 'com.example.whiskeyreviewer'
+    namespace 'com.whiskeyReviewer.whiskeyreviewer'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.whiskeyreviewer"
+        applicationId "com.whiskeyReviewer.whiskeyreviewer"
         minSdk 24
         targetSdk 34
         versionCode 1
