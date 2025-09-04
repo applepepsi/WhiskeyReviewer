@@ -152,21 +152,7 @@ fun WhiskeyDetailView(
                     )
                 },
                 rightButton = {
-//                    CustomIconComponent(
-//                        icon = ImageVector.vectorResource(R.drawable.half_bottle),
-//                        onClick = {
-//                            writeReviewViewModel.synchronizationWhiskyData(
-//                                WhiskyReviewData(
-//                                    review_uuid = mainViewModel.selectWhiskyData.value.whisky_uuid
-//                                ),
-//                                mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
-//                                uriList = emptyList()
-//                            )
-//
-//                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
-//                        },
-//                        modifier = Modifier
-//                    )
+
                     CustomTextBoxComponent(
                         text = "작성",
                         onClick = {
@@ -184,26 +170,6 @@ fun WhiskeyDetailView(
 
                         modifier = Modifier
                     )
-//                    Text(
-//                        text = "작성",
-//                        style = TextStyle.Default.copy(
-//                            color = LightBlackColor,
-//                            fontSize = 16.sp,
-//                            fontWeight = FontWeight.Normal
-//                        ),
-//                        modifier = Modifier
-//                            .clickable {
-//                            writeReviewViewModel.synchronizationWhiskyData(
-//                                WhiskyReviewData(
-//                                    review_uuid = mainViewModel.selectWhiskyData.value.whisky_uuid
-//                                ),
-//                                mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
-//                                uriList = emptyList()
-//                            )
-//                            navController.navigate("${MainRoute.INSERT_REVIEW}/new")
-//                        }
-//                            .padding(end=7.dp)
-//                    )
 
 
                 }

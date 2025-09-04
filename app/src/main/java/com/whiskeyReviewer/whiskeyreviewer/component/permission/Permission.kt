@@ -90,7 +90,7 @@ fun PermissionItem(
                     modifier = Modifier
                         .padding(end = 5.dp)
                         .drawBehind {
-                            val strokeWidthPx = 2.dp.toPx()
+                            val strokeWidthPx = 1.dp.toPx()
                             val verticalOffset = size.height - 1.sp.toPx()
                             drawLine(
                                 color = Color.LightGray,
