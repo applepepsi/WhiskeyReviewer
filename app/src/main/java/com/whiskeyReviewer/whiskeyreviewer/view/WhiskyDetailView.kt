@@ -116,12 +116,6 @@ fun WhiskeyDetailView(
         currentState = mainViewModel.deleteReviewConfirmDialogState.value
     )
 
-//    val info=WhiskyName(
-//        whisky_name = mainViewModel.selectWhiskyData.value.whisky_name,
-//        is_first = false,
-//        whisky_uuid = ""
-//    )
-
 
     Scaffold(
         modifier = Modifier

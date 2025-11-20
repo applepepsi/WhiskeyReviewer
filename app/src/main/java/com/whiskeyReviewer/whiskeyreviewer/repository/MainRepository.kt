@@ -10,44 +10,43 @@ import com.whiskeyReviewer.whiskeyreviewer.data.SingleWhiskeyData
 import com.whiskeyReviewer.whiskeyreviewer.data.TokenData
 import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyReviewData
 import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyName
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import java.io.File
 
 interface MainRepository{
 
 
 
-    fun register(device_id:String,callback: (ServerResponse<TokenData>?) -> Unit)
+    suspend fun register(device_id:String): ServerResponse<TokenData>?
 
-    fun getMyWhiskyList(
-        name:String?,
+    suspend fun getMyWhiskyList(
+        name: String?,
         category: String?,
         date_order: String?,
-//        name_order:String,
-        score_order:String?,
+//        name_order: String,
+        score_order: String?,
         open_date_order:String?,
-        callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
-    )
+    ): ServerResponse<List<SingleWhiskeyData>>?
 
-    fun getMyReviewList(
+    suspend fun getMyReviewList(
         whiskyUuid:String,
         order:String,
-        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
-    )
+    ):ServerResponse<List<WhiskyReviewData>>?
 
-    fun addWhiskyNameSearch(
+    suspend fun addWhiskyNameSearch(
         name:String,
         category: String?,
-        callback: (ServerResponse<List<WhiskyName>>?) -> Unit
-    )
+    ):ServerResponse<List<WhiskyName>>?
 
 
-    fun saveOrModifyCustomWhisky(
+    suspend fun saveOrModifyCustomWhisky(
         image:File?,
         data:CustomWhiskyData,
         modify:Boolean,
-        callback: (ServerResponse<SingleWhiskeyData?>?) -> Unit
-    )
+
+    ):ServerResponse<SingleWhiskeyData?>?
 
     fun getReviewSearchList(
         searchWord:String?,
@@ -58,10 +57,9 @@ interface MainRepository{
         createdAtAsc: String?,
     ): Flow<PagingData<WhiskyReviewData>>
 
-    fun deleteReview(
+    suspend fun deleteReview(
         reviewUuid:String,
-        callback: (ServerResponse<Any>?) -> Unit
-    )
+    ):ServerResponse<Any>?
 
     suspend fun getImageList(
         singleWhiskeyData: WhiskyReviewData
@@ -69,33 +67,29 @@ interface MainRepository{
 
     suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData
 
-    fun likeReview(
+    suspend fun likeReview(
         reviewUuid: String,
-        callback: (ServerResponse<Any>?) -> Unit
-    )
 
-    fun cancelLikeReview(
+    ):ServerResponse<Any>?
+
+    suspend fun cancelLikeReview(
         reviewUuid: String,
-        callback: (ServerResponse<Any>?) -> Unit
-    )
+    ):ServerResponse<Any>?
 
-    fun getBackupCode(
+    suspend fun getBackupCode(
+    ):ServerResponse<BackupCodeData>?
 
-        callback: (ServerResponse<BackupCodeData>?) -> Unit
-    )
-
-    fun submitBackupCode(
+    suspend fun submitBackupCode(
         backupCodeData: BackupCodeData,
-        callback: (ServerResponse<Any>?) -> Unit
-    )
 
-    fun deleteWhisky(
+    ):ServerResponse<Any>?
+
+    suspend fun deleteWhisky(
         whisky_uuid: String,
-        callback: (ServerResponse<Any>?) -> Unit
-    )
+    ):ServerResponse<Any>?
 
-    fun getLiveSearchData(
+    suspend fun getLiveSearchData(
         searchText:String,
-        callback: (ServerResponse<List<LiveSearchData>>?) -> Unit
-    )
+
+    ):ServerResponse<List<LiveSearchData>>?
 }

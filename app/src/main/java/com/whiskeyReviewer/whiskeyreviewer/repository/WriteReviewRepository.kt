@@ -7,12 +7,8 @@ import java.io.File
 
 interface WriteReviewRepository {
 
-    fun reviewSave(imageFiles:List<File>?, reviewData: SubmitWhiskyData, callback: (ServerResponse<Any>?) -> Unit)
+    suspend fun reviewSave(imageFiles:List<File>?, reviewData: SubmitWhiskyData):ServerResponse<Any>?
 
-    fun reviewModify(imageFiles:List<File>?, reviewData: SubmitWhiskyData,callback: (ServerResponse<Any>?) -> Unit)
-
-    fun getReview(reviewData:WriteReviewData,callback: (ServerResponse<Any>?) -> Unit)
-
-    fun deleteReview(reviewData:WriteReviewData,callback: (ServerResponse<Any>?) -> Unit)
+    suspend fun reviewModify(imageFiles:List<File>?, reviewData: SubmitWhiskyData):ServerResponse<Any>?
 
 }

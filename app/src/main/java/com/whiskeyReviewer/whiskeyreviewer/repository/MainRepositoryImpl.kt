@@ -32,130 +32,71 @@ class MainRepositoryImpl @Inject constructor(
 ) : MainRepository {
 
 
-    override fun register(device_id: String, callback: (ServerResponse<TokenData>?) -> Unit) {
-//        CoroutineScope(Dispatchers.IO).launch {
-//
-//            val result = try {
-//                val response = api.getToken(device_id)
-//
-//                if (response.isSuccessful){
-//                    Log.d("토큰 발급 성공", response.body().toString())
-//                    response.body()
-//                } else {
-//                    Log.d("토큰 발급 실패","토큰 발급 실패")
-//                    null
-//                }
-//
-//            } catch (e: IOException) {
-//                Log.e("연결 실패", "Network Error: ${e.message}", e)
-//                null
-//            } catch (e: Exception) {
-//                Log.e("오류 발생", "Unexpected Error: ${e.message}", e)
-//                null
-//            }
-//            withContext(Dispatchers.Main) {
-//                callback(result)
-//            }
-//        }
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="로그인 토큰발급") { api.getToken(device_id) }
-            withContext(Dispatchers.Main) {
-                callback(result)
+    override suspend fun register(device_id: String): ServerResponse<TokenData>? {
+
+        return withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="로그인 토큰발급") {
+                api.getToken(device_id)
             }
         }
     }
 
-    override fun getMyWhiskyList(
+    override suspend fun getMyWhiskyList(
         name: String?,
         category: String?,
         date_order: String?,
-//        name_order: String,
         score_order: String?,
-        open_date_order:String?,
-        callback: (ServerResponse<List<SingleWhiskeyData>>?) -> Unit
-    ) {
+        open_date_order: String?
+    ): ServerResponse<List<SingleWhiskeyData>>? = withContext(Dispatchers.IO) {
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="나의 위스키 목록 가져오기") {
-
-                //이름순은 제거 예정 임시로 asc
-                api.getMyWhiskys(
-                name=name,
-                category=category,
-                date_order=date_order,
-                score_order=score_order,
-                open_date_order=open_date_order,
-            ) }
-
-            val updatedServerResponse=result?.let{
-                val whiskyDataList = mutableListOf<SingleWhiskeyData>()
-
-                result.data?.forEach { singleWhiskeyData ->
-                    val updatedData = getImage(singleWhiskeyData)
-                    whiskyDataList.add(updatedData)
-                }
-                result.copy(data = whiskyDataList)
-            }
-
-            withContext(Dispatchers.Main) {
-                callback(updatedServerResponse)
-            }
+        val result = ApiHandler.makeApiCall(tag = "나의 위스키 목록 가져오기") {
+            api.getMyWhiskys(
+                name = name,
+                category = category,
+                date_order = date_order,
+                score_order = score_order,
+                open_date_order = open_date_order,
+            )
         }
-    }
 
-    override suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData {
-        if(singleWhiskeyData.image_name==null){
+        val updatedServerResponse = result?.let { response ->
+            val updatedList = response.data?.map { singleWhiskeyData ->
 
-            return singleWhiskeyData
+                getImage(singleWhiskeyData)
+            } ?: emptyList()
+
+            response.copy(data = updatedList)
         }
-        return withContext(Dispatchers.IO) {
-            val result = ApiHandler.makeApiCall(tag = "이미지 가져오기") {
-                api.getImage(image_name = singleWhiskeyData.image_name)
-            }
-            if(result!=null){
-                Log.d("이미지 가져오기 결과",result.toString())
-                singleWhiskeyData.copy(
-                    image = ImageData(image=result.bytes(),isOldImage = true)
-                )
-            }else{
-                singleWhiskeyData
-            }
 
-        }
+        return@withContext updatedServerResponse
     }
 
 
 
-    override fun getMyReviewList(
+    override suspend fun getMyReviewList(
         whiskyUuid: String,
-
         order: String,
-        callback: (ServerResponse<List<WhiskyReviewData>>?) -> Unit
-    ){
+    ):ServerResponse<List<WhiskyReviewData>>? = withContext(Dispatchers.IO){
         Log.d("whiskyUuid",whiskyUuid)
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="나의 리뷰 가져오기") {
+        val result = ApiHandler.makeApiCall(tag="나의 리뷰 가져오기") {
 
-                api.getReview(
-                    myWhiskyUuid=whiskyUuid,
-                    order=order
-                )
-            }
-
-            val updatedServerResponse=result?.let{
-                val whiskyDataList = mutableListOf<WhiskyReviewData>()
-
-                result.data?.forEach { singleReviewData->
-                    val updatedData = getImageList(singleReviewData)
-                    whiskyDataList.add(updatedData)
-                }
-                result.copy(data = whiskyDataList)
-            }
-
-            withContext(Dispatchers.Main) {
-                callback(updatedServerResponse)
-            }
+            api.getReview(
+                myWhiskyUuid=whiskyUuid,
+                order=order
+            )
         }
+
+        val updatedServerResponse=result?.let{
+            val whiskyDataList = mutableListOf<WhiskyReviewData>()
+
+            result.data?.forEach { singleReviewData->
+                val updatedData = getImageList(singleReviewData)
+                whiskyDataList.add(updatedData)
+            }
+            result.copy(data = whiskyDataList)
+        }
+
+        return@withContext updatedServerResponse
     }
 
     override suspend fun getImageList(singleWhiskeyData: WhiskyReviewData):WhiskyReviewData {
@@ -184,138 +125,127 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun likeReview(reviewUuid: String,callback: (ServerResponse<Any>?) -> Unit){
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="리뷰 추천") {
+    override suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData {
+        if(singleWhiskeyData.image_name==null){
+
+            return singleWhiskeyData
+        }
+        return withContext(Dispatchers.IO) {
+            val result = ApiHandler.makeApiCall(tag = "이미지 가져오기") {
+                api.getImage(image_name = singleWhiskeyData.image_name)
+            }
+            if(result!=null){
+                Log.d("이미지 가져오기 결과",result.toString())
+                singleWhiskeyData.copy(
+                    image = ImageData(image=result.bytes(),isOldImage = true)
+                )
+            }else{
+                singleWhiskeyData
+            }
+
+        }
+    }
+
+    override suspend fun likeReview(reviewUuid: String):ServerResponse<Any>?{
+
+        return  withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="리뷰 추천") {
 
                 api.likeReview(
                     reviewUuid=reviewUuid
                 )
             }
-
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
         }
     }
 
-    override fun cancelLikeReview(reviewUuid: String, callback: (ServerResponse<Any>?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="리뷰 추천 취소") {
+    override suspend fun cancelLikeReview(reviewUuid: String):ServerResponse<Any>? {
+        return  withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="리뷰 추천 취소") {
                 api.cancelLikeReview(
                     reviewUuid=reviewUuid
                 )
             }
-
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
         }
     }
 
-    override fun getBackupCode(callback: (ServerResponse<BackupCodeData>?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = ApiHandler.makeApiCall(tag="백업코드 발급") {
+    override suspend fun getBackupCode():ServerResponse<BackupCodeData>? {
+
+        return  withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="백업코드 발급") {
                 api.getBackupCode()
             }
-
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
         }
     }
 
-    override fun submitBackupCode(backupCodeData: BackupCodeData,callback: (ServerResponse<Any>?) -> Unit) {
+    override suspend fun submitBackupCode(backupCodeData: BackupCodeData):ServerResponse<Any>? {
 
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("백업코드", backupCodeData.toString())
-            val result = ApiHandler.makeApiCall(tag="백업코드 제출") {
+        return  withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="백업코드 제출") {
                 api.submitBackupCode(backupCodeData)
             }
+        }
+    }
 
-            withContext(Dispatchers.Main) {
-                callback(result)
+    override suspend fun deleteWhisky(whisky_uuid: String):ServerResponse<Any>? {
+
+        return  withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="위스키 제거") {
+                api.deleteWhisky(whisky_uuid = whisky_uuid)
             }
         }
     }
 
-    override fun deleteWhisky(whisky_uuid: String, callback: (ServerResponse<Any>?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val result = ApiHandler.makeApiCall(tag="위스키 제거") { api.deleteWhisky(whisky_uuid = whisky_uuid) }
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
-        }
-    }
-
-    override fun getLiveSearchData(searchText: String, callback: (ServerResponse<List<LiveSearchData>>?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val result = ApiHandler.makeApiCall(tag="라이브 서치 데이터 가져오기") { api.whiskyLiveSearch(searchText) }
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
+    override suspend fun getLiveSearchData(searchText: String):ServerResponse<List<LiveSearchData>>? {
+        return withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="라이브 서치 데이터 가져오기") { api.whiskyLiveSearch(searchText)}
         }
     }
 
 
-    override fun addWhiskyNameSearch(name: String,category:String?, callback: (ServerResponse<List<WhiskyName>>?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
+    override suspend fun addWhiskyNameSearch(name: String,category:String?):ServerResponse<List<WhiskyName>>? {
 
-            if (category != null) {
-                Log.d("카테고리",category)
-            }
-            val result = ApiHandler.makeApiCall(tag="위스키 이름 가져오기") { api.addWhiskyNameSearch(name,category=category) }
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
+        return withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="위스키 이름 가져오기") { api.addWhiskyNameSearch(name,category=category) }
         }
     }
 
-    override fun saveOrModifyCustomWhisky(
+    override suspend fun saveOrModifyCustomWhisky(
         image: File?,
         data: CustomWhiskyData,
         modify: Boolean,
-        callback: (ServerResponse<SingleWhiskeyData?>?) -> Unit
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
 
-            val imageLink = image?.let {
-                postImage(it).also { link ->
-                    Log.d("이미지 링크", link ?: "null")
-                }
-            }
+    ):ServerResponse<SingleWhiskeyData?>? = withContext(Dispatchers.IO){
 
-            val newData = data.copy(image_name = imageLink ?: data.image_name)
-            Log.d("위스키 수정 이미지", newData.image_name.toString())
-            val result = if (modify) {
-                // 수정
-                Log.d("수정 데이터", newData.toString())
-                ApiHandler.makeApiCall(tag = "위스키 수정") {
-                    api.modifyWhisky(myWhiskyUuid = data.whisky_uuid, data = newData)
-                }
-            } else {
-                // 추가
-                ApiHandler.makeApiCall(tag = "커스텀 위스키 추가") {
-                    api.customWhiskySave(data = newData)
-                }
-            }
-            //수정 했을 때는 서버에서 수정된 데이터를 보내줌 이미지를 수정했다면 수정된 이미지도 함께 보내준다.(서버에서 이미지를 다시 가져와야함)
-            val updatedServerResponse = if (modify) {
-                result?.let { serverResponse ->
-                    serverResponse.data?.let { modifyData ->
-                        serverResponse.copy(data = getImage(modifyData))
-                    } ?: serverResponse
-                }
-            } else {
-                result
-            }
 
-            withContext(Dispatchers.Main) {
-                callback(updatedServerResponse)
+        val imageLink = image?.let {
+            postImage(it).also { link ->
+                Log.d("이미지 링크", link ?: "null")
             }
         }
+        val newData = data.copy(image_name = imageLink ?: data.image_name)
+        val result = if (modify) {
+            // 수정
+            Log.d("수정 데이터", newData.toString())
+            ApiHandler.makeApiCall(tag = "위스키 수정") {
+                api.modifyWhisky(myWhiskyUuid = data.whisky_uuid, data = newData)
+            }
+        } else {
+            // 추가
+            ApiHandler.makeApiCall(tag = "커스텀 위스키 추가") {
+                api.customWhiskySave(data = newData)
+            }
+        }
+        val updatedServerResponse = if (modify) {
+            result?.let { serverResponse ->
+                serverResponse.data?.let { modifyData ->
+                    serverResponse.copy(data = getImage(modifyData))
+                } ?: serverResponse
+            }
+        } else {
+            result
+        }
+
+        return@withContext updatedServerResponse
     }
 
 
@@ -342,13 +272,9 @@ class MainRepositoryImpl @Inject constructor(
     }
 
 
-    override fun deleteReview(reviewUuid: String, callback: (ServerResponse<Any>?) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val result = ApiHandler.makeApiCall(tag="리뷰 제거") { api.deleteReview(reviewUuid=reviewUuid) }
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
+    override suspend fun deleteReview(reviewUuid: String):ServerResponse<Any>? {
+        return withContext(Dispatchers.IO) {
+            ApiHandler.makeApiCall(tag="리뷰 제거") { api.deleteReview(reviewUuid=reviewUuid)}
         }
     }
 

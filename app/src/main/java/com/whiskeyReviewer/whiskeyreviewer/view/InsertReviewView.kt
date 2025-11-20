@@ -67,15 +67,6 @@ fun InsertReviewView(
 
     val navBackStackEntry = navController.currentBackStackEntry
 
-
-
-//    LaunchedEffect(writeReviewViewModel.reviewSaveResultState.value) {
-//        if(writeReviewViewModel.reviewSaveResultState.value){
-//            navController.popBackStack()
-//            writeReviewViewModel.toggleReviewSaveResult()
-//        }
-//    }
-
     LaunchedEffect(writeReviewViewModel.reviewSaveResultState.value) {
         if (writeReviewViewModel.reviewSaveResultState.value) {
             navController.popBackStack(
@@ -87,10 +78,6 @@ fun InsertReviewView(
     }
 
 
-//
-//    LaunchedEffect(mainViewModel.selectedImageUri.value) {
-//        writeReviewViewModel.setSelectedImage(listOf(mainViewModel.selectedImageUri.value))
-//    }
 
     LaunchedEffect(writeReviewViewModel.loadingState.value) {
         if(writeReviewViewModel.loadingState.value){

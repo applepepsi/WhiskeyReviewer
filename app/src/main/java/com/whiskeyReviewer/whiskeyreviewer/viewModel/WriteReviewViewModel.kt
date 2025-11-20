@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.whiskeyReviewer.nextclass.utils.SUCCESS_CODE
 
 import com.whiskeyReviewer.whiskeyreviewer.component.toolBar.TextAlignment
@@ -28,6 +29,8 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 import com.whiskeyReviewer.whiskeyreviewer.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.launch
+import java.io.File
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -299,56 +302,73 @@ class WriteReviewViewModel @Inject constructor(
 
     fun exportReview(richTextEditorState: RichTextState,tag:String?=null) {
 
-        Log.d("richTextEditorState",richTextEditorState.toHtml())
-        Log.d("richTextEditorState",richTextEditorState.annotatedString.text)
 
-        _writeReviewData.value=_writeReviewData.value.copy(
-            content = richTextEditorState.toHtml()
-        )
-        Log.d("_writeReviewData", _writeReviewData.value.toString())
-        val imageFiles=if(selectedImageUri.value.isNotEmpty()){
-            ImageConverter.convertUrisToFiles(applicationContext,selectedImageUri.value)
-        }else{
-            null
-        }
+        viewModelScope.launch {
 
+            Log.d("richTextEditorState",richTextEditorState.toHtml())
+            Log.d("richTextEditorState",richTextEditorState.annotatedString.text)
 
-        if(_writeReviewData.value.open_date > LocalDate.now()){
-            _errorToastState.value=true
-            _errorToastMessage.value="현재 시간보다 이전 시간을 선택해 주세요"
-            _errorToastIcon.value= R.drawable.fail_icon
-        }else if(richTextEditorState.annotatedString.text.isBlank()){
-
-            _errorToastState.value=true
-            _errorToastMessage.value="내용을 입력해 주세요."
-            _errorToastIcon.value=R.drawable.fail_icon
-        }else{
-
-            val submitWhiskyData=SubmitWhiskyData(
-                _writeReviewData.value.content,
-                _writeReviewData.value.is_anonymous,
-                _writeReviewData.value.open_date.toString(),
-                _writeReviewData.value.tags,
-                _writeReviewData.value.score.toInt(),
-                _writeReviewData.value.whiskey_uuid,
-                _writeReviewData.value.imageList
+            _writeReviewData.value=_writeReviewData.value.copy(
+                content = richTextEditorState.toHtml()
             )
+            Log.d("_writeReviewData", _writeReviewData.value.toString())
 
-            Log.d("submitWhiskyData", submitWhiskyData.toString())
-            _loadingState.value=true
-            if(tag=="modify"){
-                //수정 태그가 들어왔다면 수정으로 전송
-                Log.d("수정 이미지2", imageFiles.toString())
-                writeReviewRepository.reviewModify(
-                    imageFiles =imageFiles,
-                    reviewData = submitWhiskyData
-                ){modifyResult->
+            Log.d("현재 이미지 리스트",selectedImageUri.value.toString())
 
-                    if(modifyResult!=null){
-                        if(modifyResult.code== SUCCESS_CODE){
+
+            //selectedImageUri.value가 최신 데이터 새로운 것만 파일로 변환하고 기존의 살아남은 이미지들은 링크만 추출하여 레포지토리로 이동
+            //새로 들어온 이미지는 레포지토리에서 서버로 전송 후 링크를 발급받고 기존의 링크와 합쳐서 전송
+            val newImageUris = selectedImageUri.value
+                .filter { !it.isOldImage }
+
+            val oldImagesPath: List<String> = selectedImageUri.value
+                .filter { it.isOldImage }
+                .mapNotNull { uriData ->
+                    uriData.uri.path?.let { path -> File(path).name }
+                }
+
+            val imageFiles=if(selectedImageUri.value.isNotEmpty()){
+                ImageConverter.convertUrisToFiles(applicationContext,newImageUris)
+            }else{
+                null
+            }
+
+
+            if(_writeReviewData.value.open_date > LocalDate.now()){
+                _errorToastState.value=true
+                _errorToastMessage.value="현재 시간보다 이전 시간을 선택해 주세요"
+                _errorToastIcon.value= R.drawable.fail_icon
+            }else if(richTextEditorState.annotatedString.text.isBlank()){
+
+                _errorToastState.value=true
+                _errorToastMessage.value="내용을 입력해 주세요."
+                _errorToastIcon.value=R.drawable.fail_icon
+            }else{
+
+                val submitWhiskyData=SubmitWhiskyData(
+                    _writeReviewData.value.content,
+                    _writeReviewData.value.is_anonymous,
+                    _writeReviewData.value.open_date.toString(),
+                    _writeReviewData.value.tags,
+                    _writeReviewData.value.score.toInt(),
+                    _writeReviewData.value.whiskey_uuid,
+                    oldImagesPath
+                )
+
+                Log.d("전송 이미지 리스트", _writeReviewData.value.imageList.toString())
+                _loadingState.value=true
+                if(tag=="modify"){
+                    //수정 태그가 들어왔다면 수정으로 전송
+                    Log.d("수정 이미지2", imageFiles.toString())
+                    val serverResponse=writeReviewRepository.reviewModify(
+                        imageFiles =imageFiles,
+                        reviewData = submitWhiskyData
+                    )
+                    if(serverResponse!=null){
+                        if(serverResponse.code== SUCCESS_CODE){
 
                             toggleReviewSaveResult()
-                            Log.d("modifyResult", modifyResult.data.toString())
+                            Log.d("modifyResult", serverResponse.data.toString())
                         }else{
                             setErrorToastMessage(
                                 icon=R.drawable.fail_icon,
@@ -363,16 +383,16 @@ class WriteReviewViewModel @Inject constructor(
                     }
                     _loadingState.value=false
                     ImageConverter.clearCache(context = applicationContext)
-                }
-            }else{
-                writeReviewRepository.reviewSave(
-                    imageFiles =imageFiles,
-                    reviewData = submitWhiskyData
-                ){ saveResult->
+
+                }else{
+                    val serverResponse= writeReviewRepository.reviewSave(
+                        imageFiles =imageFiles,
+                        reviewData = submitWhiskyData
+                    )
 
                     _loadingState.value=false
-                    if(saveResult!=null){
-                        if(saveResult.code== SUCCESS_CODE){
+                    if(serverResponse!=null){
+                        if(serverResponse.code== SUCCESS_CODE){
                             toggleReviewSaveResult()
                         }else{
                             setErrorToastMessage(
@@ -389,11 +409,13 @@ class WriteReviewViewModel @Inject constructor(
                     _loadingState.value=false
                 }
 
+                Log.d("작성이미지", imageFiles.toString())
+                Log.d("작성내용", _writeReviewData.value.toString())
             }
-
-            Log.d("작성이미지", imageFiles.toString())
-            Log.d("작성내용", _writeReviewData.value.toString())
         }
+
+
+
 //
 //
 //        _writeReviewDate.value

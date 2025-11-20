@@ -21,105 +21,56 @@ class WriteReviewRepositoryImpl @Inject constructor(
     private val api: API
 ) : WriteReviewRepository {
 
-    override fun reviewSave(
+    override suspend fun reviewSave(
         imageFiles:List<File>?,
-        reviewData: SubmitWhiskyData, callback: (ServerResponse<Any>?) -> Unit) {
+        reviewData: SubmitWhiskyData):ServerResponse<Any>? = withContext(Dispatchers.IO){
 
-
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("이미지 데이터들", imageFiles.toString())
-            val imageLinks = imageFiles?.map { singleImage ->
-                postImage(singleImage)
-            }
-            val newData = reviewData.copy(image_names = imageLinks)
-
-            Log.d("리뷰 데이터", newData.toString())
-//            api.reviewSave(
-//
-//                newData
-//            )
-
-            val result = ApiHandler.makeApiCall(tag = "리뷰 추가") { api.reviewSave(newData) }
-            withContext(Dispatchers.Main) {
-                callback(result)
-            }
+        Log.d("이미지 데이터들", imageFiles.toString())
+        val imageLinks = imageFiles?.map { singleImage ->
+            postImage(singleImage)
         }
+        val newData = reviewData.copy(image_names = imageLinks)
+        val result = ApiHandler.makeApiCall(tag = "리뷰 추가") { api.reviewSave(newData) }
 
+        return@withContext result
 
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val result = ApiHandler.makeApiCall(tag="리뷰 작성") {
-//
-//                //이미지를 멀티파트바디로 변환
-//                val imageParts = imageFiles?.map { file ->
-//                    val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-//                    MultipartBody.Part.createFormData("images", file.name, requestFile)
-//                } ?: emptyList()
-//
-//                // 리뷰 데이터 json으로 변환
-//                val json = Gson().toJson(reviewData)
-//                val reviewRequestBody = json.toRequestBody("application/json".toMediaTypeOrNull())
-//                val buffer = Buffer()
-//                reviewRequestBody.writeTo(buffer)
-//
-//
-//
-//                api.reviewSave(
-//
-//                    reviewRequestBody
-//                ) }
-//            withContext(Dispatchers.Main) {
-//                callback(result)
-//            }
-//        }
 
     }
 
 
     //todo 리뷰 수정할때 포스트 이미지는 추가된 이미지만 전송, 수정된 리뷰를 보낼 때는 기존 이미지 주소 까지 같이 전송
-    override fun reviewModify(
+    override suspend fun reviewModify(
         imageFiles:List<File>?,
         reviewData: SubmitWhiskyData,
-        callback: (ServerResponse<Any>?) -> Unit
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("이미지 데이터들", imageFiles.toString())
-            val result = ApiHandler.makeApiCall(tag="리뷰 수정") {
+
+    ):ServerResponse<Any>? {
+
+        Log.d("이미지 데이터들", imageFiles.toString())
+        return withContext(Dispatchers.IO){
+            ApiHandler.makeApiCall(tag="리뷰 수정") {
                 Log.d("수정 데이터", reviewData.toString())
-                val imageLinks = imageFiles?.map { singleImage ->
+                val newUploadedLinks = imageFiles?.map { singleImage ->
                     postImage(singleImage)
                 }
 
-
-                val oldImageList=reviewData.image_names
+                val oldImageList = reviewData.image_names ?: emptyList()
 
                 var newImageLinks: List<String?>?=null
 
-                if(imageLinks!=null){
-                    newImageLinks = if(oldImageList!=null){
-                        oldImageList+imageLinks
-                    }else{
-                        imageLinks
-                    }
+                val finalImageLinks = if (newUploadedLinks != null) {
+                    oldImageList + newUploadedLinks
+                } else {
+                    oldImageList
                 }
-                val newData = reviewData.copy(image_names = newImageLinks)
+                val newData = reviewData.copy(
+                    image_names = if (finalImageLinks.isNotEmpty()) finalImageLinks else null
+                )
                 Log.d("수정 이미지 결과", newImageLinks.toString())
 
-                api.reviewModify(reviewUuid = newData.my_whisky_uuid, writeReviewData = newData) }
-            withContext(Dispatchers.Main) {
-                callback(result)
+                api.reviewModify(reviewUuid = newData.my_whisky_uuid, writeReviewData = newData)
             }
         }
-    }
 
-    override fun getReview(reviewData: WriteReviewData, callback: (ServerResponse<Any>?) -> Unit) {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteReview(
-        reviewData: WriteReviewData,
-        callback: (ServerResponse<Any>?) -> Unit
-    ) {
-        TODO("Not yet implemented")
     }
 
 

@@ -37,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -272,6 +273,18 @@ fun NavigationDrawerComponent(
 
         )
 
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 3.dp),
+            text = "SSAID: ${mainViewModel.userSSAID.value}",
+            textAlign = TextAlign.Center,
+            style = TextStyle.Default.copy(
+                color = LightBlackColor,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Light
+            )
+        )
     }
 }
 

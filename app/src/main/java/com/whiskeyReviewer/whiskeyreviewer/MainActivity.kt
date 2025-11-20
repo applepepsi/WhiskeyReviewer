@@ -29,8 +29,6 @@ import com.whiskeyReviewer.whiskeyreviewer.data.MainRoute
 import com.whiskeyReviewer.whiskeyreviewer.nav.MainNavGraph
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.whiskeyReviewer.whiskeyreviewer.utils.FirstRunCheck
-import com.whiskeyReviewer.whiskeyreviewer.utils.GlobalNavigationHandler
-import com.whiskeyReviewer.whiskeyreviewer.utils.GlobalNavigator
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.MainViewModel
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.WriteReviewViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -47,12 +45,6 @@ class MainActivity : ComponentActivity() {
         val ssaId=Settings.Secure.getString(this.contentResolver, Settings.Secure.ANDROID_ID)
 
 
-//        if (!hasRequiredPermissions()) {
-//            ActivityCompat.requestPermissions(
-//                this, CAMERAX_PERMISSIONS, 0
-//            )
-//        }
-
         super.onCreate(savedInstanceState)
         val splashScreen = installSplashScreen()
         setContent {
@@ -68,8 +60,6 @@ class MainActivity : ComponentActivity() {
                 !mainViewModel.loginResult.value
             }
             WhiskeyReviewerTheme(darkTheme = false) {
-                // A surface container using the 'background' color from the theme
-
                     if(mainViewModel.loginResult.value){
                         Log.d("뷰 가져오기 시작","로그인 시작3")
                         Greeting(ssaId,mainViewModel,context)
@@ -79,10 +69,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-
-    companion object {
-        private val CAMERAX_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
-    }
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -116,18 +102,6 @@ fun Greeting(ssaId: String, mainViewModel: MainViewModel, context: Context) {
         writeReviewViewModel=writeReviewViewModel,
         mainNavController = mainNavController
     )
-    //테스트 해봐야함
-    DisposableEffect(Unit) {
-        GlobalNavigator.registerHandler(object : GlobalNavigationHandler {
-            override fun retryLogin()
-            {
-                mainViewModel.tryLogin(ssaId)
-            }
-        })
-        onDispose {
-            GlobalNavigator.unregisterHandler()
-        }
-    }
 
 
     val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
