@@ -287,10 +287,8 @@ fun WhiskeyDetailView(
                                         writeReviewViewModel.synchronizationWhiskyData(
                                             whiskyReviewData,
                                             mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
-                                            uriList = ImageConverter.byteArrayListToCacheUriList(
-                                                context=context,
-                                                byteArrayList = whiskyReviewData.imageList,
-                                                fileNameList = whiskyReviewData.image_names
+                                            uriList = ImageConverter.imageNamesToRemoteUriDataList(
+                                                imageNameList = whiskyReviewData.image_names
                                             )
                                         )
                                         navController.navigate("${MainRoute.INSERT_REVIEW}/modify")

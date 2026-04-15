@@ -1,6 +1,7 @@
 package com.whiskeyReviewer.whiskeyreviewer.viewModel
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -325,7 +326,11 @@ class WriteReviewViewModel @Inject constructor(
             val oldImagesPath: List<String> = selectedImageUri.value
                 .filter { it.isOldImage }
                 .mapNotNull { uriData ->
-                    uriData.uri.path?.let { path -> File(path).name }
+                    val uri = uriData.uri
+                    when (uri.scheme) {
+                        "http", "https" -> uri.lastPathSegment?.let { Uri.decode(it) }
+                        else -> uri.path?.let { path -> File(path).name }
+                    }
                 }
 
             val imageFiles=if(selectedImageUri.value.isNotEmpty()){

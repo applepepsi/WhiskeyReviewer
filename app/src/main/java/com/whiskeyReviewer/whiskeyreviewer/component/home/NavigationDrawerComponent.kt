@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -47,7 +48,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.bumptech.glide.request.RequestOptions
+import coil.compose.AsyncImage
 import com.whiskeyReviewer.nextclass.utils.RECENT_SEARCH_WHISKEY_TEXT
 
 import com.whiskeyReviewer.whiskeyreviewer.component.customComponent.LiveSearchBoxComponent
@@ -61,7 +62,6 @@ import com.whiskeyReviewer.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.whiskeyReviewer.whiskeyreviewer.utils.RecentSearchWordManager
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.MainViewModel
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.WriteReviewViewModel
-import com.skydoves.landscapist.glide.GlideImage
 import com.whiskeyReviewer.whiskeyreviewer.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -115,15 +115,13 @@ fun NavigationDrawerComponent(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                GlideImage(
-                    imageModel = R.drawable.app_icon,
+                AsyncImage(
+                    model = R.drawable.app_icon,
+                    contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)
                         .clip(shape = RoundedCornerShape(8.dp)),
-                    requestOptions = {
-                        RequestOptions().encodeQuality(80).override(1080, 1920).fitCenter()
-                    }
-
+                    contentScale = ContentScale.Fit
                 )
 
                 Text(

@@ -41,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,7 +64,7 @@ import com.whiskeyReviewer.whiskeyreviewer.ui.theme.MainColor
 import com.whiskeyReviewer.whiskeyreviewer.utils.TimeFormatter
 import com.whiskeyReviewer.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.MainViewModel
-import com.skydoves.landscapist.glide.GlideImage
+import coil.compose.AsyncImage
 import com.whiskeyReviewer.whiskeyreviewer.R
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
@@ -149,9 +151,9 @@ fun SingleWhiskeyComponent(
             }
 
 
-            GlideImage(
-                imageModel = singleWhiskeyData.image?.image ?: R.drawable.empty_image_icon,
-
+            AsyncImage(
+                model = singleWhiskeyData.image?.image ?: R.drawable.empty_image_icon,
+                contentDescription = null,
                 modifier = Modifier
                     .size(200.dp)
                     .then(
@@ -166,7 +168,9 @@ fun SingleWhiskeyComponent(
                             Modifier
                         }
                     ),
-
+                placeholder = painterResource(id = R.drawable.empty_image_icon),
+                error = painterResource(id = R.drawable.empty_image_icon),
+                contentScale = ContentScale.Crop
             )
             
             Spacer(modifier = Modifier.height(10.dp))

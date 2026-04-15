@@ -108,6 +108,7 @@ dependencies {
     implementation 'com.github.Kaaveh:sdp-compose:1.1.0'
 
     implementation "com.github.skydoves:landscapist-glide:1.4.7"
+    implementation "io.coil-kt:coil-compose:2.7.0"
 
     //텝 페이저
     implementation("com.google.accompanist:accompanist-pager:0.28.0")

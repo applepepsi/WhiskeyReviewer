@@ -12,12 +12,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.request.RequestOptions
+import coil.compose.AsyncImage
 
 import com.whiskeyReviewer.whiskeyreviewer.data.UriData
-import com.skydoves.landscapist.glide.GlideImage
 import com.whiskeyReviewer.whiskeyreviewer.R
 
 @Composable
@@ -47,12 +48,13 @@ fun ImageComponent(
             },
     ) {
 
-        GlideImage(
-            imageModel = selectImage,
-            modifier = Modifier
-                .size(200.dp),
-            requestOptions = { RequestOptions().encodeQuality(80).override(1080,1920) }
-
+        AsyncImage(
+            model = selectImage,
+            contentDescription = null,
+            modifier = Modifier.size(200.dp),
+            placeholder = painterResource(id = R.drawable.empty_image_icon),
+            error = painterResource(id = R.drawable.empty_image_icon),
+            contentScale = ContentScale.Crop
         )
     }
 }

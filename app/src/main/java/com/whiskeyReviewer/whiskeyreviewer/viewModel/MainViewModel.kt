@@ -1465,31 +1465,14 @@ class MainViewModel @Inject constructor(
     }
 
     private fun fetchImageList(whiskyReviewData: WhiskyReviewData, currentImageList: MutableMap<String, ImageState>) {
-        viewModelScope.launch {
-            Log.e("이미지 가져오기 시작", whiskyReviewData.toString())
-            try {
-                val result = mainRepository.getImageList(whiskyReviewData)
-
-                when (result) {
-                    is ApiResult.Success -> {
-                        result.data.imageList?.let { imageList ->
-                            currentImageList[whiskyReviewData.review_uuid] = ImageState(
-                                isOpened = true,
-                                extendedState = true,
-                                imageList = imageList
-                            )
-                        }
-                        imageListFlow.value = currentImageList
-                        updateReviewList()
-                    }
-                    else -> {
-                        Log.e("실패", "이미지 리스트 가져오기 실패")
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("실패", "이미지 리스트 가져오기 실패: ${e.message}")
-            }
-        }
+        // URL 기반 렌더링으로 전환해 첫 토글에서는 상태만 열어준다.
+        currentImageList[whiskyReviewData.review_uuid] = ImageState(
+            isOpened = true,
+            extendedState = true,
+            imageList = whiskyReviewData.imageList ?: emptyList()
+        )
+        imageListFlow.value = currentImageList
+        updateReviewList()
     }
 
 

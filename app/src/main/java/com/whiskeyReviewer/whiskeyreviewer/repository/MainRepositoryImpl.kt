@@ -81,27 +81,12 @@ class MainRepositoryImpl @Inject constructor(
     ): ApiResult<ServerResponse<List<WhiskyReviewData>>> = withContext(Dispatchers.IO){
         Log.d("whiskyUuid",whiskyUuid)
         val result = ApiHandler.makeApiCall(tag="나의 리뷰 가져오기") {
-
             api.getReview(
                 myWhiskyUuid=whiskyUuid,
                 order=order
             )
         }
-
-        val updatedServerResponse = result.map { response ->
-            val whiskyDataList = mutableListOf<WhiskyReviewData>()
-
-            response.data?.forEach { singleReviewData ->
-                val updatedData = when (val imageResult = getImageList(singleReviewData)) {
-                    is ApiResult.Success -> imageResult.data
-                    else -> singleReviewData
-                }
-                whiskyDataList.add(updatedData)
-            }
-            response.copy(data = whiskyDataList)
-        }
-
-        return@withContext updatedServerResponse
+        return@withContext result
     }
 
     override suspend fun getImageList(singleWhiskeyData: WhiskyReviewData): ApiResult<WhiskyReviewData> {

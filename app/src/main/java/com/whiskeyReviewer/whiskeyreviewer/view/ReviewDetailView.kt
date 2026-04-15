@@ -125,10 +125,8 @@ fun ReviewDetailView(
                         writeReviewViewModel.synchronizationWhiskyData(
                             mainViewModel.selectWhiskyReviewData.value,
                             mainViewModel.selectWhiskyData.value.korea_name ?: mainViewModel.selectWhiskyData.value.english_name,
-                            uriList = ImageConverter.byteArrayListToCacheUriList(
-                                context=context,
-                                byteArrayList = mainViewModel.selectWhiskyReviewData.value.imageList,
-                                fileNameList = mainViewModel.selectWhiskyReviewData.value.image_names
+                            uriList = ImageConverter.imageNamesToRemoteUriDataList(
+                                imageNameList = mainViewModel.selectWhiskyReviewData.value.image_names
                             )
                         )
 

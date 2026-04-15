@@ -171,6 +171,17 @@ object ImageConverter {
 
     }
 
+    fun imageNamesToRemoteUriDataList(imageNameList: List<String>?): List<UriData>? {
+        if (imageNameList.isNullOrEmpty()) return null
+
+        return imageNameList.map { imageName ->
+            UriData(
+                uri = Uri.parse(ImageUrlUtils.fromImageName(imageName)),
+                isOldImage = true
+            )
+        }
+    }
+
     fun clearCache(context: Context) {
         val cacheDir = context.cacheDir
         if (cacheDir.isDirectory) {

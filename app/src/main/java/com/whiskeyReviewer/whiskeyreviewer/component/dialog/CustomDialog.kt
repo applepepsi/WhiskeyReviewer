@@ -54,8 +54,10 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -87,12 +89,12 @@ import com.whiskeyReviewer.whiskeyreviewer.component.writeReivew.SelectDateBotto
 import com.whiskeyReviewer.whiskeyreviewer.data.ImageData
 import com.whiskeyReviewer.whiskeyreviewer.data.ImageSelectType
 import com.whiskeyReviewer.whiskeyreviewer.data.TapLayoutItems
+import coil.compose.AsyncImage
 
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.LightBlackColor
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.MainColor
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.MainViewModel
-import com.skydoves.landscapist.glide.GlideImage
 import com.whiskeyReviewer.whiskeyreviewer.R
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
@@ -2098,11 +2100,15 @@ fun ImageViewerDialog(
 
                 currentImage?.let { imageData ->
 
-                    GlideImage(
-                        imageModel = imageData.image,
+                    AsyncImage(
+                        model = imageData.image,
+                        contentDescription = null,
                         modifier = Modifier
                             .size(350.dp)
-                            .align(Alignment.Center)
+                            .align(Alignment.Center),
+                        placeholder = painterResource(id = R.drawable.empty_image_icon),
+                        error = painterResource(id = R.drawable.empty_image_icon),
+                        contentScale = ContentScale.Fit
                     )
                 }
 

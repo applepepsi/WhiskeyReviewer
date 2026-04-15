@@ -65,6 +65,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -73,7 +75,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.bumptech.glide.request.RequestOptions
+import coil.compose.AsyncImage
 
 import com.whiskeyReviewer.whiskeyreviewer.component.toolBar.TextStyleItems
 import com.whiskeyReviewer.whiskeyreviewer.component.toolBar.textColorList
@@ -88,7 +90,6 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
-import com.skydoves.landscapist.glide.GlideImage
 import com.whiskeyReviewer.whiskeyreviewer.R
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -620,12 +621,15 @@ fun ImageLazyRowComponent(
                             .clip(RoundedCornerShape(8.dp)),
                         contentAlignment = Alignment.TopEnd
                     ) {
-                        GlideImage(
-                            imageModel = image.uri,
+                        AsyncImage(
+                            model = image.uri,
+                            contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(8.dp)),
-                            requestOptions = { RequestOptions().encodeQuality(80).override(1080,1920) }
+                            placeholder = painterResource(id = R.drawable.empty_image_icon),
+                            error = painterResource(id = R.drawable.empty_image_icon),
+                            contentScale = ContentScale.Crop
                         )
 
                         Icon(

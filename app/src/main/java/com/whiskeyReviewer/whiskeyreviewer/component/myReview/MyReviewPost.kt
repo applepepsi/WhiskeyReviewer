@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -66,12 +67,13 @@ import com.whiskeyReviewer.whiskeyreviewer.ui.theme.LightBlackColor
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.LightOrangeColor
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.MainColor
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.WhiskeyReviewerTheme
+import com.whiskeyReviewer.whiskeyreviewer.utils.ImageUrlUtils
 import com.whiskeyReviewer.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.MainViewModel
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
-import com.skydoves.landscapist.glide.GlideImage
+import coil.compose.AsyncImage
 import com.whiskeyReviewer.whiskeyreviewer.R
 import my.nanihadesuka.compose.LazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarSettings
@@ -301,14 +303,9 @@ fun MySingleReviewComponent(
                         )
                     }
 
-                    if (singleReview.imageList != null) {
-                        ReviewImageLazyRowComponent(
-                            imageList = singleReview.imageList,
-                            deleteImage = {},
-                            deleteImageAllow = false,
-                            onImageSelect = {
-                                onImageSelect(it)
-                            }
+                    if (!singleReview.image_names.isNullOrEmpty()) {
+                        ReviewImageNameLazyRowComponent(
+                            imageNames = singleReview.image_names
                         )
 
                         Spacer(modifier = Modifier.height(5.dp))
@@ -482,16 +479,22 @@ fun OtherUserReviewPostComponent(
                         }
                     }
 
-                    if (singleReview.imageList != null && singleReview.expendedState) {
+                    if (!singleReview.image_names.isNullOrEmpty() && singleReview.expendedState) {
                         Log.d("이미지 결과", singleReview.imageList.toString())
-                        ReviewImageLazyRowComponent(
-                            imageList = singleReview.imageList,
-                            deleteImage = {},
-                            deleteImageAllow = false,
-                            onImageSelect = {
-                                onImageSelect(it)
-                            }
-                        )
+                        if (!singleReview.imageList.isNullOrEmpty()) {
+                            ReviewImageLazyRowComponent(
+                                imageList = singleReview.imageList,
+                                deleteImage = {},
+                                deleteImageAllow = false,
+                                onImageSelect = {
+                                    onImageSelect(it)
+                                }
+                            )
+                        } else {
+                            ReviewImageNameLazyRowComponent(
+                                imageNames = singleReview.image_names
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(5.dp))
                     }
@@ -572,18 +575,18 @@ fun ReviewImageLazyRowComponent(
 //                        .clip(RoundedCornerShape(8.dp))
 //                )
 
-                GlideImage(
-                    imageModel = image.image,
-
+                AsyncImage(
+                    model = image.image,
+                    contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
                             onImageSelect(image)
                         },
-                    placeHolder = painterResource(id = R.drawable.empty_image_icon),
-                    error = painterResource(id = R.drawable.empty_image_icon)
-
+                    placeholder = painterResource(id = R.drawable.empty_image_icon),
+                    error = painterResource(id = R.drawable.empty_image_icon),
+                    contentScale = ContentScale.Crop
                 )
 
                 }
@@ -603,6 +606,35 @@ fun ReviewImageLazyRowComponent(
             }
         }
     }
+
+
+@Composable
+fun ReviewImageNameLazyRowComponent(
+    imageNames: List<String>,
+) {
+    val scrollState = rememberLazyListState()
+
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        state = scrollState,
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = PaddingValues(5.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        items(imageNames) { imageName ->
+            AsyncImage(
+                model = ImageUrlUtils.fromImageName(imageName),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                placeholder = painterResource(id = R.drawable.empty_image_icon),
+                error = painterResource(id = R.drawable.empty_image_icon),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
 
 
 @Composable
