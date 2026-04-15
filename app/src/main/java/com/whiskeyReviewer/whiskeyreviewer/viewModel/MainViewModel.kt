@@ -48,6 +48,7 @@ import com.whiskeyReviewer.whiskeyreviewer.data.pagingResponse.LikeState
 import com.whiskeyReviewer.whiskeyreviewer.repository.MainRepository
 import com.whiskeyReviewer.whiskeyreviewer.utils.ApiResult
 import com.whiskeyReviewer.whiskeyreviewer.utils.ImageConverter
+import com.whiskeyReviewer.whiskeyreviewer.utils.ImageUrlUtils
 import com.whiskeyReviewer.whiskeyreviewer.utils.TokenManager
 import com.whiskeyReviewer.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.whiskeyReviewer.whiskeyreviewer.R
@@ -712,6 +713,13 @@ class MainViewModel @Inject constructor(
         data.image?.let{
             ImageConverter.byteArrayToCacheUri(context = applicationContext,byteArray = data.image,fileName=data.image_name!!)?.let{
                 _selectedImageUri.value=_selectedImageUri.value.copy(uri = it.uri,isOldImage = it.isOldImage)
+            }
+        } ?: run {
+            data.image_name?.let { imageName ->
+                _selectedImageUri.value = _selectedImageUri.value.copy(
+                    uri = Uri.parse(ImageUrlUtils.fromImageName(imageName)),
+                    isOldImage = true
+                )
             }
         }
         _currentCustomWhiskyType.value=WhiskyLanguageTransfer.finedWhiskyCategory(data.category)

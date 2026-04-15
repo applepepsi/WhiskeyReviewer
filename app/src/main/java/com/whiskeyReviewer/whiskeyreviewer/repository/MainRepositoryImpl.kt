@@ -61,16 +61,7 @@ class MainRepositoryImpl @Inject constructor(
             )
         }
 
-        return@withContext result.map { response ->
-            val updatedList = response.data?.map { singleWhiskeyData ->
-                when (val imageResult = getImage(singleWhiskeyData)) {
-                    is ApiResult.Success -> imageResult.data
-                    else -> singleWhiskeyData
-                }
-            } ?: emptyList()
-
-            response.copy(data = updatedList)
-        }
+        return@withContext result
     }
 
 

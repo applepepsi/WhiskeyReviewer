@@ -61,6 +61,7 @@ import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyName
 import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyOptionItems
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.LightBlackColor
 import com.whiskeyReviewer.whiskeyreviewer.ui.theme.MainColor
+import com.whiskeyReviewer.whiskeyreviewer.utils.ImageUrlUtils
 import com.whiskeyReviewer.whiskeyreviewer.utils.TimeFormatter
 import com.whiskeyReviewer.whiskeyreviewer.utils.WhiskyLanguageTransfer
 import com.whiskeyReviewer.whiskeyreviewer.viewModel.MainViewModel
@@ -149,10 +150,11 @@ fun SingleWhiskeyComponent(
                     )
                 }
             }
-
-
             AsyncImage(
-                model = singleWhiskeyData.image?.image ?: R.drawable.empty_image_icon,
+                model = singleWhiskeyData.image_name
+                    ?.let { ImageUrlUtils.fromImageName(it) }
+                    ?: singleWhiskeyData.image?.image
+                    ?: R.drawable.empty_image_icon,
                 contentDescription = null,
                 modifier = Modifier
                     .size(200.dp)
