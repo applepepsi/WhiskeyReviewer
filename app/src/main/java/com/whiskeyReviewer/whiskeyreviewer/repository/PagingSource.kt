@@ -6,6 +6,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyReviewData
 import com.whiskeyReviewer.whiskeyreviewer.utils.ApiHandler
+import com.whiskeyReviewer.whiskeyreviewer.utils.ApiResult
+import com.whiskeyReviewer.whiskeyreviewer.utils.asThrowable
 
 class PagingSource(
     private val apiService: API,
@@ -28,21 +30,24 @@ class PagingSource(
                     sub_search_word = detailSearchWord,
                     like_order = likeAsc,
                     score_order = scoreAsc,
-                    create_order=createdAtAsc,
+                    create_order = createdAtAsc,
                     name_order = null,
-                    page=page,
-                    size=10,
+                    page = page,
+                    size = 10,
                 )
             }
 
-            //이미지 로딩은 뒤로 미루고 일단 데이터 가져오는 것부터
-            val data = result?.data?.content ?: emptyList()
-//            delay(2000)
-            LoadResult.Page(
-                data = data,
-                prevKey = if (page == 0) null else page,
-                nextKey = if (data.isEmpty()) null else page + 1
-            )
+            return when (result) {
+                is ApiResult.Success -> {
+                    val data = result.data.data?.content ?: emptyList()
+                    LoadResult.Page(
+                        data = data,
+                        prevKey = if (page == 0) null else page,
+                        nextKey = if (data.isEmpty()) null else page + 1
+                    )
+                }
+                else -> LoadResult.Error(result.asThrowable())
+            }
         } catch (e: Exception) {
             LoadResult.Error(e)
         }

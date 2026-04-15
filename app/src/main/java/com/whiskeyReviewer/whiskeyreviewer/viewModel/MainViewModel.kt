@@ -46,6 +46,7 @@ import com.whiskeyReviewer.whiskeyreviewer.data.WriteReviewData
 import com.whiskeyReviewer.whiskeyreviewer.data.pagingResponse.ImageState
 import com.whiskeyReviewer.whiskeyreviewer.data.pagingResponse.LikeState
 import com.whiskeyReviewer.whiskeyreviewer.repository.MainRepository
+import com.whiskeyReviewer.whiskeyreviewer.utils.ApiResult
 import com.whiskeyReviewer.whiskeyreviewer.utils.ImageConverter
 import com.whiskeyReviewer.whiskeyreviewer.utils.TokenManager
 import com.whiskeyReviewer.whiskeyreviewer.utils.WhiskyLanguageTransfer
@@ -501,16 +502,19 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             if(searchText!=""){
                 val liveSearchResult = mainRepository.getLiveSearchData(searchText = searchText)
-                if (liveSearchResult != null) {
-                    if(liveSearchResult.code== SUCCESS_CODE){
-                        Log.d("라이브 서치 리스트", liveSearchResult.data.toString())
-                        _liveSearchDataList.value=liveSearchResult.data ?: emptyList()
-                        toggleLiveSearchOpenState(true)
-                    }else{
-                        _liveSearchDataList.value= emptyList()
+                when (liveSearchResult) {
+                    is ApiResult.Success -> {
+                        if (liveSearchResult.data.code == SUCCESS_CODE) {
+                            Log.d("라이브 서치 리스트", liveSearchResult.data.data.toString())
+                            _liveSearchDataList.value = liveSearchResult.data.data ?: emptyList()
+                            toggleLiveSearchOpenState(true)
+                        } else {
+                            _liveSearchDataList.value = emptyList()
+                        }
                     }
-                }else{
-                    _liveSearchDataList.value= emptyList()
+                    else -> {
+                        _liveSearchDataList.value = emptyList()
+                    }
                 }
 
             }else{
@@ -643,11 +647,16 @@ class MainViewModel @Inject constructor(
 
             Log.d("로그인 결과", postDetailResult.toString() + "2")
 
-            if (postDetailResult?.code == SUCCESS_CODE) {
-                TokenManager.saveToken(applicationContext, postDetailResult.data!!)
-                _loginResult.value = true
-            } else {
-                _loginResult.value = false
+            _loginResult.value = when (postDetailResult) {
+                is ApiResult.Success -> {
+                    if (postDetailResult.data.code == SUCCESS_CODE) {
+                        TokenManager.saveToken(applicationContext, postDetailResult.data.data!!)
+                        true
+                    } else {
+                        false
+                    }
+                }
+                else -> false
             }
 
             Log.d("로그인 결과", _loginResult.value.toString())
@@ -746,22 +755,33 @@ class MainViewModel @Inject constructor(
             _searchButtonState.value=true
             _smallProgressIndicatorState.value=true
             viewModelScope.launch {
-                val serverResponse=mainRepository.addWhiskyNameSearch(name = selectWhiskyText.value,category=currentWhiskyFilterType.value.name)
+                val serverResponse = mainRepository.addWhiskyNameSearch(
+                    name = selectWhiskyText.value,
+                    category = currentWhiskyFilterType.value.name
+                )
 
-                if(serverResponse!=null && serverResponse.data!=null){
-
-                    val list=serverResponse.data
-                    val updatedList = list.map{ oldName ->
-
-                        oldName.copy(check = false)
+                when (serverResponse) {
+                    is ApiResult.Success -> {
+                        val list = serverResponse.data.data
+                        if (list != null) {
+                            val updatedList = list.map { oldName ->
+                                oldName.copy(check = false)
+                            }
+                            _dialogSelectWhiskyData.value = updatedList
+                            Log.d("이름들", _dialogSelectWhiskyData.toString())
+                        } else {
+                            setErrorToastMessage(
+                                icon = R.drawable.fail_icon,
+                                text = "서버와 연결 상태가 좋지 않습니다."
+                            )
+                        }
                     }
-                    _dialogSelectWhiskyData.value = updatedList
-                    Log.d("이름들", _dialogSelectWhiskyData.toString())
-                }else{
-                    setErrorToastMessage(
-                        icon=R.drawable.fail_icon,
-                        text="서버와 연결 상태가 좋지 않습니다."
-                    )
+                    else -> {
+                        setErrorToastMessage(
+                            icon = R.drawable.fail_icon,
+                            text = "서버와 연결 상태가 좋지 않습니다."
+                        )
+                    }
                 }
 
                 _smallProgressIndicatorState.value=false
@@ -813,16 +833,27 @@ class MainViewModel @Inject constructor(
                 open_date_order = _myWhiskyFilterData.value.open_date_order?.orderType
             )
 
-            if (response != null && response.code == SUCCESS_CODE) {
-                _myWhiskyList.value = response.data!!
-                Log.d("위스키 데이터", _myWhiskyList.value.toString())
-                initializeListSize()
-            } else {
-                _myWhiskyList.value = emptyList()
-                setErrorToastMessage(
-                    text = "데이터를 가져오는데 실패했습니다. 다시 시도해 주세요",
-                    icon = R.drawable.fail_icon,
-                )
+            when (response) {
+                is ApiResult.Success -> {
+                    if (response.data.code == SUCCESS_CODE) {
+                        _myWhiskyList.value = response.data.data ?: emptyList()
+                        Log.d("위스키 데이터", _myWhiskyList.value.toString())
+                        initializeListSize()
+                    } else {
+                        _myWhiskyList.value = emptyList()
+                        setErrorToastMessage(
+                            text = "데이터를 가져오는데 실패했습니다. 다시 시도해 주세요",
+                            icon = R.drawable.fail_icon,
+                        )
+                    }
+                }
+                else -> {
+                    _myWhiskyList.value = emptyList()
+                    setErrorToastMessage(
+                        text = "데이터를 가져오는데 실패했습니다. 다시 시도해 주세요",
+                        icon = R.drawable.fail_icon,
+                    )
+                }
             }
 
             if (refresh) _whiskyListRefreshState.value = false
@@ -908,44 +939,47 @@ class MainViewModel @Inject constructor(
                 val customWhiskyImage=ImageConverter.convertUrisToFiles(applicationContext, selectedImageUri.value)
                 Log.d("커스텀 위스키 데이터", customWhiskyImage.toString())
 
-                val serverResponse= mainRepository.saveOrModifyCustomWhisky(image=customWhiskyImage,data=_customWhiskyData.value,_whiskyModifyState.value)
+                val serverResponse = mainRepository.saveOrModifyCustomWhisky(
+                    image = customWhiskyImage,
+                    data = _customWhiskyData.value,
+                    _whiskyModifyState.value
+                )
 
-                if(serverResponse!=null){
+                when (serverResponse) {
+                    is ApiResult.Success -> {
+                        if (serverResponse.data.code == SUCCESS_CODE) {
+                            if (_whiskyModifyState.value) {
+                                setErrorToastMessage(
+                                    icon = R.drawable.success_icon,
+                                    text = "정보를 수정했습니다."
+                                )
+                            } else {
+                                setErrorToastMessage(
+                                    icon = R.drawable.success_icon,
+                                    text = "위스키가 등록되었습니다."
+                                )
+                            }
 
-                    if(serverResponse.code== SUCCESS_CODE){
+                            getMyWhiskeyData()
+                            toggleInsertWhiskyState()
+                            toggleWhiskySelectDialogState(state = false)
 
-                        if(_whiskyModifyState.value){
+                            if (serverResponse.data.data != null) {
+                                _selectWhiskyData.value = serverResponse.data.data
+                            }
+                        } else {
                             setErrorToastMessage(
-                                icon=R.drawable.success_icon,
-                                text="정보를 수정했습니다."
-                            )
-                        }else{
-                            setErrorToastMessage(
-                                icon=R.drawable.success_icon,
-                                text="위스키가 등록되었습니다."
+                                icon = R.drawable.fail_icon,
+                                text = "정보를 저장하는데 실패했습니다."
                             )
                         }
-
-
-                        getMyWhiskeyData()
-                        toggleInsertWhiskyState()
-                        toggleWhiskySelectDialogState(state=false)
-
-                        if(serverResponse.data!=null){
-                            _selectWhiskyData.value=serverResponse.data
-                        }
-
-                    }else{
+                    }
+                    else -> {
                         setErrorToastMessage(
-                            icon=R.drawable.fail_icon,
-                            text="정보를 저장하는데 실패했습니다."
+                            icon = R.drawable.fail_icon,
+                            text = "서버와 연결 상태가 좋지 않습니다."
                         )
                     }
-                }else{
-                    setErrorToastMessage(
-                        icon=R.drawable.fail_icon,
-                        text="서버와 연결 상태가 좋지 않습니다."
-                    )
                 }
                 ImageConverter.clearCache(context = applicationContext)
                 _tinyProgressIndicatorState.value=false
@@ -1192,28 +1226,29 @@ class MainViewModel @Inject constructor(
 
             _smallProgressIndicatorState.value = true
 
-            val serverResponse=mainRepository.getMyReviewList(
+            val serverResponse = mainRepository.getMyReviewList(
                 whiskyUuid = _selectWhiskyData.value.whisky_uuid,
                 order = currentMyReviewDayFilter.value.orderType
             )
 
-            if (serverResponse != null) {
-
-                if (serverResponse.code == SUCCESS_CODE) {
-
-                    _myReviewDataList.value = serverResponse.data ?: emptyList()
-                    Log.d("리뷰 데이터", _myReviewDataList.value.toString())
-                } else {
+            when (serverResponse) {
+                is ApiResult.Success -> {
+                    if (serverResponse.data.code == SUCCESS_CODE) {
+                        _myReviewDataList.value = serverResponse.data.data ?: emptyList()
+                        Log.d("리뷰 데이터", _myReviewDataList.value.toString())
+                    } else {
+                        setErrorToastMessage(
+                            icon = R.drawable.fail_icon,
+                            text = "리뷰 데이터를 가져오는데 실패했습니다."
+                        )
+                    }
+                }
+                else -> {
                     setErrorToastMessage(
                         icon = R.drawable.fail_icon,
                         text = "리뷰 데이터를 가져오는데 실패했습니다."
                     )
                 }
-            } else {
-                setErrorToastMessage(
-                    icon = R.drawable.fail_icon,
-                    text = "리뷰 데이터를 가져오는데 실패했습니다."
-                )
             }
             _smallProgressIndicatorState.value = false
         }
@@ -1304,29 +1339,31 @@ class MainViewModel @Inject constructor(
 
     fun deleteReviewData() {
         viewModelScope.launch {
-            val serverResponse=mainRepository.deleteReview(
+            val serverResponse = mainRepository.deleteReview(
                 reviewUuid = selectWhiskyReviewData.value.review_uuid
             )
 
-            if(serverResponse !=null ){
-
-                if(serverResponse.code== SUCCESS_CODE){
-                    getMyReviewList()
+            when (serverResponse) {
+                is ApiResult.Success -> {
+                    if (serverResponse.data.code == SUCCESS_CODE) {
+                        getMyReviewList()
+                        setErrorToastMessage(
+                            icon = R.drawable.success_icon,
+                            text = "리뷰를 제거하였습니다."
+                        )
+                    } else {
+                        setErrorToastMessage(
+                            icon = R.drawable.fail_icon,
+                            text = "리뷰를 제거하지 못했습니다."
+                        )
+                    }
+                }
+                else -> {
                     setErrorToastMessage(
-                        icon=R.drawable.success_icon,
-                        text="리뷰를 제거하였습니다."
-                    )
-                }else{
-                    setErrorToastMessage(
-                        icon=R.drawable.fail_icon,
-                        text="리뷰를 제거하지 못했습니다."
+                        icon = R.drawable.fail_icon,
+                        text = "리뷰를 제거하지 못했습니다."
                     )
                 }
-            }else{
-                setErrorToastMessage(
-                    icon=R.drawable.fail_icon,
-                    text="리뷰를 제거하지 못했습니다."
-                )
             }
 
             toggleProgressIndicatorState(state = false,text="")
@@ -1433,15 +1470,22 @@ class MainViewModel @Inject constructor(
             try {
                 val result = mainRepository.getImageList(whiskyReviewData)
 
-                result.imageList?.let { imageList ->
-                    currentImageList[whiskyReviewData.review_uuid] = ImageState(
-                        isOpened = true,
-                        extendedState = true,
-                        imageList = imageList
-                    )
+                when (result) {
+                    is ApiResult.Success -> {
+                        result.data.imageList?.let { imageList ->
+                            currentImageList[whiskyReviewData.review_uuid] = ImageState(
+                                isOpened = true,
+                                extendedState = true,
+                                imageList = imageList
+                            )
+                        }
+                        imageListFlow.value = currentImageList
+                        updateReviewList()
+                    }
+                    else -> {
+                        Log.e("실패", "이미지 리스트 가져오기 실패")
+                    }
                 }
-                imageListFlow.value = currentImageList
-                updateReviewList()
             } catch (e: Exception) {
                 Log.e("실패", "이미지 리스트 가져오기 실패: ${e.message}")
             }
@@ -1451,45 +1495,49 @@ class MainViewModel @Inject constructor(
 
     private fun cancelLike(reviewUuid: String, whiskyReviewData: WhiskyReviewData, currentLikeStates: MutableMap<String, LikeState>) {
         viewModelScope.launch {
-            val serverResponse=mainRepository.cancelLikeReview(reviewUuid)
+            val serverResponse = mainRepository.cancelLikeReview(reviewUuid)
 
-            if(serverResponse!=null){
-                if (serverResponse.code == SUCCESS_CODE) {
-
-                    updateLikeState(currentLikeStates, whiskyReviewData, -1, false)
-                }else{
+            when (serverResponse) {
+                is ApiResult.Success -> {
+                    if (serverResponse.data.code == SUCCESS_CODE) {
+                        updateLikeState(currentLikeStates, whiskyReviewData, -1, false)
+                    } else {
+                        setErrorToastMessage(
+                            icon = R.drawable.fail_icon,
+                            text = "추천 취소에 실패했습니다."
+                        )
+                    }
+                }
+                else -> {
                     setErrorToastMessage(
-                        icon=R.drawable.fail_icon,
-                        text="추천 취소에 실패했습니다."
+                        icon = R.drawable.fail_icon,
+                        text = "추천 취소에 실패했습니다."
                     )
                 }
-            }else{
-                setErrorToastMessage(
-                    icon=R.drawable.fail_icon,
-                    text="추천 취소에 실패했습니다."
-                )
             }
         }
     }
 
     private fun likeReview(reviewUuid: String, whiskyReviewData: WhiskyReviewData, currentLikeStates: MutableMap<String, LikeState>) {
         viewModelScope.launch {
-            val serverResponse=mainRepository.likeReview(reviewUuid)
-            if (serverResponse != null) {
-                if (serverResponse.code == SUCCESS_CODE) {
-//                    setErrorToastMessage(icon = R.drawable.success_icon, text = "추천 성공")
-                    updateLikeState(currentLikeStates, whiskyReviewData, 1, true)
-                } else {
+            val serverResponse = mainRepository.likeReview(reviewUuid)
+            when (serverResponse) {
+                is ApiResult.Success -> {
+                    if (serverResponse.data.code == SUCCESS_CODE) {
+                        updateLikeState(currentLikeStates, whiskyReviewData, 1, true)
+                    } else {
+                        setErrorToastMessage(
+                            icon = R.drawable.fail_icon,
+                            text = "추천에 실패했습니다."
+                        )
+                    }
+                }
+                else -> {
                     setErrorToastMessage(
                         icon = R.drawable.fail_icon,
                         text = "추천에 실패했습니다."
                     )
                 }
-            } else {
-                setErrorToastMessage(
-                    icon = R.drawable.fail_icon,
-                    text = "추천에 실패했습니다."
-                )
             }
         }
     }
@@ -1540,18 +1588,21 @@ class MainViewModel @Inject constructor(
             if((remainingTime.value) <= 0){
                 _getBackupCodeIndicatorState.value=true
 
-                val serverResponse=mainRepository.getBackupCode()
+                val serverResponse = mainRepository.getBackupCode()
 
-                if(serverResponse !=null){
-                    if(serverResponse.code== SUCCESS_CODE){
-                        _backupCode.value=serverResponse.data?.code
-
-                        startCountDown()
-                    }else{
-
+                when (serverResponse) {
+                    is ApiResult.Success -> {
+                        if (serverResponse.data.code == SUCCESS_CODE) {
+                            _backupCode.value = serverResponse.data.data?.code
+                            startCountDown()
+                        }
                     }
-                }else{
-
+                    else -> {
+                        setErrorToastMessage(
+                            icon = R.drawable.fail_icon,
+                            text = "백업 코드를 가져오지 못했습니다."
+                        )
+                    }
                 }
                 _getBackupCodeIndicatorState.value=false
             }
@@ -1566,16 +1617,17 @@ class MainViewModel @Inject constructor(
                 code = backupCode
             )
 
-            val serverResponse=mainRepository.submitBackupCode(inputBackupCode.value)
-            if(serverResponse !=null){
-                if(serverResponse.code== SUCCESS_CODE){
-                    Log.d("입력 백업 코드", serverResponse.toString())
-                    _backupCodeResult.value=true
-                }else{
-                    _backupCodeResult.value=false
+            val serverResponse = mainRepository.submitBackupCode(inputBackupCode.value)
+            _backupCodeResult.value = when (serverResponse) {
+                is ApiResult.Success -> {
+                    if (serverResponse.data.code == SUCCESS_CODE) {
+                        Log.d("입력 백업 코드", serverResponse.toString())
+                        true
+                    } else {
+                        false
+                    }
                 }
-            }else{
-                _backupCodeResult.value=false
+                else -> false
             }
         }
 
@@ -1619,19 +1671,22 @@ class MainViewModel @Inject constructor(
             toggleProgressIndicatorState(state = true,text="")
             toggleDeleteWhiskyConfirmDialog()
 
-            val serverResponse= mainRepository.deleteWhisky(
+            val serverResponse = mainRepository.deleteWhisky(
                 whisky_uuid = selectWhiskyData.value.whisky_uuid
             )
-            if(serverResponse !=null){
-                if(serverResponse.code== SUCCESS_CODE){
-                    findAndDeleteWhiskyList()
-                    toggleWhiskyDeleteState(state = true)
-
-                }else{
-
+            when (serverResponse) {
+                is ApiResult.Success -> {
+                    if (serverResponse.data.code == SUCCESS_CODE) {
+                        findAndDeleteWhiskyList()
+                        toggleWhiskyDeleteState(state = true)
+                    }
                 }
-            }else{
-
+                else -> {
+                    setErrorToastMessage(
+                        icon = R.drawable.fail_icon,
+                        text = "위스키를 제거하지 못했습니다."
+                    )
+                }
             }
             toggleProgressIndicatorState(state = false,text="")
         }

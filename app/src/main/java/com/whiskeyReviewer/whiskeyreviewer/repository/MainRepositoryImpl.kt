@@ -16,6 +16,8 @@ import com.whiskeyReviewer.whiskeyreviewer.data.TokenData
 import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyReviewData
 import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyName
 import com.whiskeyReviewer.whiskeyreviewer.utils.ApiHandler
+import com.whiskeyReviewer.whiskeyreviewer.utils.ApiResult
+import com.whiskeyReviewer.whiskeyreviewer.utils.map
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +34,7 @@ class MainRepositoryImpl @Inject constructor(
 ) : MainRepository {
 
 
-    override suspend fun register(device_id: String): ServerResponse<TokenData>? {
+    override suspend fun register(device_id: String): ApiResult<ServerResponse<TokenData>> {
 
         return withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="로그인 토큰발급") {
@@ -47,7 +49,7 @@ class MainRepositoryImpl @Inject constructor(
         date_order: String?,
         score_order: String?,
         open_date_order: String?
-    ): ServerResponse<List<SingleWhiskeyData>>? = withContext(Dispatchers.IO) {
+    ): ApiResult<ServerResponse<List<SingleWhiskeyData>>> = withContext(Dispatchers.IO) {
 
         val result = ApiHandler.makeApiCall(tag = "나의 위스키 목록 가져오기") {
             api.getMyWhiskys(
@@ -59,16 +61,16 @@ class MainRepositoryImpl @Inject constructor(
             )
         }
 
-        val updatedServerResponse = result?.let { response ->
+        return@withContext result.map { response ->
             val updatedList = response.data?.map { singleWhiskeyData ->
-
-                getImage(singleWhiskeyData)
+                when (val imageResult = getImage(singleWhiskeyData)) {
+                    is ApiResult.Success -> imageResult.data
+                    else -> singleWhiskeyData
+                }
             } ?: emptyList()
 
             response.copy(data = updatedList)
         }
-
-        return@withContext updatedServerResponse
     }
 
 
@@ -76,7 +78,7 @@ class MainRepositoryImpl @Inject constructor(
     override suspend fun getMyReviewList(
         whiskyUuid: String,
         order: String,
-    ):ServerResponse<List<WhiskyReviewData>>? = withContext(Dispatchers.IO){
+    ): ApiResult<ServerResponse<List<WhiskyReviewData>>> = withContext(Dispatchers.IO){
         Log.d("whiskyUuid",whiskyUuid)
         val result = ApiHandler.makeApiCall(tag="나의 리뷰 가져오기") {
 
@@ -86,67 +88,72 @@ class MainRepositoryImpl @Inject constructor(
             )
         }
 
-        val updatedServerResponse=result?.let{
+        val updatedServerResponse = result.map { response ->
             val whiskyDataList = mutableListOf<WhiskyReviewData>()
 
-            result.data?.forEach { singleReviewData->
-                val updatedData = getImageList(singleReviewData)
+            response.data?.forEach { singleReviewData ->
+                val updatedData = when (val imageResult = getImageList(singleReviewData)) {
+                    is ApiResult.Success -> imageResult.data
+                    else -> singleReviewData
+                }
                 whiskyDataList.add(updatedData)
             }
-            result.copy(data = whiskyDataList)
+            response.copy(data = whiskyDataList)
         }
 
         return@withContext updatedServerResponse
     }
 
-    override suspend fun getImageList(singleWhiskeyData: WhiskyReviewData):WhiskyReviewData {
-        if(singleWhiskeyData.image_names==null){
-
-            return singleWhiskeyData
+    override suspend fun getImageList(singleWhiskeyData: WhiskyReviewData): ApiResult<WhiskyReviewData> {
+        if (singleWhiskeyData.image_names == null) {
+            return ApiResult.Success(singleWhiskeyData)
         }
         return withContext(Dispatchers.IO) {
             val imageList = mutableListOf<ImageData>()
 
-            singleWhiskeyData.image_names.forEach{ singleImageUrl->
+            singleWhiskeyData.image_names.forEach { singleImageUrl ->
 
-                val result=ApiHandler.makeApiCall(tag = "이미지 가져오기") {
+                val result = ApiHandler.makeApiCall(tag = "이미지 가져오기") {
                     api.getImage(image_name = singleImageUrl)
                 }
 
-                if (result != null) {
-                    imageList.add(ImageData(result.bytes(),isOldImage = true))
-                } else {
-                    imageList.add(ImageData(ByteArray(0),isOldImage = true))
+                when (result) {
+                    is ApiResult.Success -> imageList.add(
+                        ImageData(result.data.bytes(), isOldImage = true)
+                    )
+                    else -> imageList.add(ImageData(ByteArray(0), isOldImage = true))
                 }
 
             }
 
-            singleWhiskeyData.copy(imageList = imageList)
+            ApiResult.Success(singleWhiskeyData.copy(imageList = imageList))
         }
     }
 
-    override suspend fun getImage(singleWhiskeyData: SingleWhiskeyData):SingleWhiskeyData {
-        if(singleWhiskeyData.image_name==null){
-
-            return singleWhiskeyData
+    override suspend fun getImage(singleWhiskeyData: SingleWhiskeyData): ApiResult<SingleWhiskeyData> {
+        if (singleWhiskeyData.image_name == null) {
+            return ApiResult.Success(singleWhiskeyData)
         }
         return withContext(Dispatchers.IO) {
             val result = ApiHandler.makeApiCall(tag = "이미지 가져오기") {
                 api.getImage(image_name = singleWhiskeyData.image_name)
             }
-            if(result!=null){
-                Log.d("이미지 가져오기 결과",result.toString())
-                singleWhiskeyData.copy(
-                    image = ImageData(image=result.bytes(),isOldImage = true)
-                )
-            }else{
-                singleWhiskeyData
+            when (result) {
+                is ApiResult.Success -> {
+                    Log.d("이미지 가져오기 결과", result.toString())
+                    ApiResult.Success(
+                        singleWhiskeyData.copy(
+                            image = ImageData(image = result.data.bytes(), isOldImage = true)
+                        )
+                    )
+                }
+                else -> ApiResult.Success(singleWhiskeyData)
             }
 
         }
     }
 
-    override suspend fun likeReview(reviewUuid: String):ServerResponse<Any>?{
+    override suspend fun likeReview(reviewUuid: String): ApiResult<ServerResponse<Any>>{
 
         return  withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="리뷰 추천") {
@@ -158,7 +165,7 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun cancelLikeReview(reviewUuid: String):ServerResponse<Any>? {
+    override suspend fun cancelLikeReview(reviewUuid: String): ApiResult<ServerResponse<Any>> {
         return  withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="리뷰 추천 취소") {
                 api.cancelLikeReview(
@@ -168,7 +175,7 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBackupCode():ServerResponse<BackupCodeData>? {
+    override suspend fun getBackupCode(): ApiResult<ServerResponse<BackupCodeData>> {
 
         return  withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="백업코드 발급") {
@@ -177,7 +184,7 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun submitBackupCode(backupCodeData: BackupCodeData):ServerResponse<Any>? {
+    override suspend fun submitBackupCode(backupCodeData: BackupCodeData): ApiResult<ServerResponse<Any>> {
 
         return  withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="백업코드 제출") {
@@ -186,7 +193,7 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteWhisky(whisky_uuid: String):ServerResponse<Any>? {
+    override suspend fun deleteWhisky(whisky_uuid: String): ApiResult<ServerResponse<Any>> {
 
         return  withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="위스키 제거") {
@@ -195,14 +202,14 @@ class MainRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getLiveSearchData(searchText: String):ServerResponse<List<LiveSearchData>>? {
+    override suspend fun getLiveSearchData(searchText: String): ApiResult<ServerResponse<List<LiveSearchData>>> {
         return withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="라이브 서치 데이터 가져오기") { api.whiskyLiveSearch(searchText)}
         }
     }
 
 
-    override suspend fun addWhiskyNameSearch(name: String,category:String?):ServerResponse<List<WhiskyName>>? {
+    override suspend fun addWhiskyNameSearch(name: String,category:String?): ApiResult<ServerResponse<List<WhiskyName>>> {
 
         return withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="위스키 이름 가져오기") { api.addWhiskyNameSearch(name,category=category) }
@@ -214,14 +221,21 @@ class MainRepositoryImpl @Inject constructor(
         data: CustomWhiskyData,
         modify: Boolean,
 
-    ):ServerResponse<SingleWhiskeyData?>? = withContext(Dispatchers.IO){
+    ): ApiResult<ServerResponse<SingleWhiskeyData?>> = withContext(Dispatchers.IO){
 
 
-        val imageLink = image?.let {
-            postImage(it).also { link ->
-                Log.d("이미지 링크", link ?: "null")
-            }
+        val imageLinkResult = image?.let { postImage(it) } ?: ApiResult.Success(null)
+        val imageLink = when (imageLinkResult) {
+            is ApiResult.Success -> imageLinkResult.data
+            is ApiResult.HttpError -> return@withContext ApiResult.HttpError(
+                imageLinkResult.code,
+                imageLinkResult.message,
+                imageLinkResult.errorBody
+            )
+            is ApiResult.NetworkError -> return@withContext ApiResult.NetworkError(imageLinkResult.exception)
+            is ApiResult.UnknownError -> return@withContext ApiResult.UnknownError(imageLinkResult.exception)
         }
+        Log.d("이미지 링크", imageLink ?: "null")
         val newData = data.copy(image_name = imageLink ?: data.image_name)
         val result = if (modify) {
             // 수정
@@ -236,9 +250,12 @@ class MainRepositoryImpl @Inject constructor(
             }
         }
         val updatedServerResponse = if (modify) {
-            result?.let { serverResponse ->
+            result.map { serverResponse ->
                 serverResponse.data?.let { modifyData ->
-                    serverResponse.copy(data = getImage(modifyData))
+                    when (val imageResult = getImage(modifyData)) {
+                        is ApiResult.Success -> serverResponse.copy(data = imageResult.data)
+                        else -> serverResponse
+                    }
                 } ?: serverResponse
             }
         } else {
@@ -272,32 +289,43 @@ class MainRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun deleteReview(reviewUuid: String):ServerResponse<Any>? {
+    override suspend fun deleteReview(reviewUuid: String): ApiResult<ServerResponse<Any>> {
         return withContext(Dispatchers.IO) {
             ApiHandler.makeApiCall(tag="리뷰 제거") { api.deleteReview(reviewUuid=reviewUuid)}
         }
     }
 
-    suspend fun postImage(image: File?):String? {
+    suspend fun postImage(image: File?): ApiResult<String?> {
         val requestFile = image?.asRequestBody("image/*".toMediaTypeOrNull())
         val convertImage = requestFile?.let { MultipartBody.Part.createFormData("image", image.name, it) }
 
         Log.d("컨버트 이미지", convertImage.toString())
         Log.d("컨버트 이미지", image?.name ?:"null")
-        return if(convertImage!=null){
+        return if (convertImage != null) {
             val result = withContext(Dispatchers.IO) {
                 ApiHandler.makeApiCall(tag = "이미지 전송") {
                     api.imageUpload(image = convertImage)
                 }
             }
 
-            if (result != null && result.code == SUCCESS_CODE) {
-                result.data
-            } else {
-                null
+            when (result) {
+                is ApiResult.Success -> {
+                    if (result.data.code == SUCCESS_CODE) {
+                        ApiResult.Success(result.data.data)
+                    } else {
+                        ApiResult.Success(null)
+                    }
+                }
+                is ApiResult.HttpError -> ApiResult.HttpError(
+                    result.code,
+                    result.message,
+                    result.errorBody
+                )
+                is ApiResult.NetworkError -> ApiResult.NetworkError(result.exception)
+                is ApiResult.UnknownError -> ApiResult.UnknownError(result.exception)
             }
-        }else{
-            null
+        } else {
+            ApiResult.Success(null)
         }
 
     }

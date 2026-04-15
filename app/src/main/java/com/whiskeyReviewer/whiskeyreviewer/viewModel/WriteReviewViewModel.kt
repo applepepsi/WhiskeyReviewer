@@ -23,6 +23,7 @@ import com.whiskeyReviewer.whiskeyreviewer.data.UriData
 import com.whiskeyReviewer.whiskeyreviewer.data.WhiskyReviewData
 import com.whiskeyReviewer.whiskeyreviewer.data.WriteReviewData
 import com.whiskeyReviewer.whiskeyreviewer.repository.WriteReviewRepository
+import com.whiskeyReviewer.whiskeyreviewer.utils.ApiResult
 import com.whiskeyReviewer.whiskeyreviewer.utils.ImageConverter
 import com.whiskeyReviewer.whiskeyreviewer.utils.TimeFormatter
 import com.mohamedrejeb.richeditor.model.RichTextState
@@ -364,22 +365,24 @@ class WriteReviewViewModel @Inject constructor(
                         imageFiles =imageFiles,
                         reviewData = submitWhiskyData
                     )
-                    if(serverResponse!=null){
-                        if(serverResponse.code== SUCCESS_CODE){
-
-                            toggleReviewSaveResult()
-                            Log.d("modifyResult", serverResponse.data.toString())
-                        }else{
+                    when (serverResponse) {
+                        is ApiResult.Success -> {
+                            if (serverResponse.data.code == SUCCESS_CODE) {
+                                toggleReviewSaveResult()
+                                Log.d("modifyResult", serverResponse.data.toString())
+                            } else {
+                                setErrorToastMessage(
+                                    icon = R.drawable.fail_icon,
+                                    text = ""
+                                )
+                            }
+                        }
+                        else -> {
                             setErrorToastMessage(
-                                icon=R.drawable.fail_icon,
-                                text=""
+                                icon = R.drawable.fail_icon,
+                                text = "서버와의 연결 상태가 좋지 않습니다."
                             )
                         }
-                    }else{
-                        setErrorToastMessage(
-                            icon=R.drawable.fail_icon,
-                            text="서버와의 연결 상태가 좋지 않습니다."
-                        )
                     }
                     _loadingState.value=false
                     ImageConverter.clearCache(context = applicationContext)
@@ -391,20 +394,23 @@ class WriteReviewViewModel @Inject constructor(
                     )
 
                     _loadingState.value=false
-                    if(serverResponse!=null){
-                        if(serverResponse.code== SUCCESS_CODE){
-                            toggleReviewSaveResult()
-                        }else{
+                    when (serverResponse) {
+                        is ApiResult.Success -> {
+                            if (serverResponse.data.code == SUCCESS_CODE) {
+                                toggleReviewSaveResult()
+                            } else {
+                                setErrorToastMessage(
+                                    icon = R.drawable.fail_icon,
+                                    text = ""
+                                )
+                            }
+                        }
+                        else -> {
                             setErrorToastMessage(
-                                icon=R.drawable.fail_icon,
-                                text=""
+                                icon = R.drawable.fail_icon,
+                                text = "서버와의 연결 상태가 좋지 않습니다."
                             )
                         }
-                    }else{
-                        setErrorToastMessage(
-                            icon=R.drawable.fail_icon,
-                            text="서버와의 연결 상태가 좋지 않습니다."
-                        )
                     }
                     _loadingState.value=false
                 }

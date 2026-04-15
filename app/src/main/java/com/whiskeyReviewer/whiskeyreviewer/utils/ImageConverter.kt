@@ -158,7 +158,6 @@ object ImageConverter {
         if (byteArray==null) return null
 
         return try {
-
             val file = File(context.cacheDir, fileName ?: "image_temp.jpg")
             FileOutputStream(file).use { fos ->
                 fos.write(byteArray.image)

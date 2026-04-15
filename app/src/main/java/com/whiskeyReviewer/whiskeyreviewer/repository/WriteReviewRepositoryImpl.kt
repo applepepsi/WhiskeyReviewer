@@ -7,6 +7,7 @@ import com.whiskeyReviewer.whiskeyreviewer.data.ServerResponse
 import com.whiskeyReviewer.whiskeyreviewer.data.SubmitWhiskyData
 import com.whiskeyReviewer.whiskeyreviewer.data.WriteReviewData
 import com.whiskeyReviewer.whiskeyreviewer.utils.ApiHandler
+import com.whiskeyReviewer.whiskeyreviewer.utils.ApiResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,11 +24,22 @@ class WriteReviewRepositoryImpl @Inject constructor(
 
     override suspend fun reviewSave(
         imageFiles:List<File>?,
-        reviewData: SubmitWhiskyData):ServerResponse<Any>? = withContext(Dispatchers.IO){
+        reviewData: SubmitWhiskyData
+    ): ApiResult<ServerResponse<Any>> = withContext(Dispatchers.IO){
 
         Log.d("이미지 데이터들", imageFiles.toString())
         val imageLinks = imageFiles?.map { singleImage ->
-            postImage(singleImage)
+            val imageResult = postImage(singleImage)
+            when (imageResult) {
+                is ApiResult.Success -> imageResult.data
+                is ApiResult.HttpError -> return@withContext ApiResult.HttpError(
+                    imageResult.code,
+                    imageResult.message,
+                    imageResult.errorBody
+                )
+                is ApiResult.NetworkError -> return@withContext ApiResult.NetworkError(imageResult.exception)
+                is ApiResult.UnknownError -> return@withContext ApiResult.UnknownError(imageResult.exception)
+            }
         }
         val newData = reviewData.copy(image_names = imageLinks)
         val result = ApiHandler.makeApiCall(tag = "리뷰 추가") { api.reviewSave(newData) }
@@ -43,30 +55,40 @@ class WriteReviewRepositoryImpl @Inject constructor(
         imageFiles:List<File>?,
         reviewData: SubmitWhiskyData,
 
-    ):ServerResponse<Any>? {
+    ): ApiResult<ServerResponse<Any>> {
 
         Log.d("이미지 데이터들", imageFiles.toString())
         return withContext(Dispatchers.IO){
+            Log.d("수정 데이터", reviewData.toString())
+            val newUploadedLinks = imageFiles?.map { singleImage ->
+                val imageResult = postImage(singleImage)
+                when (imageResult) {
+                    is ApiResult.Success -> imageResult.data
+                    is ApiResult.HttpError -> return@withContext ApiResult.HttpError(
+                        imageResult.code,
+                        imageResult.message,
+                        imageResult.errorBody
+                    )
+                    is ApiResult.NetworkError -> return@withContext ApiResult.NetworkError(imageResult.exception)
+                    is ApiResult.UnknownError -> return@withContext ApiResult.UnknownError(imageResult.exception)
+                }
+            }
+
+            val oldImageList = reviewData.image_names ?: emptyList()
+
+            var newImageLinks: List<String?>?=null
+
+            val finalImageLinks = if (newUploadedLinks != null) {
+                oldImageList + newUploadedLinks
+            } else {
+                oldImageList
+            }
+            val newData = reviewData.copy(
+                image_names = if (finalImageLinks.isNotEmpty()) finalImageLinks else null
+            )
+            Log.d("수정 이미지 결과", newImageLinks.toString())
+
             ApiHandler.makeApiCall(tag="리뷰 수정") {
-                Log.d("수정 데이터", reviewData.toString())
-                val newUploadedLinks = imageFiles?.map { singleImage ->
-                    postImage(singleImage)
-                }
-
-                val oldImageList = reviewData.image_names ?: emptyList()
-
-                var newImageLinks: List<String?>?=null
-
-                val finalImageLinks = if (newUploadedLinks != null) {
-                    oldImageList + newUploadedLinks
-                } else {
-                    oldImageList
-                }
-                val newData = reviewData.copy(
-                    image_names = if (finalImageLinks.isNotEmpty()) finalImageLinks else null
-                )
-                Log.d("수정 이미지 결과", newImageLinks.toString())
-
                 api.reviewModify(reviewUuid = newData.my_whisky_uuid, writeReviewData = newData)
             }
         }
@@ -74,7 +96,7 @@ class WriteReviewRepositoryImpl @Inject constructor(
     }
 
 
-    suspend fun postImage(image: File?):String? {
+    suspend fun postImage(image: File?): ApiResult<String?> {
         val requestFile = image?.asRequestBody("image/*".toMediaTypeOrNull())
         val convertImage = requestFile?.let { MultipartBody.Part.createFormData("image", image.name, it) }
 
@@ -85,10 +107,21 @@ class WriteReviewRepositoryImpl @Inject constructor(
             }
         }
 
-        return if (result != null && result.code == SUCCESS_CODE) {
-            result.data
-        } else {
-            null
+        return when (result) {
+            is ApiResult.Success -> {
+                if (result.data.code == SUCCESS_CODE) {
+                    ApiResult.Success(result.data.data)
+                } else {
+                    ApiResult.Success(null)
+                }
+            }
+            is ApiResult.HttpError -> ApiResult.HttpError(
+                result.code,
+                result.message,
+                result.errorBody
+            )
+            is ApiResult.NetworkError -> ApiResult.NetworkError(result.exception)
+            is ApiResult.UnknownError -> ApiResult.UnknownError(result.exception)
         }
     }
 
